@@ -5,76 +5,108 @@ export enum Method {
 	Or,
 }
 
+interface ParseResult {
+	matched: boolean;
+	remaining: string;
+}
+
 class Parser {
 	rule: Rule;
-
 	constructor(rule: Rule) {
 		this.rule = rule;
 	}
 
-	parse(text: string) {
+	parse(text: string): boolean {
+		const result = this.parseRecursive(this.rule, text);
+		const fullyParsed = result.matched && result.remaining.trim() === "";
+		return fullyParsed;
+	}
 
-		const dfs = (rule: Rule) => {
+	private parseRecursive(rule: Rule, text: string): ParseResult {
+		console.log(`Parsing rule with method ${Method[rule.method]}, text: "${text}"`);
 
-			console.log(text)
-
-			if (rule.literal) {
-				let match = rule.match(text);
-				return { matched: match.matched, text: match.text };
-			}
-
-			if (rule.method == Method.Or) {
-				let found = false;
-				for (const subrule of rule.definition) {
-					if (dfs(subrule)) {
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-					throw new Error("not Or")
-			}
-
-			// for And rules we need to make sure that every one of the subrules is matched
-			if (rule.method == Method.And) {
-				let matched = 0;
-				for (const subrule of rule.definition) {
-					if (dfs(subrule))
-						matched++;
-				}
-				if (matched != rule.definition.length)
-					throw new Error("not And");
-			}
-
-			if (rule.method == Method.ZeroOrMore) {
-				let running = true;
-				while (running) {
-					for (const subrule of rule.definition) {
-						running = dfs(subrule);
-					}
-				}
-			}
-
-			if (rule.method == Method.OneOrMore) {
-				let running = true;
-				let matched = 0;
-				while (running) {
-					for (const subrule of rule.definition) {
-						running = dfs(subrule);
-					}
-					if (running)
-						matched++;
-				}
-				if (matched == 0)
-					throw new Error("not OneOrMore")
-			}
-
-			return true;
+		if (rule.literal) {
+			return rule.match(text);
 		}
 
-		dfs(this.rule);
+		if (rule.method === Method.Or) {
+			for (const subrule of rule.definition) {
+				const result = this.parseRecursive(subrule, text);
+				if (result.matched) {
+					return result;
+				}
+			}
+			return { matched: false, remaining: text };
+		}
 
-		console.log("parsed: ", text == "");
+		if (rule.method === Method.And) {
+			let currentText = text;
+			for (const subrule of rule.definition) {
+				const result = this.parseRecursive(subrule, currentText);
+				if (!result.matched) {
+					return { matched: false, remaining: text };
+				}
+				currentText = result.remaining;
+			}
+			return { matched: true, remaining: currentText };
+		}
+
+		if (rule.method === Method.ZeroOrMore) {
+			let currentText = text;
+			while (true) {
+				let allMatched = true;
+				let tempText = currentText;
+
+				for (const subrule of rule.definition) {
+					const result = this.parseRecursive(subrule, tempText);
+					if (!result.matched) {
+						allMatched = false;
+						break;
+					}
+					tempText = result.remaining;
+				}
+
+				if (!allMatched || tempText === currentText) {
+					// No progress made, stop
+					break;
+				}
+				currentText = tempText;
+			}
+			return { matched: true, remaining: currentText };
+		}
+
+		if (rule.method === Method.OneOrMore) {
+			let currentText = text;
+			let matchCount = 0;
+
+			while (true) {
+				let allMatched = true;
+				let tempText = currentText;
+
+				for (const subrule of rule.definition) {
+					const result = this.parseRecursive(subrule, tempText);
+					if (!result.matched) {
+						allMatched = false;
+						break;
+					}
+					tempText = result.remaining;
+				}
+
+				if (!allMatched || tempText === currentText) {
+					// No progress made, stop
+					break;
+				}
+				currentText = tempText;
+				matchCount++;
+			}
+
+			if (matchCount === 0) {
+				return { matched: false, remaining: text };
+			}
+			return { matched: true, remaining: currentText };
+		}
+
+		return { matched: false, remaining: text };
 	}
 }
 
@@ -93,21 +125,23 @@ class Rule {
 	define(rules: Rule[]) {
 		for (let rule of rules)
 			rule.parent = this;
-
 		this.definition = rules;
 	}
 
-	match(text: string) {
+	match(text: string): ParseResult {
 		if (this.literal) {
-			// if we can find the match as the first subword of the text, lets trim the 
-			if (text.indexOf(this.literal) == 0) {
-				return { matched: true, text: text.replace(this.literal, "") };
+			if (text.startsWith(this.literal)) {
+				return {
+					matched: true,
+					remaining: text.substring(this.literal.length)
+				};
 			}
 		}
-		return { matched: false, text: text };
+		return { matched: false, remaining: text };
 	}
 }
 
+// Grammar definition
 const adjective = new Rule();
 adjective.method = Method.Or;
 adjective.define([new Rule("wow"), new Rule("many"), new Rule("so"), new Rule("such")]);
@@ -126,17 +160,15 @@ phrase.define([adjective, spaces, noun]);
 
 const doge = new Rule();
 doge.method = Method.ZeroOrMore;
-doge.define([phrase]);
+doge.define([phrase, spaces]);
 
-const p = new Parser(doge); // TODO
-
-const text = "such book"
+// Test the parser
+const p = new Parser(doge);
+const text = "such   book wow   lisp ";
 
 try {
-	p.parse(text)
-	console.log(p);
+	const success = p.parse(text);
+	console.log("Parse successful:", success);
+} catch (e) {
+	console.log("Parse error:", e);
 }
-catch (e) {
-	console.log(e);
-}
-
