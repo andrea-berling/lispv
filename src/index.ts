@@ -1,4 +1,4 @@
-const DEBUG = true;
+const DEBUG = false;
 
 export enum Method {
 	ZeroOrMore,
@@ -253,7 +253,6 @@ operation.name = "operation";
 operation.define([new Rule("+"), new Rule("-"), new Rule("*"), new Rule("/")])
 
 const expression = new Rule();
-// expression.name = "expression";
 const base_expression = new Rule();
 base_expression.name = "base expression";
 
@@ -273,12 +272,77 @@ rpn.define([expression])
 
 // Test the parser
 const p = new Parser(rpn);
-const text = "(+ (- 3 (+ 432 (+ 1 2) (+ 1 2 3))) 2)";
+const text = "(+ (- 3 10 (+ 432 (+ 1 2) (+ 1 2 3))) 2)";
+
+export class Interpreter {
+	p: Parser;
+	execute: (caugt: Caught) => number = function () { return 0; };
+
+	constructor(p: Parser) {
+		this.p = p;
+	}
+
+	run() {
+		let result = this.execute(this.p.caught);
+		return result;
+	}
+}
+
+const i = new Interpreter(p);
+
+
+i.execute = (c: Caught): number => {
+	// Se è un numero letterale, restituiscilo
+	if (c.name === number.name) {
+		let digits = c.caught.map(ch => ch.literal).join('');
+		return Number.parseInt(digits);
+	}
+
+	// Se è una base_expression, estrai op e valuta gli argomenti
+	if (c.name === base_expression.name) {
+		// Trova il nome dell'operazione (es: "+")
+		let opNode = c.caught.find(x => x.name === operation.name);
+		let op = opNode ? opNode.caught[0].name : "";
+
+		// Trova tutte le sub-espressioni figlie (espressioni numeriche o altre base_expression)
+		let args: number[] = [];
+
+		for (let child of c.caught) {
+			if (child.name === expression.name || child.name === base_expression.name || child.name === number.name) {
+				args.push(i.execute(child));
+			}
+		}
+
+		// Applica l’operazione
+		let result = (op === "*" || op === "/") ? 1 : 0;
+
+		for (let n of args) {
+			if (op === "+") result += n;
+			else if (op === "-") result -= n;
+			else if (op === "*") result *= n;
+			else if (op === "/") result /= n;
+		}
+
+		return result;
+	}
+
+	// Se è un wrapper (tipo expression), scendi nei figli
+	if (c.caught.length === 1) {
+		return i.execute(c.caught[0]);
+	}
+
+	// Caso di fallback: somma tutti i figli interpretabili
+	let res = 0;
+	for (let child of c.caught) {
+		res += i.execute(child);
+	}
+	return res;
+}
 
 try {
 	const success = p.parse(text);
 	console.log("Parse successful:", success);
-	console.log(p.caught)
+	console.log(i.run())
 } catch (e) {
 	console.log("Parse error:", e);
 }
