@@ -1,3 +1,5 @@
+const DEBUG = true;
+
 export enum Method {
 	ZeroOrMore,
 	OneOrMore,
@@ -5,60 +7,115 @@ export enum Method {
 	Or,
 }
 
-interface ParseResult {
+export interface ParseResult {
 	matched: boolean;
 	remaining: string;
 }
 
-class Parser {
+export class Caught {
+	name: string = "";
+	literal: string = "";
+	method: Method = Method.Or;
+	caught: Caught[] = [];
+}
+
+export class Parser {
 	rule: Rule;
+	caught: Caught;
+
 	constructor(rule: Rule) {
 		this.rule = rule;
+		this.caught = new Caught();
+		this.caught.name = "main";
 	}
 
 	parse(text: string): boolean {
-		const result = this.parseRecursive(this.rule, text);
+		const result = this.parseRecursive(this.rule, text, this.caught);
 		const fullyParsed = result.matched && result.remaining.trim() === "";
 		return fullyParsed;
 	}
 
-	private parseRecursive(rule: Rule, text: string): ParseResult {
-		console.log(`Parsing rule with method ${Method[rule.method]}, text: "${text}"`);
-
+	private parseRecursive(rule: Rule, text: string, parent: Caught): ParseResult {
 		if (rule.literal) {
-			return rule.match(text);
+			let child = new Caught();
+			child.literal = rule.literal;
+			child.name = child.literal;
+
+			let matched = rule.match(text)
+			if (matched.matched) {
+				parent.caught.push(child);
+				DEBUG && rule.debug();
+			}
+			return matched;
 		}
 
 		if (rule.method === Method.Or) {
+			let child = parent;
+			if (rule.name) {
+				child = new Caught();
+				child.method = rule.method;
+				child.name = rule.name;
+			}
+
 			for (const subrule of rule.definition) {
-				const result = this.parseRecursive(subrule, text);
+
+				const result = this.parseRecursive(subrule, text, child);
+
 				if (result.matched) {
+					if (rule.name)
+						parent.caught.push(child);
+					DEBUG && rule.debug();
 					return result;
 				}
 			}
+
 			return { matched: false, remaining: text };
 		}
 
 		if (rule.method === Method.And) {
 			let currentText = text;
+
+			let child = parent;
+			if (rule.name) {
+				child = new Caught();
+				child.method = rule.method;
+				child.name = rule.name;
+			}
+
 			for (const subrule of rule.definition) {
-				const result = this.parseRecursive(subrule, currentText);
+
+				const result = this.parseRecursive(subrule, currentText, child);
+
 				if (!result.matched) {
 					return { matched: false, remaining: text };
 				}
 				currentText = result.remaining;
 			}
+
+			if (rule.name)
+				parent.caught.push(child);
+			DEBUG && rule.debug();
 			return { matched: true, remaining: currentText };
 		}
 
 		if (rule.method === Method.ZeroOrMore) {
 			let currentText = text;
+
+			let child = parent;
+			if (rule.name) {
+				child = new Caught();
+				child.method = rule.method;
+				child.name = rule.name;
+			}
+
 			while (true) {
 				let allMatched = true;
 				let tempText = currentText;
 
 				for (const subrule of rule.definition) {
-					const result = this.parseRecursive(subrule, tempText);
+
+					const result = this.parseRecursive(subrule, tempText, child);
+
 					if (!result.matched) {
 						allMatched = false;
 						break;
@@ -72,6 +129,10 @@ class Parser {
 				}
 				currentText = tempText;
 			}
+
+			if (rule.name)
+				parent.caught.push(child);
+			DEBUG && rule.debug();
 			return { matched: true, remaining: currentText };
 		}
 
@@ -79,12 +140,21 @@ class Parser {
 			let currentText = text;
 			let matchCount = 0;
 
+			let child = parent;
+			if (rule.name) {
+				child = new Caught();
+				child.method = rule.method;
+				child.name = rule.name;
+			}
+
 			while (true) {
 				let allMatched = true;
 				let tempText = currentText;
 
 				for (const subrule of rule.definition) {
-					const result = this.parseRecursive(subrule, tempText);
+
+					const result = this.parseRecursive(subrule, tempText, child);
+
 					if (!result.matched) {
 						allMatched = false;
 						break;
@@ -103,6 +173,10 @@ class Parser {
 			if (matchCount === 0) {
 				return { matched: false, remaining: text };
 			}
+
+			if (rule.name)
+				parent.caught.push(child);
+			DEBUG && rule.debug();
 			return { matched: true, remaining: currentText };
 		}
 
@@ -110,11 +184,11 @@ class Parser {
 	}
 }
 
-class Rule {
+export class Rule {
 	parent: Rule = this;
+	name: string = "";
 	method: Method;
 	definition: Rule[] = [];
-	caught: Rule[] = [];
 	literal: string = "";
 
 	constructor(literal = "") {
@@ -126,6 +200,16 @@ class Rule {
 		for (let rule of rules)
 			rule.parent = this;
 		this.definition = rules;
+	}
+
+	debug() {
+		if (this.name) {
+			console.log("matched named rule", this.name);
+		}
+
+		if (this.literal) {
+			console.log("matched literal rule", this.literal);
+		}
 	}
 
 	match(text: string): ParseResult {
@@ -142,33 +226,59 @@ class Rule {
 }
 
 // Grammar definition
-const adjective = new Rule();
-adjective.method = Method.Or;
-adjective.define([new Rule("wow"), new Rule("many"), new Rule("so"), new Rule("such")]);
 
-const noun = new Rule();
-noun.method = Method.Or;
-noun.define([new Rule("lisp"), new Rule("language"), new Rule("book"), new Rule("build"), new Rule("c")]);
+const digit = new Rule();
+digit.define([new Rule("0"), new Rule("1"), new Rule("2"), new Rule("3"), new Rule("4"), new Rule("5"), new Rule("6"), new Rule("7"), new Rule("8"), new Rule("9")])
+
+const number = new Rule();
+number.name = "number";
+number.method = Method.OneOrMore;
+number.define([digit])
+
+const space = new Rule();
+space.define([new Rule(" ")]);
 
 const spaces = new Rule();
-spaces.method = Method.OneOrMore;
-spaces.define([new Rule(" ")]);
+spaces.method = Method.ZeroOrMore;
+spaces.define([space]);
 
-const phrase = new Rule();
-phrase.method = Method.And;
-phrase.define([adjective, spaces, noun]);
+const lbracket = new Rule();
+lbracket.define([new Rule("(")])
 
-const doge = new Rule();
-doge.method = Method.ZeroOrMore;
-doge.define([phrase, spaces]);
+const rbracket = new Rule();
+rbracket.define([new Rule(")")])
+
+const operation = new Rule();
+operation.name = "operation";
+operation.define([new Rule("+"), new Rule("-"), new Rule("*"), new Rule("/")])
+
+const expression = new Rule();
+// expression.name = "expression";
+const base_expression = new Rule();
+base_expression.name = "base expression";
+
+expression.method = Method.Or
+expression.define([number, base_expression])
+
+const one_or_more_expressions = new Rule();
+one_or_more_expressions.method = Method.OneOrMore
+one_or_more_expressions.define([expression, spaces])
+
+base_expression.method = Method.And;
+base_expression.define([lbracket, spaces, operation, spaces, one_or_more_expressions, rbracket])
+
+const rpn = new Rule();
+rpn.name = "rpn";
+rpn.define([expression])
 
 // Test the parser
-const p = new Parser(doge);
-const text = "such   book wow   lisp ";
+const p = new Parser(rpn);
+const text = "(+ (- 3 (+ 432 (+ 1 2) (+ 1 2 3))) 2)";
 
 try {
 	const success = p.parse(text);
 	console.log("Parse successful:", success);
+	console.log(p.caught)
 } catch (e) {
 	console.log("Parse error:", e);
 }
