@@ -272,7 +272,7 @@ rpn.define([expression])
 
 // Test the parser
 const p = new Parser(rpn);
-const text = "(+ (- 3 10 (+ 432 (+ 1 2) (+ 1 2 3))) 2)";
+const text = "(+ 1 2 3 4 (- 1))";
 
 export class Interpreter {
 	p: Parser;

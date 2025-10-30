@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
+    "tsx": "^4.20.6"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm", 
+    "preinstall": "npx only-allow pnpm",
     "dev": "webpack serve --open",
     "pack": "webpack"
   },
