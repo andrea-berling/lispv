@@ -7,22 +7,30 @@ class Register {
 	}
 }
 
-abstract class Registers {
-	public static registers: Map<string, Register> = new Map<string, Register>();
+export abstract class Registers {
+	private static registers: Map<string, Register> = new Map<string, Register>();
 
-	// constructor() {
-	// 	Register.registers = new Map<string, Register>();
+	static {
+		for (let i = 0; i < 32; i++) {
+			let name = `i${i}`; // Usiamo 'r' per coerenza, ma puoi usare 'i'
+			const initialValue = 0x0; // Valore iniziale
+			Registers.registers.set(name, new Register(name, initialValue));
+		}
+	}
 
-	// 	for (let i = 0; i < 32; i++) {
-	// 		let name = "i" + i;
-	// 		Register.registers.set(name, new Register(name, 0x0));
-	// 	}
-	// }
-
+	/**
+	 * Restituisce un Register dato il suo nome.
+	 * @param name - Il nome del registro (e.g., "r0").
+	 * @returns L'oggetto Register.
+	 * @throws Error se il registro non esiste.
+	 */
 	public static get(name: string): Register {
-		let register = Register.registers.get(name);
-		if (!register)
-			throw new Error("nonexistent register")
+		let register = Registers.registers.get(name);
+
+		if (!register) {
+			throw new Error(`Register "${name}" not existent.`);
+		}
+
 		return register;
 	}
 }
@@ -49,6 +57,18 @@ class RTypeInstruction extends Instruction {
 	}
 
 	execute(): void {
+		this.destination.value = this.source1.value + this.source2.value;
 	}
 }
 
+
+let i1 = Registers.get("i1");
+let i2 = Registers.get("i2");
+i1.value = 10;
+let i3 = Registers.get("i3");
+i2.value = 10;
+
+let add = new RTypeInstruction(i3, i1, i2);
+add.execute();
+
+console.log(i3.value);
