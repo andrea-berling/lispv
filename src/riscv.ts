@@ -69,6 +69,8 @@ export abstract class Instruction {
 
 // associative table for opcodes
 
+export let Opcodes: Map<number, T extends Instruction>
+
 abstract class BIRSTypeInstructions extends Instruction {
 	f3: number = 0;
 }
