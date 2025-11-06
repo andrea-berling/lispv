@@ -56,20 +56,17 @@ export abstract class Registers {
 	}
 }
 
+export let opcodes = null;
+
 export abstract class Instruction {
 	abstract name: string;
-	abstract opcode: number;
 	abstract execute(): void;
 
-	decode(number: number): Instruction {
+	static decode(number: number): Instruction {
 		// TODO
-		return this;
+		throw new Error("not implemented!");
 	}
 }
-
-// associative table for opcodes
-
-export let Opcodes: Map<number, T extends Instruction>
 
 abstract class BIRSTypeInstructions extends Instruction {
 	f3: number = 0;
@@ -79,7 +76,12 @@ abstract class RTypeInstruction extends BIRSTypeInstructions {
 	destination: Register;
 	source1: Register;
 	source2: Register;
-	opcode = 0b0110011;
+
+	public static readonly opcode = 0b0110011;
+	public get opcode(): number {
+		return RTypeInstruction.opcode;
+	}
+
 	f7: number = 0;
 
 	constructor(destination: Register, source1: Register, source2: Register) {
@@ -197,9 +199,19 @@ export class SwInstruction extends STypeInstruction {
 
 Registers.get("i1").value = 0b1111;
 console.log(Registers.get("i1"));
+
 let load = new LwInstruction(Registers.get("i1"), Registers.get("i2"), 0)
+
 Memory.set(0x0000_0000, 0x0000_00ff);
+
 console.log(load.toString());
 console.log(load);
+
 load.execute();
+
 console.log(Registers.get("i1"));
+
+
+console.log(AddInstruction.opcode);
+let add = new AddInstruction(Registers.get("i1"), Registers.get("i1"), Registers.get("i1"));
+console.log(add.opcode);
