@@ -67,6 +67,8 @@ export abstract class Instruction {
 	}
 }
 
+// associative table for opcodes
+
 abstract class BIRSTypeInstructions extends Instruction {
 	f3: number = 0;
 }
