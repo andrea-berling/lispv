@@ -137,7 +137,7 @@ abstract class RTypeInstruction extends Instruction {
 	static opcode = 0b0110011;
 	static f7 = 0b0000000;
 
-	constructor(destination: number, source1: number, source2: number) {
+	constructor(destination: RegisterIndex, source1: number, source2: number) {
 		super();
 		this.destination = destination;
 		this.source1 = source1;
