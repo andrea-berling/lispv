@@ -1,17 +1,13 @@
-export function bin(num: number) {
-	return (num >>> 0).toString(2);
+export function bin(num: number, bits?: number) {
+	let s = (num >>> 0).toString(2);
+	if (!bits)
+		return s;
+	return "0".repeat(bits - s.length) + (num >>> 0).toString(2);
 }
 
-export class Register {
-	name: string;
-	value: number;
-	constructor(name: string, value: number) {
-		this.name = name;
-		this.value = value;
-	}
-}
-
-// data memory and instruction memory are unified (Von Neumann architecture).
+/**
+ * data memory and instruction memory are unified (Von Neumann architecture). the memory is addressed to the byte.
+ */
 export abstract class Memory {
 	private static cells: Map<number, number>
 
@@ -34,19 +30,33 @@ export abstract class Memory {
 	}
 }
 
-export abstract class Registers {
+type RegisterIndex = number;
+
+export class Register {
+	name: string;
+	index: number;
+	value: number;
+	constructor(index: number, value: number) {
+		this.index = index;
+		this.name = "i" + this.index;
+		this.value = value;
+	}
+}
+/**
+ * registers are 32 bit sized, i0..i32
+ */
+export abstract class IRegisters {
 	private static registers: Map<string, Register> = new Map<string, Register>();
 
 	static {
 		for (let i = 0; i < 32; i++) {
-			let name = `i${i}`;
-			const initialValue = 0x0;
-			Registers.registers.set(name, new Register(name, initialValue));
+			let r = new Register(i, 0);
+			IRegisters.registers.set(r.name, r);
 		}
 	}
 
 	public static get(name: string): Register {
-		let register = Registers.registers.get(name);
+		let register = IRegisters.registers.get(name);
 
 		if (!register) {
 			throw new Error(`Register "${name}" not existent.`);
@@ -56,53 +66,109 @@ export abstract class Registers {
 	}
 }
 
-export let opcodes = null;
+export abstract class ProgramCounter {
+
+}
 
 export abstract class Instruction {
 	abstract name: string;
 	abstract execute(): void;
 
-	static decode(number: number): Instruction {
-		// TODO
+	static opcode: number = 0;
+	static f3: number = 0;
+	static f7: number = 0;
+
+	// get fields for instances
+	get opcode(): number {
+		return (this.constructor as typeof Instruction).opcode;
+	}
+
+	get f3(): number {
+		return (this.constructor as typeof Instruction).f3;
+	}
+
+	get f7(): number {
+		return (this.constructor as typeof Instruction).f7;
+	}
+
+	static registry = new Map<number, typeof Instruction>();
+
+	static decode(encoded: number): Instruction {
+		const opcode = encoded & 0b1111111;
+		const f3 = (encoded >> 12) & 0b111;
+		const f7 = (encoded >> 25) & 0b1111111;
+		const rd = (encoded >> 7) & 0b11111;
+		const rs1 = (encoded >> 15) & 0b11111;
+		const rs2 = (encoded >> 20) & 0b11111;
+
+		switch (opcode) {
+			case RTypeInstruction.opcode:
+				switch (f3) {
+
+					case AddInstruction.f3:
+						switch (f7) {
+							case AddInstruction.f7:
+								return new AddInstruction()
+								break;
+						}
+						break;
+				}
+				break;
+
+			case ITypeInstruction.opcode:
+
+				break;
+
+			default:
+				break;
+		}
+
+		// opcode, f3, f7 in and
+
 		throw new Error("not implemented!");
 	}
 }
 
-abstract class BIRSTypeInstructions extends Instruction {
-	f3: number = 0;
-}
-
-abstract class RTypeInstruction extends BIRSTypeInstructions {
+abstract class RTypeInstruction extends Instruction {
 	destination: Register;
 	source1: Register;
 	source2: Register;
 
-	public static readonly opcode = 0b0110011;
-	public get opcode(): number {
-		return RTypeInstruction.opcode;
-	}
+	static opcode = 0b0110011;
+	static f7 = 0b0000000;
 
-	f7: number = 0;
-
-	constructor(destination: Register, source1: Register, source2: Register) {
+	constructor(destination: number, source1: number, source2: number) {
 		super();
 		this.destination = destination;
 		this.source1 = source1;
 		this.source2 = source2;
 	}
 
-	execute(): void {
-	}
-
 	toString(): string {
 		return `${this.name} ${this.destination.name}, ${this.source1.name}, ${this.source2.name}`
 	}
-}
 
+	encode(): number {
+		let encoded = 0;
+		let shift = 0;
+		encoded += this.opcode;
+		shift += 7;
+		encoded += this.destination.index << shift;
+		shift += 5;
+		encoded += this.f3 << shift;
+		shift += 3;
+		encoded += this.source1.index << shift;
+		shift += 5;
+		encoded += this.source2.index << shift;
+		shift += 5;
+		encoded += this.f7 << shift;
+		return encoded;
+	}
+}
 
 export class AddInstruction extends RTypeInstruction {
 	name = "add";
-	f3 = 0b000;
+	static f3 = 0b000;
 	execute(): void {
 		this.destination.value = this.source1.value + this.source2.value;
 	}
@@ -110,8 +176,8 @@ export class AddInstruction extends RTypeInstruction {
 
 export class SubInstruction extends RTypeInstruction {
 	name = "sub";
-	f3 = 0b000;
-	f7 = 0b0100000;
+	static f3 = 0b000;
+	static f7 = 0b0100000;
 	execute(): void {
 		this.destination.value = this.source1.value - this.source2.value;
 	}
@@ -119,7 +185,7 @@ export class SubInstruction extends RTypeInstruction {
 
 export class XorInstruction extends RTypeInstruction {
 	name = "xor";
-	f3 = 0b100;
+	static f3 = 0b100;
 	execute(): void {
 		this.destination.value = this.source1.value ^ this.source2.value;
 	}
@@ -127,7 +193,7 @@ export class XorInstruction extends RTypeInstruction {
 
 export class AndInstruction extends RTypeInstruction {
 	name = "and";
-	f3 = 0b111;
+	static f3 = 0b111;
 	execute(): void {
 		this.destination.value = this.source1.value & this.source2.value;
 	}
@@ -135,17 +201,16 @@ export class AndInstruction extends RTypeInstruction {
 
 export class OrInstruction extends RTypeInstruction {
 	name = "or";
-	f3 = 0b110;
+	static f3 = 0b110;
 	execute(): void {
 		this.destination.value = this.source1.value | this.source2.value;
 	}
 }
 
-abstract class ITypeInstruction extends BIRSTypeInstructions {
+abstract class ITypeInstruction extends Instruction {
 	destination: Register;
 	source: Register;
 	immediate: number;
-	opcode = 0b0000011;
 
 	constructor(destination: Register, source: Register, immediate: number) {
 		super();
@@ -159,20 +224,47 @@ abstract class ITypeInstruction extends BIRSTypeInstructions {
 	}
 }
 
-export class LwInstruction extends ITypeInstruction {
+export class JalrInstruction extends ITypeInstruction {
+	name = "jalr";
+	static f3 = 0b000;
+
+	execute(): void {
+		// TODO
+	}
+}
+
+abstract class MemoryLoadInstruction extends ITypeInstruction {
+	static opcode = 0b0000011;
+}
+
+export class LwInstruction extends MemoryLoadInstruction {
 	name = "lw";
-	f3 = 0b010;
+	static f3 = 0b010;
 
 	execute(): void {
 		this.destination.value = Memory.get(this.source.value + this.immediate);
 	}
 }
 
-abstract class STypeInstruction extends BIRSTypeInstructions {
+abstract class IntegerRegisterImmediateInstruction extends ITypeInstruction {
+	static opcode = 0b0010011;
+}
+
+export class AddiInstruction extends IntegerRegisterImmediateInstruction {
+	name = "addi";
+	static f3 = 0b000;
+
+	execute(): void {
+		// TODO
+	}
+}
+
+
+abstract class STypeInstruction extends Instruction {
 	source1: Register; // the value to store in memory
 	source2: Register; // add to this the immediate, that's the address to store in memory
 	immediate: number;
-	opcode = 0b0100011;
+	static opcode = 0b0100011;
 
 	constructor(destination: Register, source: Register, immediate: number) {
 		super();
@@ -188,19 +280,36 @@ abstract class STypeInstruction extends BIRSTypeInstructions {
 
 export class SwInstruction extends STypeInstruction {
 	name = "lw";
-	f3 = 0b010;
+	static f3 = 0b010;
 
 	execute(): void {
 		Memory.set(this.source2.value + this.immediate, this.source1.value);
 	}
 }
 
+abstract class BTypeInstruction extends Instruction {
+	source1: Register;
+	source2: Register;
+	immediate: number;
+	static opcode = 0b1100011;
+
+	constructor(destination: Register, source: Register, immediate: number) {
+		super();
+		this.source1 = destination;
+		this.source2 = source;
+		this.immediate = immediate; // the branch is always at a multiple of 2
+	}
+
+	toString(): string {
+		return `${this.name} ${this.source1.name}, ${this.source2.name}, ${this.immediate}`
+	}
+}
 
 
-Registers.get("i1").value = 0b1111;
-console.log(Registers.get("i1"));
+IRegisters.get("i1").value = 0b1111;
+console.log(IRegisters.get("i1"));
 
-let load = new LwInstruction(Registers.get("i1"), Registers.get("i2"), 0)
+let load = new LwInstruction(IRegisters.get("i1"), IRegisters.get("i2"), 0)
 
 Memory.set(0x0000_0000, 0x0000_00ff);
 
@@ -209,9 +318,13 @@ console.log(load);
 
 load.execute();
 
-console.log(Registers.get("i1"));
+console.log(IRegisters.get("i1"));
 
 
 console.log(AddInstruction.opcode);
-let add = new AddInstruction(Registers.get("i1"), Registers.get("i1"), Registers.get("i1"));
-console.log(add.opcode);
+let sub = new SubInstruction(IRegisters.get("i1"), IRegisters.get("i1"), IRegisters.get("i1"));
+console.log(sub.opcode);
+
+console.log(bin(sub.encode(), 32));
+
+Instruction.decode(sub.encode());
