@@ -30,8 +30,6 @@ export abstract class Memory {
 	}
 }
 
-type RegisterIndex = number;
-
 export class Register {
 	name: string;
 	index: number;
@@ -42,21 +40,23 @@ export class Register {
 		this.value = value;
 	}
 }
+
 /**
  * registers are 32 bit sized, i0..i32
  */
-export abstract class IRegisters {
-	private static registers: Map<string, Register> = new Map<string, Register>();
+
+export abstract class Registers {
+	private static registers = new Map<number, Register>();
 
 	static {
 		for (let i = 0; i < 32; i++) {
 			let r = new Register(i, 0);
-			IRegisters.registers.set(r.name, r);
+			Registers.registers.set(r.index, r);
 		}
 	}
 
-	public static get(name: string): Register {
-		let register = IRegisters.registers.get(name);
+	public static get(index: number): Register {
+		let register = Registers.registers.get(index);
 
 		if (!register) {
 			throw new Error(`Register "${name}" not existent.`);
@@ -94,36 +94,47 @@ export abstract class Instruction {
 	static registry = new Map<number, typeof Instruction>();
 
 	static decode(encoded: number): Instruction {
+		// opcode and f3 have fixed positions
 		const opcode = encoded & 0b1111111;
 		const f3 = (encoded >> 12) & 0b111;
-		const f7 = (encoded >> 25) & 0b1111111;
-		const rd = (encoded >> 7) & 0b11111;
-		const rs1 = (encoded >> 15) & 0b11111;
-		const rs2 = (encoded >> 20) & 0b11111;
 
 		switch (opcode) {
 			case RTypeInstruction.opcode:
-				switch (f3) {
+				{
+					// r type instructions also have field f7
+					const f7 = (encoded >> 25) & 0b1111111;
 
-					case AddInstruction.f3:
-						switch (f7) {
-							case AddInstruction.f7:
-								return new AddInstruction()
-								break;
-						}
-						break;
+					const rd = (encoded >> 7) & 0b11111;
+					const rs1 = (encoded >> 15) & 0b11111;
+					const rs2 = (encoded >> 20) & 0b11111;
+
+					switch (f3) {
+
+						case AddInstruction.f3:
+							switch (f7) {
+								case AddInstruction.f7:
+									return new AddInstruction(rd, rs1, rs2);
+								case SubInstruction.f7:
+									return new SubInstruction(rd, rs1, rs2);
+							}
+						case OrInstruction.f3:
+							return new OrInstruction(rd, rs1, rs2);
+
+					}
 				}
-				break;
 
 			case ITypeInstruction.opcode:
+				{
 
-				break;
+					const rd = (encoded >> 7) & 0b11111;
 
-			default:
-				break;
+					break;
+
+				}
+			
+			case JalrInstruction
+
 		}
-
-		// opcode, f3, f7 in and
 
 		throw new Error("not implemented!");
 	}
@@ -137,11 +148,11 @@ abstract class RTypeInstruction extends Instruction {
 	static opcode = 0b0110011;
 	static f7 = 0b0000000;
 
-	constructor(destination: RegisterIndex, source1: number, source2: number) {
+	constructor(destination: number, source1: number, source2: number) {
 		super();
-		this.destination = destination;
-		this.source1 = source1;
-		this.source2 = source2;
+		this.destination = Registers.get(destination);
+		this.source1 = Registers.get(source1);
+		this.source2 = Registers.get(source2);
 	}
 
 	toString(): string {
@@ -306,10 +317,10 @@ abstract class BTypeInstruction extends Instruction {
 }
 
 
-IRegisters.get("i1").value = 0b1111;
-console.log(IRegisters.get("i1"));
+Registers.get(1).value = 0b1111;
+console.log(Registers.get(1));
 
-let load = new LwInstruction(IRegisters.get("i1"), IRegisters.get("i2"), 0)
+let load = new LwInstruction(Registers.get(1), Registers.get(2), 0)
 
 Memory.set(0x0000_0000, 0x0000_00ff);
 
@@ -318,13 +329,15 @@ console.log(load);
 
 load.execute();
 
-console.log(IRegisters.get("i1"));
+console.log(Registers.get(1));
 
 
 console.log(AddInstruction.opcode);
-let sub = new SubInstruction(IRegisters.get("i1"), IRegisters.get("i1"), IRegisters.get("i1"));
+let sub = new AddInstruction(Registers.get(1), Registers.get(1), Registers.get(1));
 console.log(sub.opcode);
 
 console.log(bin(sub.encode(), 32));
 
-Instruction.decode(sub.encode());
+let i = Instruction.decode(sub.encode());
+
+console.log(i);
