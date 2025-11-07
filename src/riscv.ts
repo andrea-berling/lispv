@@ -131,8 +131,9 @@ export abstract class Instruction {
 					break;
 
 				}
-			
-			case JalrInstruction
+
+			case JalrInstruction.opcode:
+				break;
 
 		}
 
@@ -333,7 +334,7 @@ console.log(Registers.get(1));
 
 
 console.log(AddInstruction.opcode);
-let sub = new AddInstruction(Registers.get(1), Registers.get(1), Registers.get(1));
+let sub = new AddInstruction(1, 1, 1);
 console.log(sub.opcode);
 
 console.log(bin(sub.encode(), 32));
