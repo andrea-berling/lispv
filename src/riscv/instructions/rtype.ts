@@ -16,10 +16,6 @@ abstract class RTypeInstruction extends Instruction {
 		this.source2 = source2;
 	}
 
-	toString(): string {
-		return `${this.tag} ${this.destination.toString()}, ${this.source1.toString()}, ${this.source2.toString()}`;
-	}
-
 	encode(): number {
 		let encoded = 0;
 		let shift = 0;
@@ -37,7 +33,7 @@ abstract class RTypeInstruction extends Instruction {
 		return encoded;
 	}
 
-	static factoryBinary(encoded: number): Instruction {
+	static factoryFromBinary(encoded: number): Instruction {
 		const rd = (encoded >> 7) & 0b11111;
 		const rs1 = (encoded >> 15) & 0b11111;
 		const rs2 = (encoded >> 20) & 0b11111;
@@ -53,16 +49,16 @@ abstract class RTypeInstruction extends Instruction {
 		return `${this.tag} ${this.destination}, ${this.source1}, ${this.source2}`
 	}
 
-	static factoryTag(parameters: string): Instruction {
+	static factoryFromAssembly(parameters: string): Instruction {
 		let p = parameters.split(",");
-		const rd = Number.parseInt(p[0].replace("i", "").trim())
-		const rs1 = Number.parseInt(p[1].replace("i", "").trim())
-		const rs2 = Number.parseInt(p[0].replace("i", "").trim())
+		const destination = Registers.parse(p[0])
+		const source1 = Registers.parse(p[1]);
+		const source2 = Registers.parse(p[2]);
 
 		return new (this as any)(
-			Registers.get(rd),
-			Registers.get(rs1),
-			Registers.get(rs2)
+			destination,
+			source1,
+			source2
 		) as Instruction;
 	}
 }

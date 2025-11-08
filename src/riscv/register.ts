@@ -46,4 +46,8 @@ export abstract class Registers {
 
 		return register;
 	}
+
+	public static parse(name: string): Register {
+		return Registers.get(Number.parseInt(name.replace("i", "").trim()));
+	}
 }

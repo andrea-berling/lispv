@@ -16,10 +16,6 @@ abstract class ITypeInstruction extends Instruction {
 		this.immediate = immediate;
 	}
 
-	toString(): string {
-		return `${this.tag} ${this.destination.toString()}, ${this.immediate}(${this.source.toString()})`
-	}
-
 	encode(): number {
 		let encoded = 0;
 		let shift = 0;
@@ -36,7 +32,7 @@ abstract class ITypeInstruction extends Instruction {
 	}
 
 
-	static factoryBinary(encoded: number): Instruction {
+	static factoryFromBinary(encoded: number): Instruction {
 		const rd = (encoded >> 7) & 0b11111;
 		const rs = (encoded >> 15) & 0b11111;
 		const imm = (encoded >> 20) & ((1 << 12) - 1);
@@ -52,16 +48,17 @@ abstract class ITypeInstruction extends Instruction {
 		return `${this.tag} ${this.destination}, ${this.immediate}(${this.source})`
 	}
 
-	static factoryTag(parameters: string): Instruction {
+	static factoryFromAssembly(parameters: string): Instruction {
 		let p = parameters.split(",");
-		const rd = Number.parseInt(p[0].replace("i", "").trim())
+		const destination = Registers.parse(p[0]);
+
 		const others = p[1].split("(");
-		const imm = parseImmediate(others[0].trim());
-		const rs = Number.parseInt(others[1].replace("i", "").replace(")", "").trim());
+		const imm = parseImmediate(others[0]);
+		const source = Registers.parse(others[1].replace(")", ""));
 
 		return new (this as any)(
-			Registers.get(rd),
-			Registers.get(rs),
+			destination,
+			source,
 			imm
 		) as Instruction
 	}

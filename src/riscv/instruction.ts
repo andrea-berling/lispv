@@ -1,6 +1,7 @@
 /**
  * instructions are 4 byte data structures, comprised of an `opcode` and optionally the `f3` and `f7` fields. these are used to differentiate instruction types. the `Instruction` class is extended by concrete classes, that define a `name` for a specific instruction and an `execute()` method that is run during the execution. instructions are fetched from memory as a `number` and decoded to the correct instruction type, that assigns the correct registry or immediate fields. subclasses of `Instruction` must define the `encode()` method that translates the `Instruction` object into the `number` that is stored in memory, and the `static factory(encoded: number)` method, that cares to decode only the registry and immediate fields and instantiate the specific `Instruction` class.
  */
+
 export abstract class Instruction {
 	abstract execute(): void;
 	abstract encode(): number;
@@ -43,6 +44,9 @@ export abstract class Instruction {
 
 	static readonly tagRegistry = new Map<string, new (...args: any[]) => Instruction>();
 
+	/**
+	 *	static method to decode the binary representation of the instruction. 
+	 */
 	static decode(encoded: number): Instruction {
 		let opcode = 0;
 		let f3 = 0;
@@ -51,7 +55,7 @@ export abstract class Instruction {
 		let key: number;
 		let instructionClass: (new (...args: any[]) => Instruction) | undefined;
 
-		let prepareDecoding = () => { return (instructionClass as any).factoryBinary(encoded) }
+		let prepareDecoding = () => { return (instructionClass as any).factoryFromBinary(encoded) }
 
 		opcode = encoded & 0b1111111;
 		key = Instruction.registryKey(opcode, f3, f7);
@@ -80,10 +84,13 @@ export abstract class Instruction {
 		return prepareDecoding();
 	}
 
-	static factoryBinary(encoded: number): Instruction {
+	static factoryFromBinary(encoded: number): Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 
+	/**
+	 * a static method to parse the assembly line into an object representation.
+	 */
 	static assemble(line: string): Instruction {
 		let tag = line.split(" ")[0];
 		let parameters = line.substr(line.indexOf(" ") + 1);
@@ -93,10 +100,10 @@ export abstract class Instruction {
 		if (!instructionClass)
 			throw new Error(`instruction ${tag} not implemented.`);
 
-		return (instructionClass as any).factoryTag(parameters);
+		return (instructionClass as any).factoryFromBinary(parameters);
 	}
 
-	static factoryTag(parameters: string): Instruction {
+	static factoryFromTag(parameters: string): Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 }

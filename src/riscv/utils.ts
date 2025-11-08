@@ -6,5 +6,5 @@ export function bin(num: number, bits?: number) {
 }
 
 export function parseImmediate(imm: string): number {
-	return eval(imm);
+	return Number.parseInt(imm.trim());
 }
