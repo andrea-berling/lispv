@@ -1,1 +1,14 @@
 https://chatgpt.com/c/690353a0-ac58-8333-afe7-9decd4045ed3
+
+roadmap
+	11-09
+		[ ] rv32i instructions
+		[ ] assembler
+		[ ] disassembler
+	11-16
+		[ ] parser combinator library
+		[ ] grammar
+		[ ] function calls
+		[ ] 
+	11-23
+	11-30
