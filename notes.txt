@@ -12,6 +12,7 @@ roadmap
 			variables
 			arrays
 			calls
+		[ ] implementare linguaggio con parser
 		[ ] execution
 	11-16
 		[ ] parser combinator library

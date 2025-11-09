@@ -3,7 +3,7 @@ import { Register, Registers } from "../register";
 import { Memory } from "../peripherals";
 import { parseImmediate } from "../utils";
 
-abstract class UTypeInstruction extends Instruction {
+abstract class JTypeInstruction extends Instruction {
 	destination: Register;
 	immediate: number;
 
@@ -20,7 +20,13 @@ abstract class UTypeInstruction extends Instruction {
 		shift += 7;
 		encoded += this.destination.index << shift;
 		shift += 5;
-		encoded += this.immediate << shift;
+		encoded += ((this.immediate >> 12) & 0b11111111) << shift;
+		shift += 8;
+		encoded += ((this.immediate >> 11) & 0b1) << shift;
+		shift += 1;
+		encoded += ((this.immediate >> 1) & 0b1111111111) << shift;
+		shift += 10;
+		encoded += ((this.immediate >> 20) & 0b1) << shift;
 		return encoded;
 	}
 
@@ -52,22 +58,9 @@ abstract class UTypeInstruction extends Instruction {
 	}
 }
 
-export class LuiInstruction extends UTypeInstruction {
+export class JalInstruction extends JTypeInstruction {
 	static tag = "lui";
-	static opcode = 0b0110111;
-
-	execute(): void {
-
-	}
-
-	static {
-		this.signal();
-	}
-}
-
-export class AuipcInstruction extends UTypeInstruction {
-	static tag = "auipc";
-	static opcode = 0b0010111;
+	static opcode = 0b1101111;
 
 	execute(): void {
 

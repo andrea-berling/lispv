@@ -4,6 +4,8 @@ import { AddInstruction, SubInstruction } from "../../src/riscv/instructions/rty
 import { JalrInstruction, LwInstruction } from "../../src/riscv/instructions/itype"
 import { SwInstruction } from "../../src/riscv/instructions/stype"
 import { BeqInstruction } from "../../src/riscv/instructions/btype"
+import { LuiInstruction } from "../../src/riscv/instructions/utype"
+import { JalInstruction } from "../../src/riscv/instructions/jtype"
 import { Registers } from "../../src/riscv/register";
 
 describe('binary encoding and decoding', () => {
@@ -16,14 +18,14 @@ describe('binary encoding and decoding', () => {
 			let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded == decoded.encode());
+			expect(encoded).toBe(decoded.encode());
 		});
 
 		test('sub', () => {
 			let i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded == decoded.encode());
+			expect(encoded).toBe(decoded.encode());
 		});
 	});
 
@@ -32,21 +34,21 @@ describe('binary encoding and decoding', () => {
 			let i = new JalrInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded == decoded.encode());
+			expect(encoded).toBe(decoded.encode());
 		});
 
 		test('lw', () => {
 			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded == decoded.encode());
+			expect(encoded).toBe(decoded.encode());
 		});
 
 		test('addi', () => {
 			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded == decoded.encode());
+			expect(encoded).toBe(decoded.encode());
 		});
 	});
 
@@ -55,7 +57,7 @@ describe('binary encoding and decoding', () => {
 			let i = new SwInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded == decoded.encode());
+			expect(encoded).toBe(decoded.encode());
 		});
 	});
 
@@ -64,8 +66,25 @@ describe('binary encoding and decoding', () => {
 			let i = new BeqInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded == decoded.encode());
-			console.log(bin(encoded, 32));
+			expect(encoded).toBe(decoded.encode());
+		});
+	});
+
+	describe('u type', () => {
+		test('beq', () => {
+			let i = new LuiInstruction(Registers.get(1), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(encoded).toBe(decoded.encode());
+		});
+	});
+
+	describe('j type', () => {
+		test('jal', () => {
+			let i = new JalInstruction(Registers.get(1), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(encoded).toBe(decoded.encode());
 		});
 	});
 });
