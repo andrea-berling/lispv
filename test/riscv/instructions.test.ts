@@ -18,14 +18,14 @@ describe('binary encoding and decoding', () => {
 			let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 
 		test('sub', () => {
 			let i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 	});
 
@@ -34,21 +34,21 @@ describe('binary encoding and decoding', () => {
 			let i = new JalrInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 
 		test('lw', () => {
 			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 
 		test('addi', () => {
 			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 	});
 
@@ -57,7 +57,7 @@ describe('binary encoding and decoding', () => {
 			let i = new SwInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 	});
 
@@ -66,7 +66,7 @@ describe('binary encoding and decoding', () => {
 			let i = new BeqInstruction(Registers.get(1), Registers.get(2), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 	});
 
@@ -75,7 +75,7 @@ describe('binary encoding and decoding', () => {
 			let i = new LuiInstruction(Registers.get(1), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 	});
 
@@ -84,7 +84,7 @@ describe('binary encoding and decoding', () => {
 			let i = new JalInstruction(Registers.get(1), 123)
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
-			expect(encoded).toBe(decoded.encode());
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 	});
 });

@@ -6,8 +6,6 @@ abstract class RTypeInstruction extends Instruction {
 	source1: Register;
 	source2: Register;
 	static opcode = 0b0110011;
-	static f3 = 0b000;
-	static f7 = 0b0000000;
 
 	constructor(destination: Register, source1: Register, source2: Register) {
 		super();

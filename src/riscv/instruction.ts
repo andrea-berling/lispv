@@ -53,29 +53,31 @@ export abstract class Instruction {
 		let f7 = 0;
 
 		let key: number;
-		let instructionClass: (new (...args: any[]) => Instruction) | undefined;
+		let instructionClass: (new (...args: any[]) => Instruction);
+
+		let possibleInstructionClass: (new (...args: any[]) => Instruction) | undefined = undefined;
 
 		let prepareDecoding = () => { return (instructionClass as any).factoryFromBinary(encoded) }
 
 		opcode = encoded & 0b1111111;
 		key = Instruction.registryKey(opcode, f3, f7);
-		instructionClass = Instruction.binaryRegistry.get(key);
+		possibleInstructionClass = Instruction.binaryRegistry.get(key);
+		if (!possibleInstructionClass)
+			throw new Error("opcode not found");
 
-		if (instructionClass) {
-			return prepareDecoding();
-		}
+		instructionClass = possibleInstructionClass;
 
 		f3 = (encoded >> 12) & 0b111;
 		key = Instruction.registryKey(opcode, f3, f7);
-		instructionClass = Instruction.binaryRegistry.get(key);
-
-		if (instructionClass) {
-			return prepareDecoding();
-		}
+		possibleInstructionClass = Instruction.binaryRegistry.get(key);
+		if (possibleInstructionClass)
+			instructionClass = possibleInstructionClass;
 
 		f7 = (encoded >> 25) & 0b1111111;
 		key = Instruction.registryKey(opcode, f3, f7);
-		instructionClass = Instruction.binaryRegistry.get(key);
+		possibleInstructionClass = Instruction.binaryRegistry.get(key);
+		if (possibleInstructionClass)
+			instructionClass = possibleInstructionClass;
 
 		if (!instructionClass) {
 			throw new Error(`Unknown instruction: opcode=${opcode}, f3=${f3}, f7=${f7}`);
