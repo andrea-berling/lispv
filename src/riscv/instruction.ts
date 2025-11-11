@@ -1,4 +1,13 @@
 /**
+ * use this decorator to signal an instruction to the registry.
+ */
+
+export function SignalInstruction(constructor: Function) {
+	let i = (constructor as any) as (typeof Instruction);
+	Instruction.signal(i);
+}
+
+/**
  * instructions are 4 byte data structures, comprised of an `opcode` and optionally the `f3` and `f7` fields. these are used to differentiate instruction types. the `Instruction` class is extended by concrete classes, that define a `name` for a specific instruction and an `execute()` method that is run during the execution. instructions are fetched from memory as a `number` and decoded to the correct instruction type, that assigns the correct registry or immediate fields. subclasses of `Instruction` must define the `encode()` method that translates the `Instruction` object into the `number` that is stored in memory, and the `static factory(encoded: number)` method, that cares to decode only the registry and immediate fields and instantiate the specific `Instruction` class.
  */
 
@@ -26,14 +35,11 @@ export abstract class Instruction {
 		return (this.constructor as typeof Instruction).tag;
 	}
 
-	/**
-	 * we cannot use decorators, as static properties are initialized only after decorators are applied, so every concrete subclass of instruction must have a `static {this.signal()}` block.
-	 */
-	static signal(this: any) {
+	static signal(i: typeof Instruction) {
 		const { opcode, f3, f7, tag } = this;
 		const key = Instruction.registryKey(opcode, f3, f7);
-		Instruction.binaryRegistry.set(key, this);
-		Instruction.tagRegistry.set(tag, this);
+		Instruction.binaryRegistry.set(key, i);
+		Instruction.tagRegistry.set(tag, i);
 	}
 
 	static registryKey(opcode: number, f3: number, f7: number) {

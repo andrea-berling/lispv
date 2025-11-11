@@ -8,6 +8,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "watch": "tsx --watch src/riscv/index.ts",
+    "watch-instance": "tsx --watch src/riscv/instance.ts",
 	"repl": "tsx -i",
     "test": "jest",
     "dev": "webpack serve --open",
