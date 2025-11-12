@@ -64,6 +64,7 @@ abstract class ITypeInstruction extends Instruction {
 	}
 }
 
+@InstructionRegistry.register
 export class JalrInstruction extends ITypeInstruction {
 	static tag = "jalr";
 	static opcode = 0b1100111;
@@ -72,16 +73,13 @@ export class JalrInstruction extends ITypeInstruction {
 		this.destination.value = ProgramCounter.address;
 		ProgramCounter.address = this.source.value + this.immediate;
 	}
-
-	static {
-		this.signal();
-	}
 }
 
 abstract class MemoryLoadInstruction extends ITypeInstruction {
 	static opcode = 0b0000011;
 }
 
+@InstructionRegistry.register
 export class LwInstruction extends MemoryLoadInstruction {
 	static tag = "lw";
 	static f3 = 0b010;
@@ -89,25 +87,18 @@ export class LwInstruction extends MemoryLoadInstruction {
 	execute(): void {
 		this.destination.value = Memory.get(this.source.value + this.immediate);
 	}
-
-	static {
-		this.signal();
-	}
 }
 
 abstract class IntegerRegisterImmediateInstruction extends ITypeInstruction {
 	static opcode = 0b0010011;
 }
 
+@InstructionRegistry.register
 export class AddiInstruction extends IntegerRegisterImmediateInstruction {
 	static tag = "addi";
 	static f3 = 0b000;
 
 	execute(): void {
 		this.destination.value = this.source.value + this.immediate;
-	}
-
-	static {
-		this.signal();
 	}
 }

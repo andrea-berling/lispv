@@ -1,4 +1,5 @@
-import { Instruction, SignalInstruction } from "../instruction"
+import { Instruction } from "../instruction"
+import { InstructionRegistry } from "./instructionRegistry";
 import { Register, Registers } from "../register";
 
 abstract class RTypeInstruction extends Instruction {
@@ -21,13 +22,13 @@ abstract class RTypeInstruction extends Instruction {
 		shift += 7;
 		encoded += this.destination.index << shift;
 		shift += 5;
-		encoded += this.f3 << shift;
+		encoded += (this.f3 || 0) << shift;
 		shift += 3;
 		encoded += this.source1.index << shift;
 		shift += 5;
 		encoded += this.source2.index << shift;
 		shift += 5;
-		encoded += this.f7 << shift;
+		encoded += (this.f7 || 0) << shift;
 		return encoded;
 	}
 
@@ -61,7 +62,7 @@ abstract class RTypeInstruction extends Instruction {
 	}
 }
 
-@SignalInstruction
+@InstructionRegistry.register
 export class AddInstruction extends RTypeInstruction {
 	static tag = "add";
 
@@ -70,7 +71,7 @@ export class AddInstruction extends RTypeInstruction {
 	}
 }
 
-@SignalInstruction
+@InstructionRegistry.register
 export class SubInstruction extends RTypeInstruction {
 	static tag = "sub";
 	static f7 = 0b0100000;
@@ -80,7 +81,7 @@ export class SubInstruction extends RTypeInstruction {
 	}
 }
 
-@SignalInstruction
+@InstructionRegistry.register
 export class XorInstruction extends RTypeInstruction {
 	static tag = "xor";
 	static f3 = 0b100;
@@ -90,7 +91,7 @@ export class XorInstruction extends RTypeInstruction {
 	}
 }
 
-@SignalInstruction
+@InstructionRegistry.register
 export class OrInstruction extends RTypeInstruction {
 	static tag = "or";
 	static f3 = 0b110;
@@ -100,7 +101,7 @@ export class OrInstruction extends RTypeInstruction {
 	}
 }
 
-@SignalInstruction
+@InstructionRegistry.register
 export class AndInstruction extends RTypeInstruction {
 	static tag = "and";
 	static f3 = 0b111;
