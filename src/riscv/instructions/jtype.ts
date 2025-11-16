@@ -2,6 +2,7 @@ import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../peripherals";
 import { parseImmediate } from "../utils";
+import { InstructionRegistry } from "../instructionRegistry";
 
 abstract class JTypeInstruction extends Instruction {
 	destination: Register;
@@ -67,6 +68,6 @@ export class JalInstruction extends JTypeInstruction {
 	}
 
 	static {
-		this.signal();
+		InstructionRegistry.register(this);
 	}
 }

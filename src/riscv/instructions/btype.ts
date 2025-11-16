@@ -2,6 +2,7 @@ import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../peripherals";
 import { parseImmediate } from "../utils";
+import { InstructionRegistry } from "../instructionRegistry";
 
 abstract class BTypeInstruction extends Instruction {
 	source1: Register;
@@ -25,7 +26,7 @@ abstract class BTypeInstruction extends Instruction {
 		shift += 1;
 		encoded += ((this.immediate >> 1) & 0b1111) << shift;
 		shift += 4;
-		encoded += this.f3 << shift;
+		encoded += (this.f3 || 0) << shift;
 		shift += 3;
 		encoded += this.source1.index << shift;
 		shift += 5;
@@ -82,6 +83,6 @@ export class BeqInstruction extends BTypeInstruction {
 	}
 
 	static {
-		this.signal();
+		InstructionRegistry.register(this);
 	}
 }

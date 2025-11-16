@@ -1,13 +1,14 @@
 import { bin } from "../../src/riscv/utils";
-import { InstructionRegistry } from "../../src/riscv/instructions/instructionRegistry";
 import { Instruction } from "../../src/riscv/instruction";
-import { AddInstruction, SubInstruction, OrInstruction } from "../../src/riscv/instructions/rtype"
-import { JalrInstruction, LwInstruction } from "../../src/riscv/instructions/itype"
+import { AddInstruction, SubInstruction, OrInstruction, XorInstruction, AndInstruction } from "../../src/riscv/instructions/rtype"
+import { JalrInstruction, LwInstruction, AddiInstruction } from "../../src/riscv/instructions/itype"
 import { SwInstruction } from "../../src/riscv/instructions/stype"
 import { BeqInstruction } from "../../src/riscv/instructions/btype"
 import { LuiInstruction } from "../../src/riscv/instructions/utype"
 import { JalInstruction } from "../../src/riscv/instructions/jtype"
+
 import { Registers } from "../../src/riscv/register";
+import { InstructionRegistry } from "../../src/riscv/instructionRegistry";
 
 describe('binary encoding and decoding', () => {
 	describe('r type', () => {
@@ -15,90 +16,102 @@ describe('binary encoding and decoding', () => {
 			expect(bin(0b101010) == "101010");
 		});
 
-		// test('add', () => {
-		// 	let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
-		// 	let encoded = i.encode();
-		// 	let decoded = Instruction.decode(encoded);
-		// 	expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-		// });
+		test('add', () => {
+			let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
 
-		// test('sub', () => {
-		// 	let i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
-		// 	let encoded = i.encode();
-		// 	let decoded = Instruction.decode(encoded);
-		// 	expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-		// });
+		test('sub', () => {
+			let i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
 
-		test("registry", () => {
+		test('or', () => {
+			let i = new OrInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
 
-			new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
-			new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
-			new OrInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+		test('xor', () => {
+			let i = new XorInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
 
+		test('and', () => {
+			let i = new AndInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+	});
+
+	describe('i type', () => {
+		test('jalr', () => {
+			let i = new JalrInstruction(Registers.get(1), Registers.get(2), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+
+		test('lw', () => {
 			console.log(InstructionRegistry.getInstance().getBinaryRegistry())
-		})
+			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+
+		test('addi', () => {
+			let i = new AddiInstruction(Registers.get(1), Registers.get(2), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+	});
+
+	describe('s type', () => {
+		test('addi', () => {
+			let i = new SwInstruction(Registers.get(1), Registers.get(2), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+	});
+
+	describe('b type', () => {
+		test('beq', () => {
+			let i = new BeqInstruction(Registers.get(1), Registers.get(2), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+	});
+
+	describe('u type', () => {
+		test('beq', () => {
+			let i = new LuiInstruction(Registers.get(1), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+	});
+
+	describe('j type', () => {
+		test('jal', () => {
+			let i = new JalInstruction(Registers.get(1), 123)
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
 	});
 });
-
-// 	describe('i type', () => {
-// 		test('jalr', () => {
-// 			let i = new JalrInstruction(Registers.get(1), Registers.get(2), 123)
-// 			let encoded = i.encode();
-// 			let decoded = Instruction.decode(encoded);
-// 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-// 		});
-
-// 		test('lw', () => {
-// 			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
-// 			let encoded = i.encode();
-// 			let decoded = Instruction.decode(encoded);
-// 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-// 		});
-
-// 		test('addi', () => {
-// 			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
-// 			let encoded = i.encode();
-// 			let decoded = Instruction.decode(encoded);
-// 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-// 		});
-// 	});
-
-// 	describe('s type', () => {
-// 		test('addi', () => {
-// 			let i = new SwInstruction(Registers.get(1), Registers.get(2), 123)
-// 			let encoded = i.encode();
-// 			let decoded = Instruction.decode(encoded);
-// 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-// 		});
-// 	});
-
-// 	describe('b type', () => {
-// 		test('beq', () => {
-// 			let i = new BeqInstruction(Registers.get(1), Registers.get(2), 123)
-// 			let encoded = i.encode();
-// 			let decoded = Instruction.decode(encoded);
-// 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-// 		});
-// 	});
-
-// 	describe('u type', () => {
-// 		test('beq', () => {
-// 			let i = new LuiInstruction(Registers.get(1), 123)
-// 			let encoded = i.encode();
-// 			let decoded = Instruction.decode(encoded);
-// 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-// 		});
-// 	});
-
-// 	describe('j type', () => {
-// 		test('jal', () => {
-// 			let i = new JalInstruction(Registers.get(1), 123)
-// 			let encoded = i.encode();
-// 			let decoded = Instruction.decode(encoded);
-// 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
-// 		});
-// 	});
-// });
 
 // describe('plaintext asm encoding and decoding', () => {
 // 	test('binary number', () => {

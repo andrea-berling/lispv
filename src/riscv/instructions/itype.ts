@@ -1,8 +1,10 @@
+import { bin } from "../utils";
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../peripherals";
 import { ProgramCounter } from "../program_counter";
 import { parseImmediate } from "../utils";
+import { InstructionRegistry } from "../instructionRegistry";
 
 abstract class ITypeInstruction extends Instruction {
 	destination: Register;
@@ -23,7 +25,7 @@ abstract class ITypeInstruction extends Instruction {
 		shift += 7;
 		encoded += this.destination.index << shift;
 		shift += 5;
-		encoded += this.f3 << shift;
+		encoded += (this.f3 || 0) << shift;
 		shift += 3;
 		encoded += this.source.index << shift;
 		shift += 5;
@@ -64,7 +66,6 @@ abstract class ITypeInstruction extends Instruction {
 	}
 }
 
-@InstructionRegistry.register
 export class JalrInstruction extends ITypeInstruction {
 	static tag = "jalr";
 	static opcode = 0b1100111;
@@ -73,13 +74,16 @@ export class JalrInstruction extends ITypeInstruction {
 		this.destination.value = ProgramCounter.address;
 		ProgramCounter.address = this.source.value + this.immediate;
 	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
 }
 
 abstract class MemoryLoadInstruction extends ITypeInstruction {
 	static opcode = 0b0000011;
 }
 
-@InstructionRegistry.register
 export class LwInstruction extends MemoryLoadInstruction {
 	static tag = "lw";
 	static f3 = 0b010;
@@ -87,18 +91,25 @@ export class LwInstruction extends MemoryLoadInstruction {
 	execute(): void {
 		this.destination.value = Memory.get(this.source.value + this.immediate);
 	}
+
+	static {
+		console.log({ opcode: bin(this.opcode, 7), f3: this.f3, f7: this.f7 })
+		InstructionRegistry.register(this);
+	}
 }
 
 abstract class IntegerRegisterImmediateInstruction extends ITypeInstruction {
 	static opcode = 0b0010011;
 }
 
-@InstructionRegistry.register
 export class AddiInstruction extends IntegerRegisterImmediateInstruction {
 	static tag = "addi";
-	static f3 = 0b000;
 
 	execute(): void {
 		this.destination.value = this.source.value + this.immediate;
+	}
+
+	static {
+		InstructionRegistry.register(this);
 	}
 }

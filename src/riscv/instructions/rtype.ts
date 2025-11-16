@@ -1,5 +1,5 @@
 import { Instruction } from "../instruction"
-import { InstructionRegistry } from "./instructionRegistry";
+import { InstructionRegistry } from "../instructionRegistry";
 import { Register, Registers } from "../register";
 
 abstract class RTypeInstruction extends Instruction {
@@ -62,16 +62,18 @@ abstract class RTypeInstruction extends Instruction {
 	}
 }
 
-@InstructionRegistry.register
 export class AddInstruction extends RTypeInstruction {
 	static tag = "add";
 
 	execute(): void {
 		this.destination.value = this.source1.value + this.source2.value;
 	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
 }
 
-@InstructionRegistry.register
 export class SubInstruction extends RTypeInstruction {
 	static tag = "sub";
 	static f7 = 0b0100000;
@@ -79,9 +81,12 @@ export class SubInstruction extends RTypeInstruction {
 	execute(): void {
 		this.destination.value = this.source1.value - this.source2.value;
 	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
 }
 
-@InstructionRegistry.register
 export class XorInstruction extends RTypeInstruction {
 	static tag = "xor";
 	static f3 = 0b100;
@@ -89,9 +94,12 @@ export class XorInstruction extends RTypeInstruction {
 	execute(): void {
 		this.destination.value = this.source1.value ^ this.source2.value;
 	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
 }
 
-@InstructionRegistry.register
 export class OrInstruction extends RTypeInstruction {
 	static tag = "or";
 	static f3 = 0b110;
@@ -99,14 +107,21 @@ export class OrInstruction extends RTypeInstruction {
 	execute(): void {
 		this.destination.value = this.source1.value | this.source2.value;
 	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
 }
 
-@InstructionRegistry.register
 export class AndInstruction extends RTypeInstruction {
 	static tag = "and";
 	static f3 = 0b111;
 
 	execute(): void {
 		this.destination.value = this.source1.value & this.source2.value;
+	}
+
+	static {
+		InstructionRegistry.register(this);
 	}
 }

@@ -2,6 +2,7 @@ import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../peripherals";
 import { parseImmediate } from "../utils";
+import { InstructionRegistry } from "../instructionRegistry";
 
 abstract class UTypeInstruction extends Instruction {
 	destination: Register;
@@ -61,7 +62,7 @@ export class LuiInstruction extends UTypeInstruction {
 	}
 
 	static {
-		this.signal();
+		InstructionRegistry.register(this);
 	}
 }
 
@@ -74,6 +75,6 @@ export class AuipcInstruction extends UTypeInstruction {
 	}
 
 	static {
-		this.signal();
+		InstructionRegistry.register(this);
 	}
 }

@@ -1,4 +1,4 @@
-import { Instruction } from "../instruction";
+import { Instruction } from "./instruction";
 
 export class InstructionRegistry {
 	private static instance: InstructionRegistry;
@@ -22,11 +22,9 @@ export class InstructionRegistry {
 
 	static register(f: Function) {
 		const i = f as typeof Instruction;
-		console.log("registring", i);
 		const key = InstructionRegistry.key(i.opcode, i.f3, i.f7);
 		InstructionRegistry.getInstance().binaryRegistry.set(key, i);
 		InstructionRegistry.getInstance().tagRegistry.set(i.tag, i);
-		console.log(InstructionRegistry.getInstance().binaryRegistry)
 	}
 
 	getBinaryRegistry(): Map<number, typeof Instruction> {

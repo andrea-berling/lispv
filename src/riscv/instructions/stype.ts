@@ -2,6 +2,7 @@ import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../peripherals";
 import { parseImmediate } from "../utils";
+import { InstructionRegistry } from "../instructionRegistry";
 
 abstract class STypeInstruction extends Instruction {
 	source1: Register; // add to this the immediate, that's the address to store in memory
@@ -23,7 +24,7 @@ abstract class STypeInstruction extends Instruction {
 		shift += 7;
 		encoded += (this.immediate & (0b11111)) << shift; // imm[4:0]
 		shift += 5;
-		encoded += this.f3 << shift;
+		encoded += (this.f3 || 0) << shift;
 		shift += 3;
 		encoded += this.source1.index << shift;
 		shift += 5;
@@ -74,6 +75,6 @@ export class SwInstruction extends STypeInstruction {
 	}
 
 	static {
-		this.signal();
+		InstructionRegistry.register(this);
 	}
 }
