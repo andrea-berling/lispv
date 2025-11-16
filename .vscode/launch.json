@@ -1,0 +1,39 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug: Jest tests",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+			"args": [
+				"--runInBand", // evita parallelismo e fa funzionare i breakpoint
+				"--watchAll=false"
+			],
+			"cwd": "${workspaceFolder}",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"sourceMaps": true,
+			"disableOptimisticBPs": true,
+			"outFiles": [
+				"${workspaceFolder}/**/*.ts"
+			]
+		},
+		{
+			"name": "Debug: tsx (watch)",
+			"type": "node",
+			"request": "launch",
+			"runtimeExecutable": "node",
+			"runtimeArgs": [
+				"--loader=tsx",
+				"--watch",
+				"${workspaceFolder}/src/riscv/index.ts"
+			],
+			"cwd": "${workspaceFolder}",
+			"sourceMaps": true,
+			"outFiles": [
+				"${workspaceFolder}/**/*.ts"
+			]
+		},
+	]
+}

@@ -20,3 +20,8 @@ roadmap
 		[ ] 
 	11-23
 	11-30
+
+syntax
+	common lisp like syntax
+		clos
+	no operator precedence
