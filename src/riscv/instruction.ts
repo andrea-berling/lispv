@@ -90,3 +90,31 @@ export abstract class Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 }
+
+export class HaltInstruction extends Instruction {
+	static opcode = 0;
+	static tag = "halt";
+
+	execute(): void {
+	}
+
+	encode() {
+		return 0;
+	}
+
+	disassemble(): string {
+		return `${this.tag}`;
+	}
+
+	constructor() {
+		super();
+	}
+
+	static factoryFromBinary(encoded: number): Instruction {
+		return new (this as any)() as Instruction;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}

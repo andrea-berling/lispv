@@ -20,29 +20,49 @@ abstract class STypeInstruction extends Instruction {
 	encode(): number {
 		let encoded = 0;
 		let shift = 0;
+
+		// opcode [6:0]
 		encoded += this.opcode;
 		shift += 7;
-		encoded += (this.immediate & (0b11111)) << shift; // imm[4:0]
+
+		// imm[4:0] [11:7]
+		encoded += (this.immediate & 0b11111) << shift;
 		shift += 5;
+
+		// funct3 [14:12]
 		encoded += (this.f3 || 0) << shift;
 		shift += 3;
+
+		// rs1 [19:15]
 		encoded += this.source1.index << shift;
 		shift += 5;
+
+		// rs2 [24:20]
 		encoded += this.source2.index << shift;
 		shift += 5;
-		encoded += (this.immediate & (0b111111100000)) << shift; // imm[11:5]
+
+		// imm[11:5] [31:25] - shift right by 5 to get the high bits
+		encoded += ((this.immediate >> 5) & 0b1111111) << shift;
+
 		return encoded;
 	}
 
 	static factoryFromBinary(encoded: number): Instruction {
-		const rd = (encoded >> 7) & 0b11111;
-		const rs = (encoded >> 15) & 0b11111;
-		const imm = (encoded >> 7) & 0b11111 + (((encoded >> 25) & 0b111111) >> 4);
+		const rs2 = (encoded >> 20) & 0b11111;
+		const rs1 = (encoded >> 15) & 0b11111;
+
+		// Reconstruct immediate: imm[4:0] from bits [11:7], imm[11:5] from bits [31:25]
+		const imm_low = (encoded >> 7) & 0b11111;
+		const imm_high = (encoded >> 25) & 0b1111111;
+		const imm = imm_low | (imm_high << 5);
+
+		// Sign extend from 12 bits to 32 bits
+		const imm_signed = (imm & 0x800) ? (imm | 0xFFFFF000) : imm;
 
 		return new (this as any)(
-			Registers.get(rd),
-			Registers.get(rs),
-			imm
+			Registers.get(rs2),
+			Registers.get(rs1),
+			imm_signed
 		) as Instruction;
 	}
 
@@ -53,7 +73,6 @@ abstract class STypeInstruction extends Instruction {
 	static factoryFromAssembly(parameters: string): Instruction {
 		let p = parameters.split(",");
 		const source2 = Registers.parse(p[0]);
-
 		const others = p[1].split("(");
 		const imm = parseImmediate(others[0]);
 		const source1 = Registers.parse(others[1].replace(")", ""));
@@ -67,7 +86,7 @@ abstract class STypeInstruction extends Instruction {
 }
 
 export class SwInstruction extends STypeInstruction {
-	name = "lw";
+	name = "sw";
 	static f3 = 0b010;
 
 	execute(): void {

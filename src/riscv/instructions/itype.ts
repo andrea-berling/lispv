@@ -93,7 +93,6 @@ export class LwInstruction extends MemoryLoadInstruction {
 	}
 
 	static {
-		console.log({ opcode: bin(this.opcode, 7), f3: this.f3, f7: this.f7 })
 		InstructionRegistry.register(this);
 	}
 }

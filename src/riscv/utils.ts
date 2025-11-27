@@ -8,3 +8,12 @@ export function bin(num: number, bits?: number) {
 export function parseImmediate(imm: string): number {
 	return Number.parseInt(imm.trim());
 }
+
+/**
+ * 
+ * @param n the `number` to hex.
+ * @returns the hexadecimal representation of `n`, treated as **unsigned**.
+ */
+export function hex(n: number) {
+	return (n | 0 >>> 0).toString(16).padStart(8, '0'); // Unsigned per hex
+}

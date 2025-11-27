@@ -10,7 +10,7 @@
     "watch": "tsx --watch src/riscv/index.ts",
     "watch-instance": "tsx --watch src/riscv/instance/main.ts",
 	"repl": "tsx -i",
-    "test": "jest",
+    "test": "jest --runInBand",
     "dev": "webpack serve --open",
     "pack": "webpack"
   },

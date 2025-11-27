@@ -17,27 +17,60 @@ abstract class JTypeInstruction extends Instruction {
 	encode(): number {
 		let encoded = 0;
 		let shift = 0;
+
+		// opcode [6:0]
 		encoded += this.opcode;
 		shift += 7;
+
+		// rd [11:7]
 		encoded += this.destination.index << shift;
 		shift += 5;
+
+		// imm[19:12] [19:12]
 		encoded += ((this.immediate >> 12) & 0b11111111) << shift;
 		shift += 8;
+
+		// imm[11] [20]
 		encoded += ((this.immediate >> 11) & 0b1) << shift;
 		shift += 1;
+
+		// imm[10:1] [30:21]
 		encoded += ((this.immediate >> 1) & 0b1111111111) << shift;
 		shift += 10;
+
+		// imm[20] [31]
 		encoded += ((this.immediate >> 20) & 0b1) << shift;
+
 		return encoded;
 	}
 
 	static factoryFromBinary(encoded: number): Instruction {
 		const rd = (encoded >> 7) & 0b11111;
-		const imm = (encoded >> 12);
+
+		// Reconstruct immediate from J-type format:
+		// imm[20|10:1|11|19:12] stored as [31|30:21|20|19:12]
+		let imm = 0;
+
+		// imm[19:12] from bits [19:12]
+		imm |= ((encoded >> 12) & 0b11111111) << 12;
+
+		// imm[11] from bit [20]
+		imm |= ((encoded >> 20) & 0b1) << 11;
+
+		// imm[10:1] from bits [30:21]
+		imm |= ((encoded >> 21) & 0b1111111111) << 1;
+
+		// imm[20] from bit [31]
+		imm |= ((encoded >> 31) & 0b1) << 20;
+
+		// Note: imm[0] is always 0 for J-type (2-byte aligned)
+
+		// Sign extend from 21 bits to 32 bits
+		const imm_signed = (imm & 0x100000) ? (imm | 0xFFE00000) : imm;
 
 		return new (this as any)(
 			Registers.get(rd),
-			imm
+			imm_signed
 		) as Instruction;
 	}
 

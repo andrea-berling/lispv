@@ -1,0 +1,45 @@
+import { Instruction } from "./instruction";
+import { Memory } from "./peripherals";
+import { ProgramCounter } from "./program_counter";
+import { Registers, Register } from "./register";
+import { DEBUG } from "./flags";
+import { hex } from "./utils";
+
+export class Pipeline {
+
+	/**
+	 * Start fetching from `Memory` at `ProgramCounter.address`, decode instructions with `static Instruction.decode(number)`, execute them immediately with `Instruction.execute()`. stop when an `HaltInstruction` is found.
+	 */
+
+	static init() {
+		Memory.clean()
+		Registers.clean();
+		ProgramCounter.reset();
+	}
+
+	static run() {
+
+		let addr: number;
+		let encoded: number;
+		let i: Instruction;
+
+		do {
+			// fetch
+			addr = ProgramCounter.address;
+			encoded = Memory.get(addr);
+			DEBUG && console.log("fetched: ", hex(encoded), "at", hex(addr));
+
+			// decode. if the decoding fails the simualtor crashes.
+			i = Instruction.decode(encoded);
+			DEBUG && console.log("decoded", i);
+
+			// execute, memory, writeback
+			i.execute();
+			ProgramCounter.increase()
+
+		} while (i.tag != "halt");
+
+		DEBUG && console.log("run finished at", Date());
+
+	}
+}

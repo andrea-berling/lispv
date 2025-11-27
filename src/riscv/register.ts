@@ -37,7 +37,15 @@ export abstract class Registers {
 		}
 	}
 
-	public static get(index: number): Register {
+	static clean() {
+		for (let i = 0; i < 32; i++) {
+			let r = Registers.registers.get(i);
+			if (r)
+				r.value = 0;
+		}
+	}
+
+	static get(index: number): Register {
 		let register = Registers.registers.get(index);
 
 		if (!register) {
@@ -47,7 +55,7 @@ export abstract class Registers {
 		return register;
 	}
 
-	public static parse(name: string): Register {
+	static parse(name: string): Register {
 		return Registers.get(Number.parseInt(name.replace("i", "").trim()));
 	}
 }

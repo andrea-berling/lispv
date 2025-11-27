@@ -4,4 +4,8 @@ export abstract class ProgramCounter {
 	static increase() {
 		ProgramCounter.address += 0b100;
 	}
+
+	static reset() {
+		ProgramCounter.address = 0;
+	}
 }
