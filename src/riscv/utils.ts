@@ -5,10 +5,6 @@ export function bin(num: number, bits?: number) {
 	return "0".repeat(bits - s.length) + (num >>> 0).toString(2);
 }
 
-export function parseImmediate(imm: string): number {
-	return Number.parseInt(imm.trim());
-}
-
 /**
  * 
  * @param n the `number` to hex.

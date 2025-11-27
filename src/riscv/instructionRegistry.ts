@@ -1,18 +1,10 @@
 import { Instruction } from "./instruction";
 
 export class InstructionRegistry {
-	private static instance: InstructionRegistry;
-	private binaryRegistry = new Map<number, typeof Instruction>();
-	private tagRegistry = new Map<string, typeof Instruction>();
+	static binaryRegistry = new Map<number, typeof Instruction>();
+	static tagRegistry = new Map<string, typeof Instruction>();
 
 	private constructor() { }
-
-	static getInstance(): InstructionRegistry {
-		if (!InstructionRegistry.instance) {
-			InstructionRegistry.instance = new InstructionRegistry();
-		}
-		return InstructionRegistry.instance;
-	}
 
 	static key(opcode: number, f3: number | null, f7: number | null): number {
 		const f3Val = f3 ?? 0;
@@ -23,15 +15,7 @@ export class InstructionRegistry {
 	static register(f: Function) {
 		const i = f as typeof Instruction;
 		const key = InstructionRegistry.key(i.opcode, i.f3, i.f7);
-		InstructionRegistry.getInstance().binaryRegistry.set(key, i);
-		InstructionRegistry.getInstance().tagRegistry.set(i.tag, i);
-	}
-
-	getBinaryRegistry(): Map<number, typeof Instruction> {
-		return this.binaryRegistry;
-	}
-
-	getTagRegistry(): Map<string, typeof Instruction> {
-		return this.tagRegistry;
+		InstructionRegistry.binaryRegistry.set(key, i);
+		InstructionRegistry.tagRegistry.set(i.tag, i);
 	}
 }

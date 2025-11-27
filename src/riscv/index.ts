@@ -3,32 +3,27 @@ import { Register, Registers } from "./register";
 import { InstructionRegistry } from "./instructionRegistry";
 import { AddInstruction, SubInstruction } from "./instructions/rtype";
 import { Instruction } from "./instruction";
-import { Memory } from "./peripherals";
+import { Memory } from "./memory";
 import { AddiInstruction } from "./instructions/itype";
 import { SwInstruction } from "./instructions/stype";
 import { Pipeline } from "./pipeline";
+import { JalInstruction } from "./instructions/jtype";
+import { Immediate12, Immediate20 } from "./immediate";
+import { Assembler } from "./assembler";
 
-let addr = 0x0000_0000;
-let i: Instruction;
+import "./instructions/btype"
+import "./instructions/itype"
+import "./instructions/jtype"
+import "./instructions/rtype"
+import "./instructions/stype"
+import "./instructions/utype"
 
-Pipeline.init();
+let instructions = `
+		addi r1, r0, 0xffff
+		add r2, r1, r1 # r2 = 0x1fffe
+		addi r3, r0, 0xff # r3 is the address we will store the result r2
+		sw r3, 0x0(r2)`
 
-i = new AddiInstruction(Registers.get(1), Registers.get(0), 0x123);
-Memory.set(addr, i.encode());
-addr += 4;
+Assembler.parse(instructions.split("\n"));
 
-i = new AddInstruction(Registers.get(2), Registers.get(1), Registers.get(1));
-Memory.set(addr, i.encode());
-addr += 4;
-
-i = new AddiInstruction(Registers.get(3), Registers.get(0), 0xff);
-Memory.set(addr, i.encode());
-addr += 4;
-
-i = new SwInstruction(Registers.get(3), Registers.get(2), 0x0);
-Memory.set(addr, i.encode());
-addr += 4;
-
-Pipeline.run();
-
-Memory.show();
+Memory.show()

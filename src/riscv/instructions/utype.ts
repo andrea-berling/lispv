@@ -1,14 +1,14 @@
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
-import { Memory } from "../peripherals";
-import { parseImmediate } from "../utils";
+import { Memory } from "../memory";
 import { InstructionRegistry } from "../instructionRegistry";
+import { Immediate20 } from "../immediate";
 
 abstract class UTypeInstruction extends Instruction {
 	destination: Register;
-	immediate: number;
+	immediate: Immediate20;
 
-	constructor(destination: Register, immediate: number) {
+	constructor(destination: Register, immediate: Immediate20) {
 		super();
 		this.destination = destination;
 		this.immediate = immediate;
@@ -21,7 +21,7 @@ abstract class UTypeInstruction extends Instruction {
 		shift += 7;
 		encoded += this.destination.index << shift;
 		shift += 5;
-		encoded += this.immediate << shift;
+		encoded += this.immediate.value << shift;
 		return encoded;
 	}
 
@@ -31,24 +31,24 @@ abstract class UTypeInstruction extends Instruction {
 
 		return new (this as any)(
 			Registers.get(rd),
-			imm
+			new Immediate20(imm)
 		) as Instruction;
 	}
 
 	disassemble(): string {
-		return `${this.tag} ${this.destination}, ${this.immediate}`
+		return `${this.tag} ${this.destination}, ${this.immediate.value}`
 	}
 
 	static factoryFromAssembly(parameters: string): Instruction {
 		let p = parameters.split(",");
 		const source1 = Registers.parse(p[0]);
 		const source2 = Registers.parse(p[1]);
-		const imm = parseImmediate(p[2]);
+		const immediate = Immediate20.parse(p[2]);
 
 		return new (this as any)(
 			source1,
 			source2,
-			imm
+			immediate
 		) as Instruction
 	}
 }

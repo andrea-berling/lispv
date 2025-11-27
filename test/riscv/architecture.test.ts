@@ -3,7 +3,7 @@ import { Instruction } from "../../src/riscv/instruction";
 import { AddInstruction, SubInstruction } from "../../src/riscv/instructions/rtype"
 import { JalrInstruction, LwInstruction, AddiInstruction } from "../../src/riscv/instructions/itype"
 import { Registers } from "../../src/riscv/register";
-import { Memory } from "../../src/riscv/peripherals";
+import { Memory } from "../../src/riscv/memory";
 
 describe('architecture', () => {
 	test('register i0 hardwired to 0', () => {

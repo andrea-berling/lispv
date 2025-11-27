@@ -9,6 +9,7 @@ import { JalInstruction } from "../../src/riscv/instructions/jtype"
 
 import { Registers } from "../../src/riscv/register";
 import { InstructionRegistry } from "../../src/riscv/instructionRegistry";
+import { Immediate12, Immediate20 } from "../../src/riscv/immediate";
 
 describe('binary encoding and decoding', () => {
 	describe('r type', () => {
@@ -53,22 +54,29 @@ describe('binary encoding and decoding', () => {
 	});
 
 	describe('i type', () => {
+		test('jal', () => {
+			let i = new JalrInstruction(Registers.get(1), Registers.get(2), new Immediate12(123))
+			let encoded = i.encode();
+			let decoded = Instruction.decode(encoded);
+			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
+		});
+
 		test('jalr', () => {
-			let i = new JalrInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new JalrInstruction(Registers.get(1), Registers.get(2), new Immediate12(123))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 
 		test('lw', () => {
-			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new LwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
 		});
 
 		test('addi', () => {
-			let i = new AddiInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new AddiInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
@@ -77,7 +85,7 @@ describe('binary encoding and decoding', () => {
 
 	describe('s type', () => {
 		test('addi', () => {
-			let i = new SwInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new SwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
@@ -86,7 +94,7 @@ describe('binary encoding and decoding', () => {
 
 	describe('b type', () => {
 		test('beq', () => {
-			let i = new BeqInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new BeqInstruction(Registers.get(1), Registers.get(2), new Immediate12(123))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
@@ -94,8 +102,8 @@ describe('binary encoding and decoding', () => {
 	});
 
 	describe('u type', () => {
-		test('beq', () => {
-			let i = new LuiInstruction(Registers.get(1), 123)
+		test('lui', () => {
+			let i = new LuiInstruction(Registers.get(1), new Immediate20(123))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
@@ -104,7 +112,7 @@ describe('binary encoding and decoding', () => {
 
 	describe('j type', () => {
 		test('jal', () => {
-			let i = new JalInstruction(Registers.get(1), 123)
+			let i = new JalInstruction(Registers.get(1), new Immediate20(123))
 			let encoded = i.encode();
 			let decoded = Instruction.decode(encoded);
 			expect(bin(encoded, 32)).toBe(bin(decoded.encode(), 32));
@@ -128,7 +136,7 @@ describe('plaintext asm encoding and decoding', () => {
 
 	describe('i type', () => {
 		test('jalr', () => {
-			let i = new JalrInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new JalrInstruction(Registers.get(1), Registers.get(2), new Immediate12(123))
 			let disassembled = i.disassemble();
 			let assembled = Instruction.assemble(disassembled);
 			expect(disassembled == assembled.disassemble());
@@ -153,7 +161,7 @@ describe('plaintext asm encoding and decoding', () => {
 
 	describe('s type', () => {
 		test('addi', () => {
-			let i = new SwInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new SwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let disassembled = i.disassemble();
 			let assembled = Instruction.assemble(disassembled);
 			expect(disassembled == assembled.disassemble());
@@ -162,7 +170,7 @@ describe('plaintext asm encoding and decoding', () => {
 
 	describe('b type', () => {
 		test('add', () => {
-			let i = new BeqInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new BeqInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let disassembled = i.disassemble();
 			let assembled = Instruction.assemble(disassembled);
 			expect(disassembled == assembled.disassemble());
@@ -171,21 +179,21 @@ describe('plaintext asm encoding and decoding', () => {
 
 	describe('i type', () => {
 		test('jalr', () => {
-			let i = new JalrInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new JalrInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let disassembled = i.disassemble();
 			let assembled = Instruction.assemble(disassembled);
 			expect(disassembled == assembled.disassemble());
 		});
 
 		test('lw', () => {
-			let i = new LwInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new LwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let disassembled = i.disassemble();
 			let assembled = Instruction.assemble(disassembled);
 			expect(disassembled == assembled.disassemble());
 		});
 
 		test('addi', () => {
-			let i = new AddiInstruction(Registers.get(1), Registers.get(2), 123)
+			let i = new AddiInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
 			let disassembled = i.disassemble();
 			let assembled = Instruction.assemble(disassembled);
 			expect(disassembled == assembled.disassemble());

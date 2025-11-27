@@ -1,17 +1,17 @@
 import { bin } from "../utils";
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
-import { Memory } from "../peripherals";
+import { Memory } from "../memory";
 import { ProgramCounter } from "../program_counter";
-import { parseImmediate } from "../utils";
 import { InstructionRegistry } from "../instructionRegistry";
+import { Immediate12 } from "../immediate";
 
 abstract class ITypeInstruction extends Instruction {
 	destination: Register;
 	source: Register;
-	immediate: number;
+	immediate: Immediate12;
 
-	constructor(destination: Register, source: Register, immediate: number) {
+	constructor(destination: Register, source: Register, immediate: Immediate12) {
 		super();
 		this.destination = destination;
 		this.source = source;
@@ -29,7 +29,7 @@ abstract class ITypeInstruction extends Instruction {
 		shift += 3;
 		encoded += this.source.index << shift;
 		shift += 5;
-		encoded += this.immediate << shift;
+		encoded += this.immediate.value << shift;
 		return encoded;
 	}
 
@@ -42,12 +42,12 @@ abstract class ITypeInstruction extends Instruction {
 		return new (this as any)(
 			Registers.get(rd),
 			Registers.get(rs),
-			imm
+			new Immediate12(imm)
 		) as Instruction;
 	}
 
 	disassemble(): string {
-		return `${this.tag} ${this.destination}, ${this.immediate}(${this.source})`
+		return `${this.tag} ${this.destination}, ${this.immediate.value}(${this.source})`
 	}
 
 	static factoryFromAssembly(parameters: string): Instruction {
@@ -55,13 +55,13 @@ abstract class ITypeInstruction extends Instruction {
 		const destination = Registers.parse(p[0]);
 
 		const others = p[1].split("(");
-		const imm = parseImmediate(others[0]);
+		const immediate = Immediate12.parse(others[0]);
 		const source = Registers.parse(others[1].replace(")", ""));
 
 		return new (this as any)(
 			destination,
 			source,
-			imm
+			immediate
 		) as Instruction
 	}
 }
@@ -72,7 +72,7 @@ export class JalrInstruction extends ITypeInstruction {
 
 	execute(): void {
 		this.destination.value = ProgramCounter.address;
-		ProgramCounter.address = this.source.value + this.immediate;
+		ProgramCounter.address = this.source.value + this.immediate.value;
 	}
 
 	static {
@@ -89,7 +89,7 @@ export class LwInstruction extends MemoryLoadInstruction {
 	static f3 = 0b010;
 
 	execute(): void {
-		this.destination.value = Memory.get(this.source.value + this.immediate);
+		this.destination.value = Memory.get(this.source.value + this.immediate.value);
 	}
 
 	static {
@@ -105,7 +105,7 @@ export class AddiInstruction extends IntegerRegisterImmediateInstruction {
 	static tag = "addi";
 
 	execute(): void {
-		this.destination.value = this.source.value + this.immediate;
+		this.destination.value = this.source.value + this.immediate.value;
 	}
 
 	static {

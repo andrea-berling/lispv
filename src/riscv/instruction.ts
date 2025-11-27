@@ -44,19 +44,19 @@ export abstract class Instruction {
 
 		opcode = encoded & 0b1111111;
 		key = InstructionRegistry.key(opcode, f3, f7);
-		possibleInstructionClass = InstructionRegistry.getInstance().getBinaryRegistry().get(key);
+		possibleInstructionClass = InstructionRegistry.binaryRegistry.get(key);
 		if (possibleInstructionClass)
 			instructionClass = possibleInstructionClass;
 
 		f3 = (encoded >> 12) & 0b111;
 		key = InstructionRegistry.key(opcode, f3, f7);
-		possibleInstructionClass = InstructionRegistry.getInstance().getBinaryRegistry().get(key);
+		possibleInstructionClass = InstructionRegistry.binaryRegistry.get(key);
 		if (possibleInstructionClass)
 			instructionClass = possibleInstructionClass;
 
 		f7 = (encoded >> 25) & 0b1111111;
 		key = InstructionRegistry.key(opcode, f3, f7);
-		possibleInstructionClass = InstructionRegistry.getInstance().getBinaryRegistry().get(key);
+		possibleInstructionClass = InstructionRegistry.binaryRegistry.get(key);
 		if (possibleInstructionClass)
 			instructionClass = possibleInstructionClass;
 
@@ -78,7 +78,7 @@ export abstract class Instruction {
 		let tag = line.split(" ")[0];
 		let parameters = line.substr(line.indexOf(" ") + 1);
 
-		let instructionClass = InstructionRegistry.getInstance().getTagRegistry().get(tag);
+		let instructionClass = InstructionRegistry.tagRegistry.get(tag);
 
 		if (!instructionClass)
 			throw new Error(`instruction ${tag} not implemented.`);

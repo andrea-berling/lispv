@@ -1,14 +1,13 @@
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
-import { Memory } from "../peripherals";
-import { parseImmediate } from "../utils";
 import { InstructionRegistry } from "../instructionRegistry";
+import { Immediate20 } from "../immediate";
 
 abstract class JTypeInstruction extends Instruction {
 	destination: Register;
-	immediate: number;
+	immediate: Immediate20;
 
-	constructor(destination: Register, immediate: number) {
+	constructor(destination: Register, immediate: Immediate20) {
 		super();
 		this.destination = destination;
 		this.immediate = immediate;
@@ -27,19 +26,19 @@ abstract class JTypeInstruction extends Instruction {
 		shift += 5;
 
 		// imm[19:12] [19:12]
-		encoded += ((this.immediate >> 12) & 0b11111111) << shift;
+		encoded += ((this.immediate.value >> 12) & 0b11111111) << shift;
 		shift += 8;
 
 		// imm[11] [20]
-		encoded += ((this.immediate >> 11) & 0b1) << shift;
+		encoded += ((this.immediate.value >> 11) & 0b1) << shift;
 		shift += 1;
 
 		// imm[10:1] [30:21]
-		encoded += ((this.immediate >> 1) & 0b1111111111) << shift;
+		encoded += ((this.immediate.value >> 1) & 0b1111111111) << shift;
 		shift += 10;
 
 		// imm[20] [31]
-		encoded += ((this.immediate >> 20) & 0b1) << shift;
+		encoded += ((this.immediate.value >> 20) & 0b1) << shift;
 
 		return encoded;
 	}
@@ -63,14 +62,9 @@ abstract class JTypeInstruction extends Instruction {
 		// imm[20] from bit [31]
 		imm |= ((encoded >> 31) & 0b1) << 20;
 
-		// Note: imm[0] is always 0 for J-type (2-byte aligned)
-
-		// Sign extend from 21 bits to 32 bits
-		const imm_signed = (imm & 0x100000) ? (imm | 0xFFE00000) : imm;
-
 		return new (this as any)(
 			Registers.get(rd),
-			imm_signed
+			new Immediate20(imm)
 		) as Instruction;
 	}
 
@@ -82,12 +76,12 @@ abstract class JTypeInstruction extends Instruction {
 		let p = parameters.split(",");
 		const source1 = Registers.parse(p[0]);
 		const source2 = Registers.parse(p[1]);
-		const imm = parseImmediate(p[2]);
+		const immediate = Immediate20.parse(p[2]);
 
 		return new (this as any)(
 			source1,
 			source2,
-			imm
+			immediate
 		) as Instruction
 	}
 }

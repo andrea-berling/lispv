@@ -1,16 +1,16 @@
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
-import { Memory } from "../peripherals";
-import { parseImmediate } from "../utils";
+import { Memory } from "../memory";
 import { InstructionRegistry } from "../instructionRegistry";
+import { Immediate12 } from "../immediate";
 
 abstract class STypeInstruction extends Instruction {
 	source1: Register; // add to this the immediate, that's the address to store in memory
 	source2: Register; // the value to store in memory
-	immediate: number;
+	immediate: Immediate12;
 	static opcode = 0b0100011;
 
-	constructor(source2: Register, source1: Register, immediate: number) {
+	constructor(source2: Register, source1: Register, immediate: Immediate12) {
 		super();
 		this.source1 = source1;
 		this.source2 = source2;
@@ -26,7 +26,7 @@ abstract class STypeInstruction extends Instruction {
 		shift += 7;
 
 		// imm[4:0] [11:7]
-		encoded += (this.immediate & 0b11111) << shift;
+		encoded += (this.immediate.value & 0b11111) << shift;
 		shift += 5;
 
 		// funct3 [14:12]
@@ -42,7 +42,7 @@ abstract class STypeInstruction extends Instruction {
 		shift += 5;
 
 		// imm[11:5] [31:25] - shift right by 5 to get the high bits
-		encoded += ((this.immediate >> 5) & 0b1111111) << shift;
+		encoded += ((this.immediate.value >> 5) & 0b1111111) << shift;
 
 		return encoded;
 	}
@@ -56,25 +56,22 @@ abstract class STypeInstruction extends Instruction {
 		const imm_high = (encoded >> 25) & 0b1111111;
 		const imm = imm_low | (imm_high << 5);
 
-		// Sign extend from 12 bits to 32 bits
-		const imm_signed = (imm & 0x800) ? (imm | 0xFFFFF000) : imm;
-
 		return new (this as any)(
 			Registers.get(rs2),
 			Registers.get(rs1),
-			imm_signed
+			new Immediate12(imm)
 		) as Instruction;
 	}
 
 	disassemble(): string {
-		return `${this.tag} ${this.source2}, ${this.immediate}(${this.source1})`
+		return `${this.tag} ${this.source2}, ${this.immediate.value}(${this.source1})`
 	}
 
 	static factoryFromAssembly(parameters: string): Instruction {
 		let p = parameters.split(",");
 		const source2 = Registers.parse(p[0]);
 		const others = p[1].split("(");
-		const imm = parseImmediate(others[0]);
+		const imm = Immediate12.parse(others[0]);
 		const source1 = Registers.parse(others[1].replace(")", ""));
 
 		return new (this as any)(
@@ -86,11 +83,11 @@ abstract class STypeInstruction extends Instruction {
 }
 
 export class SwInstruction extends STypeInstruction {
-	name = "sw";
+	static tag = "sw";
 	static f3 = 0b010;
 
 	execute(): void {
-		Memory.set(this.source2.value + this.immediate, this.source1.value);
+		Memory.set(this.source2.value + this.immediate.value, this.source1.value);
 	}
 
 	static {

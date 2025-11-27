@@ -1,9 +1,11 @@
 import { Instruction } from "./instruction";
-import { Memory } from "./peripherals";
+import { Memory } from "./memory";
 import { ProgramCounter } from "./program_counter";
 import { Registers, Register } from "./register";
-import { DEBUG } from "./flags";
+import { DEBUG, DEBUG_SIMULATOR } from "./flags";
 import { hex } from "./utils";
+
+const debug = DEBUG || DEBUG_SIMULATOR;
 
 export class Pipeline {
 
@@ -27,11 +29,11 @@ export class Pipeline {
 			// fetch
 			addr = ProgramCounter.address;
 			encoded = Memory.get(addr);
-			DEBUG && console.log("fetched: ", hex(encoded), "at", hex(addr));
+			debug && console.log("fetched: ", hex(encoded), "at", hex(addr));
 
 			// decode. if the decoding fails the simualtor crashes.
 			i = Instruction.decode(encoded);
-			DEBUG && console.log("decoded", i);
+			debug && console.log("decoded", i);
 
 			// execute, memory, writeback
 			i.execute();
@@ -39,7 +41,7 @@ export class Pipeline {
 
 		} while (i.tag != "halt");
 
-		DEBUG && console.log("run finished at", Date());
+		debug && console.log("run finished at", Date());
 
 	}
 }

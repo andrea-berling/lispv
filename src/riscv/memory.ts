@@ -37,7 +37,7 @@ export abstract class Memory {
 		// show memory addresses sorted
 		for (let cell of Array.from(Memory.cells.entries()).sort((a, b) => a[0] - b[0])) {
 			let addr = cell[0];
-			let value = cell[0] | 0;
+			let value = cell[1] | 0;
 
 			console.log(`0x${hex(addr)}: 0x${hex(value)} (${value})`);
 		}
