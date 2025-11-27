@@ -8,7 +8,6 @@ import { ProgramCounter } from "../../src/riscv/program_counter";
 import { SwInstruction } from "../../src/riscv/instructions/stype";
 import { Pipeline } from "../../src/riscv//pipeline";
 import { Immediate12 } from "../../src/riscv/immediate";
-import { InstructionRegistry } from "../../src/riscv/instructionRegistry";
 
 describe('execution', () => {
 	test('manual execution', () => {

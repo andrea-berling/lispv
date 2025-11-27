@@ -15,6 +15,9 @@ export class InstructionRegistry {
 	static register(f: Function) {
 		const i = f as typeof Instruction;
 		const key = InstructionRegistry.key(i.opcode, i.f3, i.f7);
+
+		// console.log("registering", key, i);
+
 		InstructionRegistry.binaryRegistry.set(key, i);
 		InstructionRegistry.tagRegistry.set(i.tag, i);
 	}

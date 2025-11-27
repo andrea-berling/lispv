@@ -99,6 +99,19 @@ export class LwInstruction extends MemoryLoadInstruction {
 
 abstract class IntegerRegisterImmediateInstruction extends ITypeInstruction {
 	static opcode = 0b0010011;
+
+	static factoryFromAssembly(parameters: string): Instruction {
+		let p = parameters.split(",");
+		const destination = Registers.parse(p[0])
+		const source1 = Registers.parse(p[1]);
+		const immediate = Immediate12.parse(p[2]);
+
+		return new (this as any)(
+			destination,
+			source1,
+			immediate
+		) as Instruction;
+	}
 }
 
 export class AddiInstruction extends IntegerRegisterImmediateInstruction {

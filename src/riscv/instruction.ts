@@ -83,10 +83,10 @@ export abstract class Instruction {
 		if (!instructionClass)
 			throw new Error(`instruction ${tag} not implemented.`);
 
-		return (instructionClass as any).factoryFromBinary(parameters);
+		return (instructionClass as any).factoryFromAssembly(parameters);
 	}
 
-	static factoryFromTag(parameters: string): Instruction {
+	static factoryFromAssembly(parameters: string): Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 }

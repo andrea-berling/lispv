@@ -62,13 +62,14 @@ abstract class RTypeInstruction extends Instruction {
 	}
 }
 
+// would have liked to use this as a decorator, but jest doesn't seem to work well with it
+// @InstructionRegistry.register
 export class AddInstruction extends RTypeInstruction {
 	static tag = "add";
 
 	execute(): void {
 		this.destination.value = this.source1.value + this.source2.value;
 	}
-
 	static {
 		InstructionRegistry.register(this);
 	}

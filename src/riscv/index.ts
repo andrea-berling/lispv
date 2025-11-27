@@ -19,11 +19,18 @@ import "./instructions/stype"
 import "./instructions/utype"
 
 let instructions = `
-		addi r1, r0, 0xffff
-		add r2, r1, r1 # r2 = 0x1fffe
-		addi r3, r0, 0xff # r3 is the address we will store the result r2
-		sw r3, 0x0(r2)`
+		addi i1, i0, 0xff
+		add i2, i1, i1 # i2 = 0x1fe
+		addi i3, i0, 0xff # i3 is the address we will store the result i2
+		sw i3, 0x0(i2)`
 
 Assembler.parse(instructions.split("\n"));
 
-Memory.show()
+let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+console.log(i);
+let disassembled = i.disassemble();
+console.log(disassembled);
+let assembled = Instruction.assemble(disassembled);
+console.log(assembled.disassemble());
+
+// Memory.show()
