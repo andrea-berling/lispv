@@ -34,12 +34,6 @@ export class Immediate12 extends Immediate {
 	readonly bits: 12 = 12;
 	constructor(value: number) {
 		super();
-		this.value = value;
-
-		if (this.overflow())
-			throw new Error(value + " overflows " + this);
-
-		// sign extension
 		this.value = (value & 0x800) ? (value | 0xFFFFF000) : value;
 	}
 
@@ -56,10 +50,10 @@ export class UnsignedImmediate12 extends UnsignedImmediate {
 	readonly bits: 12 = 12;
 	constructor(value: number) {
 		super();
-		this.value = value;
+		this.value = value & 0b111111111111;
 
-		if (this.overflow())
-			throw new Error(value + " overflows " + this);
+		// if (this.overflow())
+		// 	throw new Error(value + " overflows " + this);
 	}
 
 	//TODO remove eval
@@ -75,16 +69,11 @@ export class Immediate20 extends Immediate {
 	readonly bits: 20 = 20;
 	constructor(value: number) {
 		super();
-		this.value = value;
-
-		if (this.overflow())
-			throw new Error(value + " overflows " + this);
-
-		// sign extension
 		this.value = (value & 0x80000) ? (value | 0xFFF00000) : value;
 	}
 
+	//TODO remove eval
 	static parse(s: string) {
-		return new Immediate20(Number.parseInt(s.trim()));
+		return new Immediate20(Number.parseInt(eval(s.trim())));
 	}
 }

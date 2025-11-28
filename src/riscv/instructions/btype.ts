@@ -3,6 +3,7 @@ import { Register, Registers } from "../register";
 import { Memory } from "../memory";
 import { InstructionRegistry } from "../instructionRegistry";
 import { Immediate12 } from "../immediate";
+import { ProgramCounter } from "../program_counter";
 
 abstract class BTypeInstruction extends Instruction {
 	source1: Register;
@@ -104,6 +105,19 @@ export class BeqInstruction extends BTypeInstruction {
 	static tag = "beq";
 
 	execute(): void {
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class BneInstruction extends BTypeInstruction {
+	static tag = "bne";
+
+	execute(): void {
+		if (this.source1.value != this.source2.value)
+			ProgramCounter.address -= this.immediate.value
 	}
 
 	static {

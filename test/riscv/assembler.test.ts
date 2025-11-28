@@ -1,4 +1,4 @@
-import { bin } from "../../src/riscv/utils";
+import { bin, hex } from "../../src/riscv/utils";
 import { Instruction } from "../../src/riscv/instruction";
 import { AddInstruction, SubInstruction } from "../../src/riscv/instructions/rtype"
 import { JalrInstruction, LwInstruction, AddiInstruction } from "../../src/riscv/instructions/itype"
@@ -20,7 +20,7 @@ import "../../src/riscv/instructions/stype"
 import "../../src/riscv/instructions/utype"
 
 describe('assembling', () => {
-	test('assemble string', () => {
+	test('assemble string and run', () => {
 
 		Pipeline.init();
 
@@ -35,8 +35,30 @@ describe('assembling', () => {
 
 		Pipeline.run();
 
-		console.log(Memory.getAccesses());
-
 		expect(Memory.get(0xff)).toBe(0x1fe);
 	});
+
+	test('loop tags', () => {
+
+		Pipeline.init();
+
+		let instructions = `
+		addi i10, i0, 0
+		addi i11, i0, 1
+		addi i1, i0, 10 # i1 = 10
+		loop:
+		addi i1, i1, -1
+		add i12, i0, i10
+		add i10, i10, i11
+		add i11, i12, i11
+		bne i1, i0, 0xc # while i1 > 0
+		`
+
+		Assembler.parse(instructions.split("\n"));
+
+		Pipeline.run();
+
+		Registers.show();
+	});
+
 });

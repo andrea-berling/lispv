@@ -20,20 +20,18 @@
 			]
 		},
 		{
-			"name": "Debug: tsx (watch)",
+			"name": "Debug: tsx",
 			"type": "node",
 			"request": "launch",
-			"runtimeExecutable": "node",
+			"runtimeExecutable": "tsx",
 			"runtimeArgs": [
-				"--loader=tsx",
-				"--watch",
 				"${workspaceFolder}/src/riscv/index.ts"
 			],
 			"cwd": "${workspaceFolder}",
-			"sourceMaps": true,
-			"outFiles": [
-				"${workspaceFolder}/**/*.ts"
+			"console": "integratedTerminal",
+			"skipFiles": [
+				"<node_internals>/**"
 			]
-		},
+		}
 	]
 }

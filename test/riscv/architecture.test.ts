@@ -8,7 +8,12 @@ import { Memory } from "../../src/riscv/memory";
 describe('architecture', () => {
 	test('register i0 hardwired to 0', () => {
 		let r = Registers.get(0);
-		r.value = 10;
-		expect( r.value == 0);
+		try {
+			r.value = 10;
+			// impossible
+			expect(true).toBe(false);
+		} catch (e) {
+		}
+		expect(r.value).toBe(0);
 	});
 });

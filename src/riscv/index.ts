@@ -18,19 +18,24 @@ import "./instructions/rtype"
 import "./instructions/stype"
 import "./instructions/utype"
 
+Pipeline.init();
+
 let instructions = `
-		addi i1, i0, 0xff
-		add i2, i1, i1 # i2 = 0x1fe
-		addi i3, i0, 0xff # i3 is the address we will store the result i2
-		sw i3, 0x0(i2)`
+		addi i10, i0, 0
+		addi i11, i0, 1
+		addi i1, i0, 10 # i1 = 10
+		loop:
+		addi i1, i1, -1
+		add i12, i0, i10
+		add i10, i10, i11
+		add i11, i12, i11
+		bne i1, i0, loop # while i1 > 0
+		`
 
 Assembler.parse(instructions.split("\n"));
 
-let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
-console.log(i);
-let disassembled = i.disassemble();
-console.log(disassembled);
-let assembled = Instruction.assemble(disassembled);
-console.log(assembled.disassemble());
+Memory.show()
 
-// Memory.show()
+Pipeline.run();
+
+Registers.show();
