@@ -23,16 +23,27 @@ abstract class BTypeInstruction extends Instruction {
 		let encoded = 0;
 		let shift = 0;
 
+		let imm: number;
+
+		if (this.immediate.label) {
+			if (!this.address)
+				throw new Error("cannot have labels on instructions without an address");
+			imm = this.immediate.label.address - this.address;
+		}
+		else {
+			imm = this.immediate.value;
+		}
+
 		// opcode [6:0]
 		encoded += this.opcode;
 		shift += 7;
 
 		// imm[11] [7]
-		encoded += ((this.immediate.value >> 11) & 0b1) << shift;
+		encoded += ((imm >> 11) & 0b1) << shift;
 		shift += 1;
 
 		// imm[4:1] [11:8]
-		encoded += ((this.immediate.value >> 1) & 0b1111) << shift;
+		encoded += ((imm >> 1) & 0b1111) << shift;
 		shift += 4;
 
 		// f3 [14:12]
@@ -48,11 +59,11 @@ abstract class BTypeInstruction extends Instruction {
 		shift += 5;
 
 		// imm[10:5] [30:25]
-		encoded += ((this.immediate.value >> 5) & 0b111111) << shift;
+		encoded += ((imm >> 5) & 0b111111) << shift;
 		shift += 6;
 
 		// imm[12] [31]
-		encoded += ((this.immediate.value >> 12) & 0b1) << shift;
+		encoded += ((imm >> 12) & 0b1) << shift;
 
 		return encoded;
 	}
@@ -85,13 +96,14 @@ abstract class BTypeInstruction extends Instruction {
 	}
 
 	disassemble(): string {
+		let asm: string;
 
-		// to disassemble 
-		if (this.immediate.label) {
+		if (this.immediate.label)
+			asm = `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.label.name}`;
+		else
+			asm = `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.value}`;
 
-		}
-
-		return `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.value}`
+		return asm;
 	}
 
 	static factoryFromAssembly(parameters: string): Instruction {
@@ -123,7 +135,8 @@ export class BneInstruction extends BTypeInstruction {
 	static tag = "bne";
 
 	execute(): void {
-		ProgramCounter.address = (ProgramCounter.address + this.immediate.value)
+		if (this.source1.value != this.source2.value)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
 	}
 
 	static {

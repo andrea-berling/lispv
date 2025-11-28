@@ -3,6 +3,7 @@ import { Instruction } from "./instruction";
 import { Labels } from "./label";
 import { Memory } from "./memory";
 import { ProgramCounter } from "./program_counter";
+import { hex } from "./utils";
 
 const debug = DEBUG || DEBUG_ASSEMBLER;
 
@@ -38,6 +39,7 @@ export class Assembler {
 					continue;
 				}
 				i = Instruction.assemble(line);
+				i.address = addr;
 				debug && console.log(i);
 				encoded = i.encode();
 				Memory.set(addr, encoded);
@@ -48,6 +50,25 @@ export class Assembler {
 				console.error(e);
 			}
 		}
+	}
+
+	static disassemble() {
+
+		let instructions: Instruction[] = [];
+
+		let addr = 0;
+		let encoded: number;
+		let i: Instruction;
+
+		do {
+			encoded = Memory.get(addr);
+			i = Instruction.decode(encoded);
+			i.address = addr;
+			instructions.push(i);
+			addr += 4;
+		} while (i.tag != "halt");
+
+		return instructions;
 	}
 
 }

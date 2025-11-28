@@ -19,8 +19,9 @@ export class Pipeline {
 		ProgramCounter.reset();
 	}
 
-	static run() {
+	static run(maxIterations?: number) {
 
+		let iter: number = 0;
 		let addr: number;
 		let encoded: number;
 		let i: Instruction;
@@ -33,13 +34,15 @@ export class Pipeline {
 
 			// decode. if the decoding fails the simulator crashes.
 			i = Instruction.decode(encoded);
+			i.address = ProgramCounter.address
 			debug && console.log("decoded", i);
 
 			// execute, memory, writeback
 			i.execute();
 			ProgramCounter.increase()
 
-		} while (i.tag != "halt");
+			iter++;
+		} while (i.tag != "halt" && (maxIterations ? iter < maxIterations : true));
 
 		debug && console.log("run finished at", Date(), `with ${Memory.getAccesses()} accesses`);
 

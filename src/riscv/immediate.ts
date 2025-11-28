@@ -12,7 +12,7 @@ export abstract class Immediate {
 		let label = Labels.get(s)
 
 		if (label) {
-			return { value: label.address, label }
+			return { value: 0, label }
 		}
 
 		return { value: Number.parseInt(eval(s.trim())), label: undefined }
@@ -53,7 +53,6 @@ export class Immediate12 extends Immediate {
 		let { value, label } = Immediate.flatten(s);
 		let imm = new Immediate12(value);
 		imm.label = label;
-		console.log(imm);
 		return imm;
 	}
 }

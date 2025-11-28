@@ -15,6 +15,8 @@ export abstract class Instruction {
 	static f7: number | null = null;
 	static tag: string = "";
 
+	address: number | null = null;
+
 	// get fields for instances
 	get opcode(): number {
 		return (this.constructor as typeof Instruction).opcode;
