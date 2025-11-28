@@ -4,7 +4,6 @@ import { AddInstruction, SubInstruction } from "../../src/riscv/instructions/rty
 import { JalrInstruction, LwInstruction, AddiInstruction } from "../../src/riscv/instructions/itype"
 import { Registers } from "../../src/riscv/register";
 import { Memory } from "../../src/riscv/memory";
-import { ProgramCounter } from "../../src/riscv/program_counter";
 import { SwInstruction } from "../../src/riscv/instructions/stype";
 import { Pipeline } from "../../src/riscv//pipeline";
 import { Immediate12 } from "../../src/riscv/immediate";
