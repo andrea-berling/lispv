@@ -17,6 +17,7 @@ import "./instructions/jtype"
 import "./instructions/rtype"
 import "./instructions/stype"
 import "./instructions/utype"
+import { Labels } from "./labels";
 
 Pipeline.init();
 
@@ -27,14 +28,18 @@ let instructions = `
 		loop:
 		addi i1, i1, -1
 		add i12, i0, i10
-		add i10, i10, i11
-		add i11, i12, i11
-		bne i1, i0, 0xc # while i1 > 0
+		add i11, i10, i11
+		add i10, i12, i11
+		bne i1, i0, loop # while i1 > 0
 		`
+
+console.log(instructions.replaceAll("\t",""));
 
 Assembler.parse(instructions.split("\n"));
 
 Memory.show()
+
+Labels.show()
 
 Pipeline.run();
 

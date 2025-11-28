@@ -1,3 +1,5 @@
+import { Labels } from "./labels";
+
 export abstract class Immediate {
 	abstract bits: any;
 	value: number = 0;
@@ -39,7 +41,17 @@ export class Immediate12 extends Immediate {
 
 	//TODO remove eval
 	static parse(s: string) {
-		return new Immediate12(Number.parseInt(eval(s.trim())));
+		s = s.trim();
+		console.log(`trying to parse -${s}-`)
+
+		let value: number;
+		let label = Labels.get(s)
+
+		if (label)
+			value = label
+		else
+			value = Number.parseInt(eval(s.trim()));
+		return new Immediate12(value);
 	}
 }
 
