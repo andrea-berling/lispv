@@ -22,36 +22,39 @@ describe('architecture', () => {
 
 		let n = 0x12abcdef;
 		Memory.set(0x0, n);
+		Memory.set(0x4, n);
 
 		// 12 ab cd ef
 
-		expect(Memory.get(0x0, 1)).toBe(0x12);
-		expect(Memory.get(0x0, 2)).toBe(0x12ab);
-		expect(Memory.get(0x0, 4)).toBe(0x12abcdef);
+		expect(Memory.get(0x0, 1)).toBe(0x12 | 0);
+		expect(Memory.get(0x0, 2)).toBe(0x12ab | 0);
+		expect(Memory.get(0x0, 4)).toBe(0x12abcdef | 0);
 
-		// ab cd ef 00
+		// ab cd ef 12
 
-		// expect(Memory.get(0x1, 1)).toBe(0xab);
-		// expect(Memory.get(0x1, 2)).toBe(0xabcd);
-		expect(Memory.get(0x1, 4)).toBe(0xabcdef00);
+		expect(Memory.get(0x1, 1)).toBe(0xab | 0);
+		expect(Memory.get(0x1, 2)).toBe(0xabcd | 0);
+		expect(Memory.get(0x1, 4)).toBe(0xabcdef12 | 0);
 
-		// cd ef 00 00
+		// cd ef 12 ab
 
-		expect(Memory.get(0x2, 1)).toBe(0xcd);
-		expect(Memory.get(0x2, 2)).toBe(0xcdef);
-		expect(Memory.get(0x2, 4)).toBe(0xcdef0000);
+		expect(Memory.get(0x2, 1)).toBe(0xcd | 0);
+		expect(Memory.get(0x2, 2)).toBe(0xcdef | 0);
+		expect(Memory.get(0x2, 4)).toBe(0xcdef12ab | 0);
 
-		// ef 00 00 00
+		// ef 12 ab cd
 
-		expect(Memory.get(0x3, 1)).toBe(0xef);
-		expect(Memory.get(0x3, 2)).toBe(0xef00);
-		expect(Memory.get(0x3, 4)).toBe(0xef000000);
+		expect(Memory.get(0x3, 1)).toBe(0xef | 0);
+		expect(Memory.get(0x3, 2)).toBe(0xef12 | 0);
+		expect(Memory.get(0x3, 4)).toBe(0xef12abcd | 0);
 
 		Memory.set(0x1, 0x67, 1);
 
+		// 67 cd ef 12
+
 		expect(Memory.get(0x1, 1)).toBe(0x67);
 		expect(Memory.get(0x1, 2)).toBe(0x67cd);
-		expect(Memory.get(0x1, 4)).toBe(0x67cdef00);
+		expect(Memory.get(0x1, 4)).toBe(0x67cdef12 | 0);
 
 	})
 });

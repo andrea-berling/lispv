@@ -12,11 +12,102 @@ export abstract class Memory {
 		Memory.accesses = 0;
 	}
 
-	static set(address: number, word: number, bytes: number = 4): void {
+	/**
+	 * Set a 
+	 * @param address the memory address, indexed by the byte.
+	 * @param value the big-endian value to store.
+	 * @param bytes = 4 by default, can be set to 1, 2, 4.
+	 */
+	static set(address: number, value: number, bytes: number = 4): void {
 		address = address | 0;
-		word = word | 0;
-		Memory.cells.set(address, word);
-		Memory.accesses += 1;
+		value = value | 0;
+		let alignment = address & 0b11;
+		let baseAddr = (address >> 2) << 2;
+		let word0 = Memory.cells.get(baseAddr) || 0;
+		let word1 = Memory.cells.get(baseAddr + 4) || 0;
+
+		switch (alignment) {
+			case 0b00: {
+				switch (bytes) {
+					case 4: {
+						Memory.cells.set(baseAddr, value);
+						break;
+					}
+					case 2: {
+						Memory.cells.set(baseAddr, (word0 & 0x0000ffff) | (value << 16));
+						break;
+					}
+					case 1: {
+						Memory.cells.set(baseAddr, (word0 & 0x00ffffff) | (value << 24));
+						break;
+					}
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`);
+				}
+				break;
+			}
+			case 0b01: {
+				switch (bytes) {
+					case 4: {
+						Memory.cells.set(baseAddr, (word0 & 0xff000000) | (value >>> 8));
+						Memory.cells.set(baseAddr + 4, (word1 & 0x00ffffff) | (value << 24));
+						break;
+					}
+					case 2: {
+						Memory.cells.set(baseAddr, (word0 & 0xff0000ff) | ((value & 0xffff) << 8));
+						break;
+					}
+					case 1: {
+						Memory.cells.set(baseAddr, (word0 & 0xff00ffff) | ((value & 0xff) << 16));
+						break;
+					}
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`);
+				}
+				break;
+			}
+			case 0b10: {
+				switch (bytes) {
+					case 4: {
+						Memory.cells.set(baseAddr, (word0 & 0xffff0000) | (value >>> 16));
+						Memory.cells.set(baseAddr + 4, (word1 & 0x0000ffff) | (value << 16));
+						break;
+					}
+					case 2: {
+						Memory.cells.set(baseAddr, (word0 & 0xffff0000) | (value & 0xffff));
+						break;
+					}
+					case 1: {
+						Memory.cells.set(baseAddr, (word0 & 0xffff00ff) | ((value & 0xff) << 8));
+						break;
+					}
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`);
+				}
+				break;
+			}
+			case 0b11: {
+				switch (bytes) {
+					case 4: {
+						Memory.cells.set(baseAddr, (word0 & 0xffffff00) | (value >>> 24));
+						Memory.cells.set(baseAddr + 4, (word1 & 0x000000ff) | (value << 8));
+						break;
+					}
+					case 2: {
+						Memory.cells.set(baseAddr, (word0 & 0xffffff00) | ((value >>> 8) & 0xff));
+						Memory.cells.set(baseAddr + 4, (word1 & 0x00ffffff) | ((value & 0xff) << 24));
+						break;
+					}
+					case 1: {
+						Memory.cells.set(baseAddr, (word0 & 0xffffff00) | (value & 0xff));
+						break;
+					}
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`);
+				}
+				break;
+			}
+		}
 	}
 
 	static getAccesses() {
@@ -31,12 +122,10 @@ export abstract class Memory {
 	static get(address: number, bytes: number = 4): number {
 		address = address | 0;
 		let alignment = address & 0b11;
-
-		let words = [Memory.cells.get((address >> 2) << 2) || 0, Memory.cells.get(((address + 4) >> 2) << 2) || 0];
-
-		// if (!word) {
-		// 	return 0; // memory initialized at 0
-		// }
+		let words = [
+			Memory.cells.get((address >> 2) << 2) || 0,
+			Memory.cells.get(((address + 4) >> 2) << 2) || 0
+		];
 
 		switch (alignment) {
 			case 0b00: {
@@ -44,46 +133,62 @@ export abstract class Memory {
 					case 4: {
 						return words[0];
 					}
-
 					case 2: {
 						return words[0] >>> 16;
 					}
-
 					case 1: {
 						return words[0] >>> 24;
 					}
-
 					default:
-						throw new Error(`cannot index memory by ${bytes} bytes`)
+						throw new Error(`cannot index memory by ${bytes} bytes`);
 				}
 			}
-
 			case 0b01: {
 				switch (bytes) {
 					case 4: {
-						return words[0] << 8 + (words[1] & 0xff) ;
+						return (words[0] << 8) | (words[1] >>> 24);
 					}
-
 					case 2: {
-						return words[0] >> 16;
+						return (words[0] >>> 8) & 0xffff;
 					}
-
 					case 1: {
-						return words[0] >> 24;
+						return (words[0] >>> 16) & 0xff;
 					}
-
 					default:
-						throw new Error(`cannot index memory by ${bytes} bytes`)
+						throw new Error(`cannot index memory by ${bytes} bytes`);
 				}
 			}
-
 			case 0b10: {
+				switch (bytes) {
+					case 4: {
+						return (words[0] << 16) | (words[1] >>> 16);
+					}
+					case 2: {
+						return words[0] & 0xffff;
+					}
+					case 1: {
+						return (words[0] >>> 8) & 0xff;
+					}
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`);
+				}
 			}
-
 			case 0b11: {
+				switch (bytes) {
+					case 4: {
+						return (words[0] << 24) | (words[1] >>> 8);
+					}
+					case 2: {
+						return ((words[0] << 8) | (words[1] >>> 24)) & 0xffff;
+					}
+					case 1: {
+						return words[0] & 0xff;
+					}
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`);
+				}
 			}
 		}
-
 		return 0;
 	}
 
