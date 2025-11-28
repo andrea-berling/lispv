@@ -4,6 +4,7 @@ import { Memory } from "../memory";
 import { InstructionRegistry } from "../instructionRegistry";
 import { Immediate12 } from "../immediate";
 import { ProgramCounter } from "../program_counter";
+import { Labels } from "../label";
 
 abstract class BTypeInstruction extends Instruction {
 	source1: Register;
@@ -84,6 +85,12 @@ abstract class BTypeInstruction extends Instruction {
 	}
 
 	disassemble(): string {
+
+		// to disassemble 
+		if (this.immediate.label) {
+
+		}
+
 		return `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.value}`
 	}
 
@@ -116,8 +123,7 @@ export class BneInstruction extends BTypeInstruction {
 	static tag = "bne";
 
 	execute(): void {
-		if (this.source1.value != this.source2.value)
-			ProgramCounter.address = (ProgramCounter.address - this.immediate.value) - 4
+		ProgramCounter.address = (ProgramCounter.address + this.immediate.value)
 	}
 
 	static {

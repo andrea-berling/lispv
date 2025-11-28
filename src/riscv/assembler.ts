@@ -1,6 +1,6 @@
 import { DEBUG, DEBUG_ASSEMBLER } from "./flags";
 import { Instruction } from "./instruction";
-import { Labels } from "./labels";
+import { Labels } from "./label";
 import { Memory } from "./memory";
 import { ProgramCounter } from "./program_counter";
 
@@ -34,7 +34,7 @@ export class Assembler {
 			try {
 				if (line.includes(":")) {
 					label = line.replace(this.afterLabel, "");
-					Labels.set(label, addr + 4)
+					Labels.set(label, addr)
 					continue;
 				}
 				i = Instruction.assemble(line);

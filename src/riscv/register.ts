@@ -64,7 +64,6 @@ export abstract class Registers {
 	}
 
 	static show() {
-		// show memory addresses sorted
 		for (let cell of Array.from(Registers.registers.entries()).sort((a, b) => a[0] - b[0])) {
 			let num = cell[0];
 			let value = cell[1].value;

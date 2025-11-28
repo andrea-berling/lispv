@@ -1,8 +1,22 @@
-import { Labels } from "./labels";
+import { Label, Labels } from "./label";
 
 export abstract class Immediate {
 	abstract bits: any;
 	value: number = 0;
+	label: Label | undefined;
+
+	// TODO remove eval
+	static flatten(s: string): { value: number, label: Label | undefined } {
+		s = s.trim();
+
+		let label = Labels.get(s)
+
+		if (label) {
+			return { value: label.address, label }
+		}
+
+		return { value: Number.parseInt(eval(s.trim())), label: undefined }
+	}
 
 	static parse(s: string): Immediate {
 		throw new Error("must do static parsing from concrete Immediate subclass")
@@ -13,10 +27,6 @@ export abstract class Immediate {
 		let min = - (1 << (this.bits - 1));
 
 		return (this.value < min || this.value > max);
-	}
-
-	extendTo(c: typeof Immediate) {
-
 	}
 }
 
@@ -39,19 +49,12 @@ export class Immediate12 extends Immediate {
 		this.value = (value & 0x800) ? (value | 0xFFFFF000) : value;
 	}
 
-	//TODO remove eval
 	static parse(s: string) {
-		s = s.trim();
-		console.log(`trying to parse -${s}-`)
-
-		let value: number;
-		let label = Labels.get(s)
-
-		if (label)
-			value = label
-		else
-			value = Number.parseInt(eval(s.trim()));
-		return new Immediate12(value);
+		let { value, label } = Immediate.flatten(s);
+		let imm = new Immediate12(value);
+		imm.label = label;
+		console.log(imm);
+		return imm;
 	}
 }
 
@@ -63,14 +66,13 @@ export class UnsignedImmediate12 extends UnsignedImmediate {
 	constructor(value: number) {
 		super();
 		this.value = value & 0b111111111111;
-
-		// if (this.overflow())
-		// 	throw new Error(value + " overflows " + this);
 	}
 
-	//TODO remove eval
 	static parse(s: string) {
-		return new UnsignedImmediate12(Number.parseInt(eval(s.trim())));
+		let { value, label } = Immediate.flatten(s);
+		let imm = new UnsignedImmediate12(value);
+		imm.label = label;
+		return imm;
 	}
 }
 
@@ -84,8 +86,10 @@ export class Immediate20 extends Immediate {
 		this.value = (value & 0x80000) ? (value | 0xFFF00000) : value;
 	}
 
-	//TODO remove eval
 	static parse(s: string) {
-		return new Immediate20(Number.parseInt(eval(s.trim())));
+		let { value, label } = Immediate.flatten(s);
+		let imm = new Immediate20(value);
+		imm.label = label;
+		return imm;
 	}
 }

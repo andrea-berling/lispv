@@ -31,7 +31,7 @@ export class Pipeline {
 			encoded = Memory.get(addr);
 			debug && console.log("fetched: ", hex(encoded), "at", hex(addr));
 
-			// decode. if the decoding fails the simualtor crashes.
+			// decode. if the decoding fails the simulator crashes.
 			i = Instruction.decode(encoded);
 			debug && console.log("decoded", i);
 
