@@ -83,7 +83,7 @@ abstract class BTypeInstruction extends Instruction {
 	}
 
 	disassemble(): string {
-		return `${this.tag} ${this.source2}, ${this.immediate.value}(${this.source1})`
+		return `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.value}`
 	}
 
 	static factoryFromAssembly(parameters: string): Instruction {

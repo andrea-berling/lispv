@@ -1,3 +1,3 @@
-export const DEBUG = false;
-export const DEBUG_ASSEMBLER = false;
-export const DEBUG_SIMULATOR= false;
+export const DEBUG: boolean = false;
+export const DEBUG_ASSEMBLER: boolean = false;
+export const DEBUG_SIMULATOR: boolean = true;

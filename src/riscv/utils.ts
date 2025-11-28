@@ -15,6 +15,5 @@ export function bin(num: number, bits?: number): string {
  * @returns the hexadecimal representation of `n`, treated as **unsigned**.
  */
 export function hex(n: number) {
-
 	return "0x" + (n >>> 0).toString(16).padStart(8, '0'); // Unsigned per hex
 }

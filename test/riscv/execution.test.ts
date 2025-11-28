@@ -32,7 +32,7 @@ describe('execution', () => {
 		i.execute()
 		addr += 4;
 
-		i = new SwInstruction(Registers.get(3), Registers.get(2), new Immediate12(0));
+		i = new SwInstruction(Registers.get(2), Registers.get(3), new Immediate12(0));
 		Memory.set(addr, i.encode());
 		i.execute()
 		addr += 4;
@@ -58,7 +58,7 @@ describe('execution', () => {
 		Memory.set(addr, i.encode());
 		addr += 4;
 
-		i = new SwInstruction(Registers.get(3), Registers.get(2), new Immediate12(0));
+		i = new SwInstruction(Registers.get(2), Registers.get(3), new Immediate12(0));
 		Memory.set(addr, i.encode());
 		addr += 4;
 

@@ -87,7 +87,7 @@ export class SwInstruction extends STypeInstruction {
 	static f3 = 0b010;
 
 	execute(): void {
-		Memory.set(this.source2.value + this.immediate.value, this.source1.value);
+		Memory.set(this.source1.value + this.immediate.value, this.source2.value);
 	}
 
 	static {

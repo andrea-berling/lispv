@@ -12,7 +12,6 @@ import { Assembler } from "../../src/riscv/assembler"
 import { InstructionRegistry } from "../../src/riscv/instructionRegistry";
 
 // side effect imports
-
 import "../../src/riscv/instructions/btype"
 import "../../src/riscv/instructions/itype"
 import "../../src/riscv/instructions/jtype"
@@ -23,20 +22,21 @@ import "../../src/riscv/instructions/utype"
 describe('assembling', () => {
 	test('assemble string', () => {
 
-
-		let i = new AddiInstruction(Registers.get(1), Registers.get(2), new Immediate12(10));
+		Pipeline.init();
 
 		let instructions = `
-		addi r1, r0, 0xffff
-		add r2, r1, r1 # r2 = 0x1fffe
-		addi r3, r0, 0xff # r3 is the address we will store the result r2
-		sw r3, 0x0(r2)`
+		addi i1, i0, 0xff
+		add i2, i1, i1 # i2 = 0x1fe
+		addi i3, i0, 0xff # i3 is the address we will store the result i2
+		sw i2, 0x0(i3)
+		`
 
 		Assembler.parse(instructions.split("\n"));
 
-	});
+		Pipeline.run();
 
-	test('load in memory', () => {
+		console.log(Memory.getAccesses());
 
+		expect(Memory.get(0xff)).toBe(0x1fe);
 	});
 });

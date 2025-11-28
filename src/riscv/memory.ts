@@ -5,15 +5,22 @@ import { hex } from "./utils";
  */
 export abstract class Memory {
 	private static cells = new Map<number, number>();
+	private static accesses = 0;
 
 	static clean() {
 		Memory.cells = new Map<number, number>();
+		Memory.accesses = 0;
 	}
 
 	static set(address: number, word: number): void {
 		address = address | 0;
 		word = word | 0;
 		Memory.cells.set(address, word);
+		Memory.accesses += 1;
+	}
+
+	static getAccesses() {
+		return Memory.accesses;
 	}
 
 	/**

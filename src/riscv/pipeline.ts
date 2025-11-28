@@ -41,7 +41,7 @@ export class Pipeline {
 
 		} while (i.tag != "halt");
 
-		debug && console.log("run finished at", Date());
+		debug && console.log("run finished at", Date(), `with ${Memory.getAccesses()} accesses`);
 
 	}
 }

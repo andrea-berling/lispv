@@ -112,6 +112,10 @@ abstract class IntegerRegisterImmediateInstruction extends ITypeInstruction {
 			immediate
 		) as Instruction;
 	}
+
+	disassemble(): string {
+		return `${this.tag} ${this.destination}, ${this.source}, ${this.immediate.value}`
+	}
 }
 
 export class AddiInstruction extends IntegerRegisterImmediateInstruction {

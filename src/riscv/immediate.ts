@@ -43,8 +43,9 @@ export class Immediate12 extends Immediate {
 		this.value = (value & 0x800) ? (value | 0xFFFFF000) : value;
 	}
 
+	//TODO remove eval
 	static parse(s: string) {
-		return new Immediate12(Number.parseInt(s.trim()));
+		return new Immediate12(Number.parseInt(eval(s.trim())));
 	}
 }
 
@@ -61,8 +62,9 @@ export class UnsignedImmediate12 extends UnsignedImmediate {
 			throw new Error(value + " overflows " + this);
 	}
 
+	//TODO remove eval
 	static parse(s: string) {
-		return new UnsignedImmediate12(Number.parseInt(s.trim()));
+		return new UnsignedImmediate12(Number.parseInt(eval(s.trim())));
 	}
 }
 

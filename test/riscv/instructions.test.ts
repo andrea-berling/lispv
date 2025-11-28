@@ -120,84 +120,72 @@ describe('binary encoding and decoding', () => {
 	});
 });
 
-// describe('plaintext asm encoding and decoding', () => {
-// 	describe('r type', () => {
-// 		test('add', () => {
-// 			let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
-// 			let disassembled = i.disassemble();
-// 			let assembled = Instruction.assemble(disassembled);
-// 			expect(disassembled).toBe(assembled.disassemble());
-// 		});
-// 	});
+describe('plaintext asm encoding and decoding', () => {
+	describe('r type', () => {
+		test('add', () => {
+			let i = new AddInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+			let disassembled = i.disassemble();
+			let assembled = Instruction.assemble(disassembled);
+			expect(disassembled).toBe(assembled.disassemble());
+		});
+	});
 
-// 	describe('i type', () => {
-// 		test('jalr', () => {
-// 			let i = new JalrInstruction(Registers.get(1), Registers.get(2), new Immediate12(123))
-// 			let disassembled = i.disassemble();
-// 			let assembled = Instruction.assemble(disassembled);
-// 			expect(disassembled).toBe(assembled.disassemble());
-// 		});
-// 	});
+	describe('s type', () => {
+		test('sw', () => {
+			let i = new SwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
+			let disassembled = i.disassemble();
+			let assembled = Instruction.assemble(disassembled);
+			expect(disassembled).toBe(assembled.disassemble());
+		});
+	});
 
-// 	describe('s type', () => {
-// 		test('addi', () => {
-// 			let i = new SwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
-// 			let disassembled = i.disassemble();
-// 			let assembled = Instruction.assemble(disassembled);
-// 			expect(disassembled).toBe(assembled.disassemble());
-// 		});
-// 	});
+	describe('b type', () => {
+		test('beq', () => {
+			let i = new BeqInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
+			let disassembled = i.disassemble();
+			let assembled = Instruction.assemble(disassembled);
+			expect(disassembled).toBe(assembled.disassemble());
+		});
+	});
 
-// 	describe('b type', () => {
-// 		test('add', () => {
-// 			let i = new BeqInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
-// 			let disassembled = i.disassemble();
-// 			let assembled = Instruction.assemble(disassembled);
-// 			expect(disassembled).toBe(assembled.disassemble());
-// 		});
-// 	});
+	describe('i type', () => {
+		test('jalr', () => {
+			let i = new JalrInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
+			let disassembled = i.disassemble();
+			let assembled = Instruction.assemble(disassembled);
+			expect(disassembled).toBe(assembled.disassemble());
+		});
 
-// 	describe('i type', () => {
-// 		test('jalr', () => {
-// 			let i = new JalrInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
-// 			let disassembled = i.disassemble();
-// 			let assembled = Instruction.assemble(disassembled);
-// 			expect(disassembled).toBe(assembled.disassemble());
-// 		});
+		test('lw', () => {
+			let i = new LwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
+			let disassembled = i.disassemble();
+			let assembled = Instruction.assemble(disassembled);
+			expect(disassembled).toBe(assembled.disassemble());
+		});
 
-// 		test('lw', () => {
-// 			let i = new LwInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
-// 			let disassembled = i.disassemble();
-// 			let assembled = Instruction.assemble(disassembled);
-// 			expect(disassembled).toBe(assembled.disassemble());
-// 		});
+		test('addi', () => {
+			let i = new AddiInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
+			let disassembled = i.disassemble();
+			let assembled = Instruction.assemble(disassembled);
+			expect(disassembled).toBe(assembled.disassemble());
+		});
+	});
 
-// 		test('addi', () => {
-// 			let i = new AddiInstruction(Registers.get(1), Registers.get(2), new Immediate12(123));
-// 			let disassembled = i.disassemble();
-// 			let assembled = Instruction.assemble(disassembled);
-// 			expect(disassembled).toBe(assembled.disassemble());
-// 		});
-// 	});
+});
 
-// });
+describe("immediate parsing", () => {
 
-// describe("immediate parsing", () => {
+	test("immediate formats", () => {
+		let i1 = "jalr i1, 63(i2)"
+		let i2 = "jalr i1, 0b111111(i2)"
+		let i3 = "jalr i1, 0x3f(i2)"
+		let i4 = "jalr i1, 0o77(i2)"
 
-// 	test("immediate formats", () => {
-// 		let i1 = "jalr i1, 63(i2)"
-// 		let i2 = "jalr i1, 0d63(i2)"
-// 		let i3 = "jalr i1, 0b111111(i2)"
-// 		let i4 = "jalr i1, 0x3f(i2)"
-// 		let i5 = "jalr i1, 0o77(i2)"
+		expect(Instruction.assemble(i1).disassemble()).toBe(Instruction.assemble(i2).disassemble());
 
-// 		expect(Instruction.assemble(i1).disassemble()).toBe(Instruction.assemble(i2).disassemble());
+		expect(Instruction.assemble(i1).disassemble()).toBe(Instruction.assemble(i3).disassemble());
 
-// 		expect(Instruction.assemble(i1).disassemble()).toBe(Instruction.assemble(i3).disassemble());
+		expect(Instruction.assemble(i1).disassemble()).toBe(Instruction.assemble(i4).disassemble());
+	})
 
-// 		expect(Instruction.assemble(i1).disassemble()).toBe(Instruction.assemble(i4).disassemble());
-
-// 		expect(Instruction.assemble(i1).disassemble()).toBe(Instruction.assemble(i5).disassemble());
-// 	})
-
-// })
+})
