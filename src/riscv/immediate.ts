@@ -22,7 +22,7 @@ export abstract class Immediate {
 		throw new Error("must do static parsing from concrete Immediate subclass")
 	}
 
-	overflow() {
+	overflows() {
 		let max = (1 << (this.bits - 1)) - 1;
 		let min = - (1 << (this.bits - 1));
 
@@ -31,7 +31,7 @@ export abstract class Immediate {
 }
 
 export abstract class UnsignedImmediate extends Immediate {
-	overflow() {
+	overflows() {
 		let max = (1 << (this.bits)) - 1;
 		let min = 0;
 

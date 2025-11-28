@@ -27,7 +27,7 @@ describe('assembling', () => {
 		let instructions = `
 		addi i1, i0, 0xff
 		add i2, i1, i1 # i2 = 0x1fe
-		addi i3, i0, 0xff # i3 is the address we will store the result i2
+		addi i3, i0, 0x100 # i3 is the address we will store the result i2
 		sw i2, 0x0(i3)
 		`
 
@@ -35,30 +35,31 @@ describe('assembling', () => {
 
 		Pipeline.run();
 
-		expect(Memory.get(0xff)).toBe(0x1fe);
+		expect(Memory.get(0x100)).toBe(0x1fe);
 	});
 
-	test('loop tags', () => {
+	test('fibonacci', () => {
 
 		Pipeline.init();
 
 		let instructions = `
-		addi i10, i0, 0
-		addi i11, i0, 1
-		addi i1, i0, 10 # i1 = 10
+			addi i10, i0, 0
+			addi i11, i0, 1
+			addi i1, i0, 40 # i1 = 40
 		loop:
-		addi i1, i1, -1
-		add i12, i0, i10
-		add i10, i10, i11
-		add i11, i12, i11
-		bne i1, i0, 0xc # while i1 > 0
+			addi i1, i1, -4 # i -= 4
+			add i12, i0, i11
+			add i11, i11, i10
+			add i10, i0, i12
+			sw i10, 0x100(i1) # 0xff is the base address of the array, of size 4B and length 10
+			bne i1, i0, loop # while i1 > 0
 		`
 
 		Assembler.parse(instructions.split("\n"));
 
 		Pipeline.run();
 
-		Registers.show();
+		expect(Memory.get(0x100)).toBe(55);
 	});
 
 });

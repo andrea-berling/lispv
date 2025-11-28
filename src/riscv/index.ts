@@ -35,7 +35,7 @@ mult_loop:
     add i13, i13, i10
     addi i14, i14, -1
     bne i14, i0, mult_loop
-     add i10, i0, i13
+    add i10, i0, i13
     sw i10, 0xff(i1)
     addi i11, i11, 1
     bne i1, i0, loop

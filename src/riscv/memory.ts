@@ -12,7 +12,7 @@ export abstract class Memory {
 		Memory.accesses = 0;
 	}
 
-	static set(address: number, word: number): void {
+	static set(address: number, word: number, bytes: number = 4): void {
 		address = address | 0;
 		word = word | 0;
 		Memory.cells.set(address, word);
@@ -24,16 +24,67 @@ export abstract class Memory {
 	}
 
 	/**
-	 * 
 	 * @param address The memory address.
-	 * @returns The content of the 4 adjacent memory cells, as a WORD, represented by a `number`
+	 * @param bytes The number of bytes to get
+	 * @returns The `bytes`-long string of bits, represented by a `number`
 	 */
-	static get(address: number): number {
-		let word = Memory.cells.get(address);
-		if (!word) {
-			return 0; // memory initialized at 0
+	static get(address: number, bytes: number = 4): number {
+		address = address | 0;
+		let alignment = address & 0b11;
+
+		let words = [Memory.cells.get((address >> 2) << 2) || 0, Memory.cells.get(((address + 4) >> 2) << 2) || 0];
+
+		// if (!word) {
+		// 	return 0; // memory initialized at 0
+		// }
+
+		switch (alignment) {
+			case 0b00: {
+				switch (bytes) {
+					case 4: {
+						return words[0];
+					}
+
+					case 2: {
+						return words[0] >>> 16;
+					}
+
+					case 1: {
+						return words[0] >>> 24;
+					}
+
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`)
+				}
+			}
+
+			case 0b01: {
+				switch (bytes) {
+					case 4: {
+						return words[0] << 8 + (words[1] & 0xff) ;
+					}
+
+					case 2: {
+						return words[0] >> 16;
+					}
+
+					case 1: {
+						return words[0] >> 24;
+					}
+
+					default:
+						throw new Error(`cannot index memory by ${bytes} bytes`)
+				}
+			}
+
+			case 0b10: {
+			}
+
+			case 0b11: {
+			}
 		}
-		return word;
+
+		return 0;
 	}
 
 	static reset() {

@@ -27,7 +27,7 @@ describe('execution', () => {
 		i.execute()
 		addr += 4;
 
-		i = new AddiInstruction(Registers.get(3), Registers.get(0), new Immediate12(0xff));
+		i = new AddiInstruction(Registers.get(3), Registers.get(0), new Immediate12(0x100));
 		Memory.set(addr, i.encode());
 		i.execute()
 		addr += 4;
@@ -37,7 +37,7 @@ describe('execution', () => {
 		i.execute()
 		addr += 4;
 
-		expect(Memory.get(0xff)).toBe(0x1fe);
+		expect(Memory.get(0x100)).toBe(0x1fe);
 	});
 
 	test('automatic execution', () => {
@@ -54,7 +54,7 @@ describe('execution', () => {
 		Memory.set(addr, i.encode());
 		addr += 4;
 
-		i = new AddiInstruction(Registers.get(3), Registers.get(0), new Immediate12(0xff));
+		i = new AddiInstruction(Registers.get(3), Registers.get(0), new Immediate12(0x100));
 		Memory.set(addr, i.encode());
 		addr += 4;
 
@@ -64,6 +64,6 @@ describe('execution', () => {
 
 		Pipeline.run();
 
-		expect(Memory.get(0xff)).toBe(0x1fe);
+		expect(Memory.get(0x100)).toBe(0x1fe);
 	});
 });

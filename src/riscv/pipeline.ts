@@ -2,10 +2,10 @@ import { Instruction } from "./instruction";
 import { Memory } from "./memory";
 import { ProgramCounter } from "./program_counter";
 import { Registers, Register } from "./register";
-import { DEBUG, DEBUG_SIMULATOR } from "./flags";
+import { DEBUG, DEBUG_PIPELINE } from "./flags";
 import { hex } from "./utils";
 
-const debug = DEBUG || DEBUG_SIMULATOR;
+const debug = DEBUG || DEBUG_PIPELINE;
 
 export class Pipeline {
 
