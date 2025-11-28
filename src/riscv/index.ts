@@ -21,15 +21,15 @@ import "./instructions/utype"
 Pipeline.init();
 
 let instructions = `
-		addi i10, i0, 0
-		addi i11, i0, 1
+		addi i10, i0, 1
+		addi i11, i0, 0
 		addi i1, i0, 10 # i1 = 10
 		loop:
 		addi i1, i1, -1
 		add i12, i0, i10
 		add i10, i10, i11
 		add i11, i12, i11
-		bne i1, i0, loop # while i1 > 0
+		bne i1, i0, 0xc # while i1 > 0
 		`
 
 Assembler.parse(instructions.split("\n"));

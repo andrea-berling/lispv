@@ -117,7 +117,7 @@ export class BneInstruction extends BTypeInstruction {
 
 	execute(): void {
 		if (this.source1.value != this.source2.value)
-			ProgramCounter.address -= this.immediate.value
+			ProgramCounter.address = (this.immediate.value) - 4
 	}
 
 	static {
