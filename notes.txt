@@ -1,10 +1,11 @@
 https://chatgpt.com/c/690353a0-ac58-8333-afe7-9decd4045ed3
 
 roadmap
-	[x] controllo range degli immediati!!
-	[x] parsing delle istruzioni da stringa e load in memoria
-		[ ] label
-	[ ] accesso a byte della memoria
+	[x] immediates range check (for debugging)
+	[x] parsing strings and loading to memory
+		[x] label
+			[x] Instruction.address parameter
+	[x] accesso a byte della memoria
 	[ ] multicore
 		[ ] instances for Pipeline, Registers, ProgramCounter
 	[ ] rv32i instructions
@@ -12,11 +13,6 @@ roadmap
 		div
 		rem
 	[ ] floating point registers
-	[ ] assembler
-		labels
-		variables
-		arrays
-		calls
 	[ ] implementare linguaggio con parser
 	[ ] execution
 	[ ] parser combinator library

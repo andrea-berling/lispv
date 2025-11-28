@@ -2,7 +2,7 @@ import { DEBUG, DEBUG_ASSEMBLER } from "./flags";
 import { Instruction } from "./instruction";
 import { Labels } from "./label";
 import { Memory } from "./memory";
-import { ProgramCounter } from "./program_counter";
+import { ProgramCounter } from "./programCounter";
 import { hex } from "./utils";
 
 const debug = DEBUG || DEBUG_ASSEMBLER;

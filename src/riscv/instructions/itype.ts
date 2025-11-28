@@ -2,7 +2,7 @@ import { bin } from "../utils";
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../memory";
-import { ProgramCounter } from "../program_counter";
+import { ProgramCounter } from "../programCounter";
 import { InstructionRegistry } from "../instructionRegistry";
 import { Immediate12 } from "../immediate";
 
@@ -90,6 +90,32 @@ export class LwInstruction extends MemoryLoadInstruction {
 
 	execute(): void {
 		this.destination.value = Memory.get(this.source.value + this.immediate.value);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class LhInstruction extends MemoryLoadInstruction {
+	static tag = "lh";
+	static f3 = 0b001;
+
+	execute(): void {
+		this.destination.value = Memory.get(this.source.value + this.immediate.value, 2);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class LbInstruction extends MemoryLoadInstruction {
+	static tag = "lb";
+	static f3 = 0b000;
+
+	execute(): void {
+		this.destination.value = Memory.get(this.source.value + this.immediate.value, 1);
 	}
 
 	static {

@@ -3,7 +3,7 @@ import { Register, Registers } from "../register";
 import { Memory } from "../memory";
 import { InstructionRegistry } from "../instructionRegistry";
 import { Immediate12 } from "../immediate";
-import { ProgramCounter } from "../program_counter";
+import { ProgramCounter } from "../programCounter";
 import { Labels } from "../label";
 
 abstract class BTypeInstruction extends Instruction {
