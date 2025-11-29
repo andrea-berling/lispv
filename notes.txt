@@ -6,6 +6,7 @@ roadmap
 		[x] label
 			[x] Instruction.address parameter
 	[x] accesso a byte della memoria
+		[ ] little endianness
 	[ ] multicore
 		[ ] instances for Pipeline, Registers, ProgramCounter
 	[ ] floating point registers

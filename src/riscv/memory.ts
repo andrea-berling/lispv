@@ -1,5 +1,10 @@
 import { hex } from "./utils";
 
+export enum MemoryMode {
+	BIG_ENDIAN,
+	LITTLE_ENDIAN
+}
+
 /**
  * data memory and instruction memory are unified (Von Neumann architecture). the memory is addressed to the byte.
  */
@@ -7,6 +12,8 @@ export abstract class Memory {
 	private static cells = new Map<number, number>();
 	private static writeAccesses = 0;
 	private static readAccesses = 0;
+
+	static mode: MemoryMode = MemoryMode.BIG_ENDIAN;
 
 	static clean() {
 		Memory.cells = new Map<number, number>();
