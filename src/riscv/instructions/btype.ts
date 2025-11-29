@@ -39,11 +39,11 @@ abstract class BTypeInstruction extends Instruction {
 		shift += 7;
 
 		// imm[11] [7]
-		encoded += ((imm >> 11) & 0b1) << shift;
+		encoded += ((imm >>> 11) & 0b1) << shift;
 		shift += 1;
 
 		// imm[4:1] [11:8]
-		encoded += ((imm >> 1) & 0b1111) << shift;
+		encoded += ((imm >>> 1) & 0b1111) << shift;
 		shift += 4;
 
 		// f3 [14:12]
@@ -59,34 +59,34 @@ abstract class BTypeInstruction extends Instruction {
 		shift += 5;
 
 		// imm[10:5] [30:25]
-		encoded += ((imm >> 5) & 0b111111) << shift;
+		encoded += ((imm >>> 5) & 0b111111) << shift;
 		shift += 6;
 
 		// imm[12] [31]
-		encoded += ((imm >> 12) & 0b1) << shift;
+		encoded += ((imm >>> 12) & 0b1) << shift;
 
 		return encoded;
 	}
 
 	static factoryFromBinary(encoded: number): Instruction {
-		const rs1 = (encoded >> 15) & 0b11111;
-		const rs2 = (encoded >> 20) & 0b11111;
+		const rs1 = (encoded >>> 15) & 0b11111;
+		const rs2 = (encoded >>> 20) & 0b11111;
 
 		// Reconstruct immediate from B-type format:
 		// imm[12|10:5|4:1|11] stored as [31|30:25|11:8|7]
 		let imm = 0;
 
 		// imm[11] from bit [7]
-		imm |= ((encoded >> 7) & 0b1) << 11;
+		imm |= ((encoded >>> 7) & 0b1) << 11;
 
 		// imm[4:1] from bits [11:8]
-		imm |= ((encoded >> 8) & 0b1111) << 1;
+		imm |= ((encoded >>> 8) & 0b1111) << 1;
 
 		// imm[10:5] from bits [30:25]
-		imm |= ((encoded >> 25) & 0b111111) << 5;
+		imm |= ((encoded >>> 25) & 0b111111) << 5;
 
 		// imm[12] from bit [31]
-		imm |= ((encoded >> 31) & 0b1) << 12;
+		imm |= ((encoded >>> 31) & 0b1) << 12;
 
 		return new (this as any)(
 			Registers.get(rs1),

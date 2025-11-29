@@ -7,6 +7,9 @@ import { hex } from "./utils";
 
 const debug = DEBUG || DEBUG_ASSEMBLER;
 
+/**
+ * parse assembly and write to memory
+ */
 export class Assembler {
 	static comment: RegExp = new RegExp("#.*");
 	static label: RegExp = new RegExp("\S+:");

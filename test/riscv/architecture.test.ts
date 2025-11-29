@@ -52,8 +52,8 @@ describe('architecture', () => {
 
 		// 67 cd ef 12
 
-		expect(Memory.get(0x1, 1)).toBe(0x67);
-		expect(Memory.get(0x1, 2)).toBe(0x67cd);
+		expect(Memory.get(0x1, 1)).toBe(0x67 | 0);
+		expect(Memory.get(0x1, 2)).toBe(0x67cd | 0);
 		expect(Memory.get(0x1, 4)).toBe(0x67cdef12 | 0);
 
 	})

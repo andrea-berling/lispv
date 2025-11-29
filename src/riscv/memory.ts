@@ -5,17 +5,18 @@ import { hex } from "./utils";
  */
 export abstract class Memory {
 	private static cells = new Map<number, number>();
-	private static accesses = 0;
+	private static writeAccesses = 0;
+	private static readAccesses = 0;
 
 	static clean() {
 		Memory.cells = new Map<number, number>();
-		Memory.accesses = 0;
+		Memory.writeAccesses = 0;
 	}
 
 	/**
 	 * Set a 
 	 * @param address the memory address, indexed by the byte.
-	 * @param value the big-endian value to store.
+	 * @param value the little-endian value to store.
 	 * @param bytes = 4 by default, can be set to 1, 2, 4.
 	 */
 	static set(address: number, value: number, bytes: number = 4): void {
@@ -108,10 +109,11 @@ export abstract class Memory {
 				break;
 			}
 		}
+		Memory.writeAccesses += 1;
 	}
 
 	static getAccesses() {
-		return Memory.accesses;
+		return {write: Memory.writeAccesses, read: Memory.readAccesses}
 	}
 
 	/**
@@ -126,6 +128,7 @@ export abstract class Memory {
 			Memory.cells.get((address >> 2) << 2) || 0,
 			Memory.cells.get(((address + 4) >> 2) << 2) || 0
 		];
+		Memory.writeAccesses += 1;
 
 		switch (alignment) {
 			case 0b00: {
@@ -190,10 +193,6 @@ export abstract class Memory {
 			}
 		}
 		return 0;
-	}
-
-	static reset() {
-		Memory.cells = new Map<number, number>();
 	}
 
 	static show() {

@@ -8,11 +8,11 @@ roadmap
 	[x] accesso a byte della memoria
 	[ ] multicore
 		[ ] instances for Pipeline, Registers, ProgramCounter
+	[ ] floating point registers
 	[ ] rv32i instructions
 		mul
 		div
 		rem
-	[ ] floating point registers
 	[ ] implementare linguaggio con parser
 	[ ] execution
 	[ ] parser combinator library
