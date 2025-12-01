@@ -2,7 +2,7 @@ import { Instruction } from "./instruction";
 import { Memory } from "./memory";
 import { ProgramCounter } from "./programCounter";
 import { Registers, Register } from "./register";
-import { DEBUG, DEBUG_PIPELINE } from "./flags";
+import { DEBUG, DEBUG_PIPELINE } from "../flags";
 import { hex } from "./utils";
 
 const debug = DEBUG || DEBUG_PIPELINE;

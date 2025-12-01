@@ -7,8 +7,8 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "watch": "tsx --watch src/riscv/index.ts",
-    "watch-instance": "tsx --watch src/riscv/instance/main.ts",
+    "watch-riscv": "tsx --watch src/riscv/index.ts",
+    "watch-parser": "tsx --watch src/parser/index.ts",
 	"repl": "tsx -i",
     "test": "jest --runInBand",
     "dev": "webpack serve --open",

@@ -1,6 +1,6 @@
 import { hex } from "./utils";
 
-export type Label = {
+export interface Label {
 	name: string;
 	address: number;
 }

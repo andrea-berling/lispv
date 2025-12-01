@@ -1,4 +1,4 @@
-import { DEBUG, DEBUG_ASSEMBLER } from "./flags";
+import { DEBUG, DEBUG_ASSEMBLER } from "../flags";
 import { Instruction } from "./instruction";
 import { Labels } from "./label";
 import { Memory } from "./memory";
