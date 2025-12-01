@@ -44,9 +44,6 @@ export class Rule {
 	}
 
 	static literal(text: string): Rule {
-		if (text.length > 1)
-			return Rule.and(text, ...text.split("").map(x => new Rule(x)))
-
 		return new Rule(text);
 	}
 
