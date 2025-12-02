@@ -2,8 +2,6 @@ import { DEBUG, DEBUG_ASSEMBLER } from "../flags";
 import { Instruction } from "./instruction";
 import { Labels } from "./label";
 import { Memory } from "./memory";
-import { ProgramCounter } from "./programCounter";
-import { hex } from "./utils";
 
 const debug = DEBUG || DEBUG_ASSEMBLER;
 
@@ -17,11 +15,10 @@ export class Assembler {
 
 	/**
 	 * @param lines An array of strings representing the instructions in asm.
+	 * @param startAddr The address of memory where to start writing.
 	 */
-
-	static parse(lines: string[]) {
-
-		let addr = 0;
+	static parse(lines: string[], startAddr: number = 0) {
+		let addr = startAddr;
 		let i: Instruction;
 		let encoded: number;
 		let label: string;

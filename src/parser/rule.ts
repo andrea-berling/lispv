@@ -15,7 +15,7 @@ export class Rule {
 	definition: Rule[] = [];
 	literal: string = "";
 
-	private constructor(literal = "") {
+	constructor(literal = "") {
 		this.method = RuleMethod.Or;
 		this.literal = literal;
 	}
