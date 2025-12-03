@@ -1,25 +1,22 @@
 https://chatgpt.com/c/690353a0-ac58-8333-afe7-9decd4045ed3
 
 roadmap
-	[x] immediates range check (for debugging)
-	[x] parsing strings and loading to memory
-		[x] label
-			[x] Instruction.address parameter
-	[x] accesso a byte della memoria
-		[ ] little endianness
-	[ ] multicore
-		[ ] instances for Pipeline, Registers, ProgramCounter
-	[ ] floating point registers
-	[ ] rv32i instructions
-		mul
-		div
-		rem
-	[ ] implementare linguaggio con parser
-	[ ] execution
-	[ ] parser combinator library
-	[ ] grammar
-
-syntax
-	common lisp like syntax
-		clos
-	no operator precedence
+	[ ] riscv
+		[x] immediates range check (for debugging)
+		[x] parsing strings and loading to memory
+			[x] label
+				[x] Instruction.address parameter
+		[x] byte based access to memory
+			[ ] little endianness
+			[ ] refactoring with uint8 array
+		[ ] multicore
+			[ ] instances for Pipeline, Registers, ProgramCounter
+		[ ] floating point registers
+		[ ] rv32i instructions
+			mul
+			div
+			rem
+	[ ] lang
+		[ ] grammar
+		[ ] parser combinator library
+		[ ] execution

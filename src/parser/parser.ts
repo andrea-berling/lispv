@@ -1,4 +1,5 @@
 import { Rule, RuleMethod } from "./rule";
+import { Parsed, Ast } from "./ast"
 import { DEBUG_PARSER } from "../flags";
 
 const DEBUG = DEBUG_PARSER;
@@ -18,40 +19,6 @@ export interface ParseResult {
 	error?: ParseError;
 }
 
-export class Parsed {
-	name: string = "";
-	literal: string = "";
-	method: RuleMethod = RuleMethod.Or;
-	children: Parsed[] = [];
-
-	findFirst(name: string | Rule): Parsed | null {
-		if (name instanceof Rule)
-			name = name.name;
-		if (this.name === name) return this;
-		for (const child of this.children) {
-			const found = child.findFirst(name);
-			if (found) return found;
-		}
-		return null;
-	}
-
-	findAll(name: string | Rule): Parsed[] {
-		if (name instanceof Rule)
-			name = name.name;
-		const results: Parsed[] = [];
-		if (this.name === name) results.push(this);
-		for (const child of this.children) {
-			results.push(...child.findAll(name));
-		}
-		return results;
-	}
-
-	getText(): string {
-		if (this.literal) return this.literal;
-		return this.children.map(c => c.getText()).join("");
-	}
-}
-
 export class Parser {
 	rule: Rule;
 	private parsed: Parsed;
@@ -59,8 +26,15 @@ export class Parser {
 
 	constructor(rule: Rule) {
 		this.rule = rule;
-		this.parsed = new Parsed();
-		this.parsed.name = "main";
+		let mainName: string = "";
+
+		if (this.rule.literal)
+			mainName = this.rule.literal;
+		if (this.rule.name)
+			mainName = this.rule.name
+
+
+		this.parsed = new Parsed(mainName, 0);
 	}
 
 	parse(text: string): ParseResult {
@@ -84,13 +58,12 @@ export class Parser {
 	}
 
 	private parseRecursive(rule: Rule, text: string, parent: Parsed, depth = 0): RecursiveParseResult {
+		// non-empty rule.literal string means we're dealing with a literal
 		if (rule.literal) {
-			let child = new Parsed();
-			child.literal = rule.literal;
-			child.name = child.literal;
+			let child = new Parsed(rule.literal, depth, rule.literal);
 
 			let matched = rule.match(text)
-			if (matched.matched) {
+			if (matched.matched && parent.children) {
 				parent.children.push(child);
 				this.debug && rule.debug(depth);
 			}
@@ -100,9 +73,7 @@ export class Parser {
 		if (rule.method === RuleMethod.Or) {
 			let child = parent;
 			if (rule.name) {
-				child = new Parsed();
-				child.method = rule.method;
-				child.name = rule.name;
+				child = new Parsed(rule.name, depth);
 			}
 
 			for (const subrule of rule.definition) {
@@ -110,7 +81,7 @@ export class Parser {
 				const result = this.parseRecursive(subrule, text, child, depth + 1);
 
 				if (result.matched) {
-					if (rule.name)
+					if (rule.name && parent.children)
 						parent.children.push(child);
 					this.debug && rule.debug(depth);
 					return result;
@@ -125,9 +96,7 @@ export class Parser {
 
 			let child = parent;
 			if (rule.name) {
-				child = new Parsed();
-				child.method = rule.method;
-				child.name = rule.name;
+				child = new Parsed(rule.name, depth);
 			}
 
 			for (const subrule of rule.definition) {
@@ -140,8 +109,9 @@ export class Parser {
 				currentText = result.remaining;
 			}
 
-			if (rule.name)
+			if (rule.name && parent.children)
 				parent.children.push(child);
+
 			this.debug && rule.debug(depth);
 			return { matched: true, remaining: currentText };
 		}
@@ -151,9 +121,7 @@ export class Parser {
 
 			let child = parent;
 			if (rule.name) {
-				child = new Parsed();
-				child.method = rule.method;
-				child.name = rule.name;
+				child = new Parsed(rule.name, depth);
 			}
 
 			while (true) {
@@ -172,61 +140,20 @@ export class Parser {
 				}
 
 				if (!allMatched || tempText === currentText) {
-					// No progress made, stop
 					break;
 				}
 				currentText = tempText;
 			}
 
-			if (rule.name)
+			if (rule.name && parent.children)
 				parent.children.push(child);
+
 			this.debug && rule.debug(depth);
+			
 			return { matched: true, remaining: currentText };
 		}
 
-		if (rule.method === RuleMethod.OneOrMore) {
-			let currentText = text;
-			let matchCount = 0;
-
-			let child = parent;
-			if (rule.name) {
-				child = new Parsed();
-				child.method = rule.method;
-				child.name = rule.name;
-			}
-
-			while (true) {
-				let allMatched = true;
-				let tempText = currentText;
-
-				for (const subrule of rule.definition) {
-
-					const result = this.parseRecursive(subrule, tempText, child, depth + 1);
-
-					if (!result.matched) {
-						allMatched = false;
-						break;
-					}
-					tempText = result.remaining;
-				}
-
-				if (!allMatched || tempText === currentText) {
-					// No progress made, stop
-					break;
-				}
-				currentText = tempText;
-				matchCount++;
-			}
-
-			if (matchCount === 0) {
-				return { matched: false, remaining: text };
-			}
-
-			if (rule.name)
-				parent.children.push(child);
-			this.debug && rule.debug(depth);
-			return { matched: true, remaining: currentText };
-		}
+		// default
 
 		return { matched: false, remaining: text };
 	}

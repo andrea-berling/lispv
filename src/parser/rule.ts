@@ -2,22 +2,23 @@ import { RecursiveParseResult } from "./parser"
 
 export enum RuleMethod {
 	ZeroOrMore,
-	OneOrMore,
 	And,
 	Or,
 }
 
 export class Rule {
-	parent: Rule = this;
-	name: string = "";
+	name?: string;
+	literal?: string;
 
 	method: RuleMethod;
+	parent: Rule = this;
 	definition: Rule[] = [];
-	literal: string = "";
 
-	constructor(literal = "") {
+	constructor(literal: string | undefined = undefined) {
+		if (literal)
+			this.literal = literal;
+
 		this.method = RuleMethod.Or;
-		this.literal = literal;
 	}
 
 	define(rules: Rule[]) {
@@ -72,10 +73,7 @@ export class Rule {
 	}
 
 	static oneOrMore(name: string, rule: Rule): Rule {
-		const r = new Rule();
-		r.name = name;
-		r.method = RuleMethod.OneOrMore;
-		r.define([rule]);
-		return r;
+		// empty string is passed to name so the zeroOrMore rule is not added to the parse tree
+		return Rule.and(name, rule, Rule.zeroOrMore("", rule));
 	}
 }

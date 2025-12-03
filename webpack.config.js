@@ -3,7 +3,7 @@ import path from "path";
 const __dirname = path.resolve();
 
 export default {
-	entry: './src/parser/index.ts',
+	entry: './sketch/parser.ts',
 	mode: 'development',
 	output: {
 		filename: 'bundle.js',
