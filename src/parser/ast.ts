@@ -1,77 +1,16 @@
 import { Rule } from "./rule";
 
-export class Parsed {
-	name: string
-	level: number;
+export class Ast {
+	name: string;
 	literal?: string;
-	children?: Parsed[];
+	children?: Ast[];
 
-	constructor(name: string, level: number, literal?: string) {
+	constructor(name: string, literal?: string) {
 		this.name = name;
-		this.level = level;
 		this.literal = literal;
 		if (!this.literal)
 			this.children = [];
 	}
-
-	copyAsAst() {
-		let result = new Ast(this.name, this.level, this.literal);
-
-		function explore(original: Parsed, copy: Ast) {
-			for (let child of original.children || []) {
-				let childCopy = new Ast(child.name, child.level, child.literal);
-				if (copy.children)
-					copy.children.push(childCopy);
-				explore(child, childCopy);
-			}
-		}
-
-		explore(this, result);
-		return result;
-	}
-
-	findFirst(rule: Rule): Parsed | null {
-		if (this.name === rule.name) return this;
-		for (const child of this.children || []) {
-			const found = child.findFirst(rule);
-			if (found) return found;
-		}
-		return null;
-	}
-
-	findLast(rule: Rule): Parsed | null {
-		if (this.name === rule.name) return this;
-		if (!this.children)
-			return null;
-		for (let i = this.children.length - 1; i >= 0; i--) {
-			let child = this.children[i];
-			const found = child.findFirst(rule);
-			if (found) return found;
-		}
-		return null;
-	}
-
-	findAll(rule: Rule): Parsed[] {
-		const results: Parsed[] = [];
-		if (this.name === rule.name) results.push(this);
-		for (const child of this.children || []) {
-			results.push(...child.findAll(rule));
-		}
-		return results;
-	}
-
-	getText(): string {
-		if (this.literal)
-			return this.literal;
-		if (!this.children)
-			throw new Error("undefined literal and undefined children")
-		return this.children.map(c => c.getText()).join("");
-	}
-}
-
-export class Ast extends Parsed {
-	parent: Ast | undefined = undefined;
-	children?: Ast[];
 
 	/**
 	 * wipe rules off of the AST, together with its children.
@@ -147,8 +86,8 @@ export class Ast extends Parsed {
 				let index = parent.children.findIndex(c => c === explored);
 
 				if (index !== -1) {
-					let added = new Ast(explored.name, explored.level, explored.getText())
-					parent.children.splice(index, 1,);
+					let added = new Ast(explored.name, explored.getText())
+					parent.children.splice(index, 1, added);
 				}
 			}
 		}
@@ -160,11 +99,9 @@ export class Ast extends Parsed {
 		let result: Ast[] = [];
 
 		function explore(explored: Ast) {
-			if (!explored.children) {
+			if (explored.literal)
 				result.push(explored)
-				return;
-			}
-			for (let child of explored.children)
+			for (let child of explored.children || [])
 				explore(child);
 		}
 
@@ -173,5 +110,41 @@ export class Ast extends Parsed {
 		return result;
 	}
 
+	findFirst(rule: Rule): Ast | null {
+		if (this.name === rule.name) return this;
+		for (const child of this.children || []) {
+			const found = child.findFirst(rule);
+			if (found) return found;
+		}
+		return null;
+	}
 
+	findLast(rule: Rule): Ast | null {
+		if (this.name === rule.name) return this;
+		if (!this.children)
+			return null;
+		for (let i = this.children.length - 1; i >= 0; i--) {
+			let child = this.children[i];
+			const found = child.findFirst(rule);
+			if (found) return found;
+		}
+		return null;
+	}
+
+	findAll(rule: Rule): Ast[] {
+		const results: Ast[] = [];
+		if (this.name === rule.name) results.push(this);
+		for (const child of this.children || []) {
+			results.push(...child.findAll(rule));
+		}
+		return results;
+	}
+
+	getText(): string {
+		if (this.literal)
+			return this.literal;
+		if (!this.children)
+			throw new Error("undefined literal and undefined children")
+		return this.children.map(c => c.getText()).join("");
+	}
 }

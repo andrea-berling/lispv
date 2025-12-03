@@ -1,5 +1,5 @@
 import { Rule, RuleMethod } from "./rule";
-import { Parsed, Ast } from "./ast"
+import { Parsed } from "./parsed";
 import { DEBUG_PARSER } from "../flags";
 
 const DEBUG = DEBUG_PARSER;
@@ -32,7 +32,6 @@ export class Parser {
 			mainName = this.rule.literal;
 		if (this.rule.name)
 			mainName = this.rule.name
-
 
 		this.parsed = new Parsed(mainName, 0);
 	}
@@ -149,7 +148,7 @@ export class Parser {
 				parent.children.push(child);
 
 			this.debug && rule.debug(depth);
-			
+
 			return { matched: true, remaining: currentText };
 		}
 
