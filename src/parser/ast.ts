@@ -4,21 +4,24 @@ export class Parsed {
 	name: string
 	level: number;
 	literal?: string;
-	children: Parsed[] = [];
+	children?: Parsed[];
 
 	constructor(name: string, level: number, literal?: string) {
 		this.name = name;
 		this.level = level;
 		this.literal = literal;
+		if (!this.literal)
+			this.children = [];
 	}
 
 	copyAsAst() {
 		let result = new Ast(this.name, this.level, this.literal);
 
 		function explore(original: Parsed, copy: Ast) {
-			for (let child of original.children) {
+			for (let child of original.children || []) {
 				let childCopy = new Ast(child.name, child.level, child.literal);
-				copy.children.push(childCopy);
+				if (copy.children)
+					copy.children.push(childCopy);
 				explore(child, childCopy);
 			}
 		}
@@ -29,7 +32,7 @@ export class Parsed {
 
 	findFirst(rule: Rule): Parsed | null {
 		if (this.name === rule.name) return this;
-		for (const child of this.children) {
+		for (const child of this.children || []) {
 			const found = child.findFirst(rule);
 			if (found) return found;
 		}
@@ -38,6 +41,8 @@ export class Parsed {
 
 	findLast(rule: Rule): Parsed | null {
 		if (this.name === rule.name) return this;
+		if (!this.children)
+			return null;
 		for (let i = this.children.length - 1; i >= 0; i--) {
 			let child = this.children[i];
 			const found = child.findFirst(rule);
@@ -49,7 +54,7 @@ export class Parsed {
 	findAll(rule: Rule): Parsed[] {
 		const results: Parsed[] = [];
 		if (this.name === rule.name) results.push(this);
-		for (const child of this.children) {
+		for (const child of this.children || []) {
 			results.push(...child.findAll(rule));
 		}
 		return results;
@@ -58,19 +63,24 @@ export class Parsed {
 	getText(): string {
 		if (this.literal)
 			return this.literal;
+		if (!this.children)
+			throw new Error("undefined literal and undefined children")
 		return this.children.map(c => c.getText()).join("");
 	}
 }
 
 export class Ast extends Parsed {
-	parent: Ast | null = null;
-	children: Ast[] = [];
+	parent: Ast | undefined = undefined;
+	children?: Ast[];
 
 	/**
 	 * wipe rules off of the AST, together with its children.
 	 */
 	remove(...rules: Rule[]) {
 		function explore(explored: Ast) {
+			if (!explored.children)
+				return;
+
 			for (let i = explored.children.length - 1; i >= 0; i--) {
 				let child = explored.children[i];
 				let shouldRemove = rules.some(rule =>
@@ -92,6 +102,9 @@ export class Ast extends Parsed {
 	 */
 	simplify(...rules: Rule[]) {
 		function explore(parent: Ast | null, explored: Ast) {
+			if (!explored.children)
+				return;
+
 			for (let i = explored.children.length - 1; i >= 0; i--) {
 				let child = explored.children[i];
 				explore(explored, child);
@@ -101,7 +114,7 @@ export class Ast extends Parsed {
 				explored.name && explored.name == rule.name
 			);
 
-			if (shouldSimplify && parent) {
+			if (shouldSimplify && parent && parent.children) {
 				let index = parent.children.findIndex(c => c === explored);
 
 				if (index !== -1) {
@@ -118,6 +131,9 @@ export class Ast extends Parsed {
 	 */
 	collapse(...rules: Rule[]) {
 		function explore(parent: Ast | null, explored: Ast) {
+			if (!explored.children)
+				return;
+
 			for (let i = explored.children.length - 1; i >= 0; i--) {
 				let child = explored.children[i];
 				explore(explored, child);
@@ -127,11 +143,12 @@ export class Ast extends Parsed {
 				explored.name && explored.name == rule.name
 			);
 
-			if (shouldSimplify && parent) {
+			if (shouldSimplify && parent && parent.children) {
 				let index = parent.children.findIndex(c => c === explored);
 
 				if (index !== -1) {
-					parent.children.splice(index, 1, new Ast(explored.name, explored.level, explored.getText()));
+					let added = new Ast(explored.name, explored.level, explored.getText())
+					parent.children.splice(index, 1,);
 				}
 			}
 		}
@@ -143,8 +160,10 @@ export class Ast extends Parsed {
 		let result: Ast[] = [];
 
 		function explore(explored: Ast) {
-			if (explored.literal)
+			if (!explored.children) {
 				result.push(explored)
+				return;
+			}
 			for (let child of explored.children)
 				explore(child);
 		}
