@@ -1,9 +1,12 @@
+import { Evaluable } from "../lang/evaluable";
 import { Rule } from "./rule";
 
 export class Ast {
 	name: string;
 	literal?: string;
+	parent?: Ast;
 	children?: Ast[];
+	evaluableType?: typeof Evaluable;
 
 	constructor(name: string, literal?: string) {
 		this.name = name;
@@ -15,7 +18,7 @@ export class Ast {
 	/**
 	 * wipe rules off of the AST, together with its children.
 	 */
-	remove(...rules: Rule[]) {
+	wipe(...rules: Rule[]) {
 		function explore(explored: Ast) {
 			if (!explored.children)
 				return;
@@ -87,6 +90,7 @@ export class Ast {
 
 				if (index !== -1) {
 					let added = new Ast(explored.name, explored.getText())
+					added.evaluableType = explored.evaluableType;
 					parent.children.splice(index, 1, added);
 				}
 			}

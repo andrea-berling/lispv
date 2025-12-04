@@ -60,29 +60,35 @@ export class Parser {
 		// non-empty rule.literal string means we're dealing with a literal
 		if (rule.literal) {
 			let child = new Parsed(rule.literal, depth, rule.literal);
+			child.evaluableType = rule.evaluableType;
 
 			let matched = rule.match(text)
+
 			if (matched.matched && parent.children) {
 				parent.children.push(child);
 				this.debug && rule.debug(depth);
 			}
+
 			return matched;
 		}
 
 		if (rule.method === RuleMethod.Or) {
 			let child = parent;
+
 			if (rule.name) {
 				child = new Parsed(rule.name, depth);
+				child.evaluableType = rule.evaluableType;
 			}
 
 			for (const subrule of rule.definition) {
-
 				const result = this.parseRecursive(subrule, text, child, depth + 1);
 
 				if (result.matched) {
 					if (rule.name && parent.children)
 						parent.children.push(child);
+
 					this.debug && rule.debug(depth);
+
 					return result;
 				}
 			}
@@ -92,19 +98,20 @@ export class Parser {
 
 		if (rule.method === RuleMethod.And) {
 			let currentText = text;
-
 			let child = parent;
+
 			if (rule.name) {
 				child = new Parsed(rule.name, depth);
+				child.evaluableType = rule.evaluableType;
 			}
 
 			for (const subrule of rule.definition) {
-
 				const result = this.parseRecursive(subrule, currentText, child, depth + 1);
 
 				if (!result.matched) {
 					return { matched: false, remaining: text };
 				}
+
 				currentText = result.remaining;
 			}
 
@@ -112,15 +119,17 @@ export class Parser {
 				parent.children.push(child);
 
 			this.debug && rule.debug(depth);
+
 			return { matched: true, remaining: currentText };
 		}
 
 		if (rule.method === RuleMethod.ZeroOrMore) {
 			let currentText = text;
-
 			let child = parent;
+
 			if (rule.name) {
 				child = new Parsed(rule.name, depth);
+				child.evaluableType = rule.evaluableType;
 			}
 
 			while (true) {
@@ -128,19 +137,20 @@ export class Parser {
 				let tempText = currentText;
 
 				for (const subrule of rule.definition) {
-
 					const result = this.parseRecursive(subrule, tempText, child, depth + 1);
 
 					if (!result.matched) {
 						allMatched = false;
 						break;
 					}
+
 					tempText = result.remaining;
 				}
 
 				if (!allMatched || tempText === currentText) {
 					break;
 				}
+
 				currentText = tempText;
 			}
 

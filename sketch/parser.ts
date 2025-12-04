@@ -20,7 +20,4 @@ if (result.parsed) {
 	console.log(ast);
 
 	console.log(JSON.stringify(ast));
-
-	// ast.children = ast.flatten();
-	// usare sto coso per accorpare i digit di number
 }

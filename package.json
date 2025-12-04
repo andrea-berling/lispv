@@ -1,29 +1,29 @@
 {
-  "name": "parser",
-  "version": "1.0.0",
-  "type": "module",
-  "dependencies": {
-    "tsx": "^4.20.6"
-  },
-  "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "watch-riscv": "tsx --watch sketch/riscv.ts",
-    "watch-parser": "tsx --watch sketch/parser.ts",
-	"repl": "tsx -i",
-    "test": "jest --runInBand",
-    "dev": "webpack serve --open",
-    "pack": "webpack"
-  },
-  "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "@types/node": "^20.10.5",
-    "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.3.3",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.2"
-  },
-  "exports": "./dist"
+	"name": "parser",
+	"version": "1.0.0",
+	"type": "module",
+	"dependencies": {
+		"tsx": "^4.20.6"
+	},
+	"scripts": {
+		"preinstall": "npx only-allow pnpm",
+		"watch-riscv": "tsx --watch sketch/riscv.ts",
+		"watch-parser": "tsx --watch sketch/parser.ts",
+		"repl": "tsx -i",
+		"test": "jest --runInBand",
+		"dev": "webpack serve --open",
+		"pack": "webpack"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"@types/node": "^20.10.5",
+		"jest": "^30.2.0",
+		"ts-jest": "^29.4.5",
+		"ts-loader": "^9.5.1",
+		"typescript": "^5.3.3",
+		"webpack": "^5.89.0",
+		"webpack-cli": "^5.1.4",
+		"webpack-dev-server": "^5.0.2"
+	},
+	"exports": "./dist"
 }

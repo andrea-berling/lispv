@@ -1,3 +1,4 @@
+import { Evaluable } from "../lang/evaluable";
 import { RecursiveParseResult } from "./parser"
 
 export enum RuleMethod {
@@ -12,6 +13,8 @@ export class Rule {
 
 	method: RuleMethod;
 	parent: Rule = this;
+	evaluableType?: typeof Evaluable;
+
 	definition: Rule[] = [];
 
 	constructor(literal: string | undefined = undefined) {
@@ -44,6 +47,11 @@ export class Rule {
 		return { matched: false, remaining: text };
 	}
 
+	addEvaluable(evaluableType: typeof Evaluable) {
+		this.evaluableType = evaluableType;
+		return this;
+	}
+
 	static literal(text: string): Rule {
 		return new Rule(text);
 	}
@@ -52,6 +60,17 @@ export class Rule {
 		const r = new Rule();
 		r.name = name;
 		r.method = RuleMethod.Or;
+
+		// its important to sort or in an order such that: 
+		// ab, aab, aa, aa, a
+		// is ordered
+		rules.sort((r1, r2) => {
+			let a = r1?.name || r1?.literal || "";
+			let b = r2?.name || r2?.literal || "";
+
+			return ('' + b).localeCompare(a)
+		});
+
 		r.define(rules);
 		return r;
 	}
@@ -76,4 +95,8 @@ export class Rule {
 		// empty string is passed to name so the zeroOrMore rule is not added to the parse tree
 		return Rule.and(name, rule, Rule.zeroOrMore("", rule));
 	}
+}
+
+export class RuleRegistry {
+
 }

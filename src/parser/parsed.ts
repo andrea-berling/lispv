@@ -1,3 +1,4 @@
+import { Evaluable } from "../lang/evaluable";
 import { Ast } from "./ast";
 import { Rule } from "./rule";
 
@@ -5,7 +6,9 @@ export class Parsed {
 	name: string
 	level: number;
 	literal?: string;
+
 	children?: Parsed[];
+	evaluableType?: typeof Evaluable;
 
 	constructor(name: string, level: number, literal?: string) {
 		this.name = name;
@@ -17,13 +20,21 @@ export class Parsed {
 
 	copyAsAst() {
 		let result = new Ast(this.name, this.literal);
+		result.evaluableType = this.evaluableType;
+		result.parent = undefined; // this is the root node
 
 		function explore(original: Parsed, copy: Ast) {
 			for (let child of original.children || []) {
-				let childCopy = new Ast(child.name, child.literal);
+				let childAst = new Ast(child.name, child.literal);
+
+				childAst.parent = copy;
+				childAst.evaluableType = child.evaluableType;
+				childAst
+
 				if (copy.children)
-					copy.children.push(childCopy);
-				explore(child, childCopy);
+					copy.children.push(childAst);
+
+				explore(child, childAst);
 			}
 		}
 
