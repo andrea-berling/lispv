@@ -49,7 +49,7 @@ export const LETTER = Rule.or("letter", ..."abcdefghijklmnopqrstuvz".split("").m
 export const FUNCTION = Rule.oneOrMore("function", LETTER).addEvaluable(EFunction);
 
 // definition of the allowed operations
-export const OPERATION = Rule.or("operation").addEvaluable(EOperation);
+export const OPERATION = Rule.or("operation");
 
 // we need to be careful to have FUNCTION being the last rule that gets checked, cause it can have arbitrary characters. Also DEFUN must come before DEF because it would be ignored otherwise.
 OPERATION.define([

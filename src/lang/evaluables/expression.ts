@@ -1,9 +1,10 @@
+import { Ast } from "../../parser/ast";
 import { Evaluable } from "../evaluable";
 
 export class EExpression extends Evaluable {
-	result?: number;
+	value?: number;
 
-	evaluate() {
-
+	static evaluate(node: Ast): number {
+		return 1;
 	}
 }

@@ -29,7 +29,6 @@ export class Parsed {
 
 				childAst.parent = copy;
 				childAst.evaluableType = child.evaluableType;
-				childAst
 
 				if (copy.children)
 					copy.children.push(childAst);

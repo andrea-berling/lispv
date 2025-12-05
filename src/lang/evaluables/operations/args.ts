@@ -6,6 +6,10 @@ import { EVariable } from "../variable";
 
 export class EArgs extends EOperation {
 
+	static evaluate(node: Ast): void {
+		console.log("evaluating args")
+	}
+
 	evaluate(node: Ast): EVariable[] {
 		let name: string;
 		let expression: Ast;
@@ -36,8 +40,8 @@ export class EArgs extends EOperation {
 				throw new Error("parameters must be variables");
 			}
 
-			let parameter = new (node.evaluableType as any) as EVariable;
-			local_parameters.push(parameter.evaluate(node));
+
+			console.log(node.evaluableType)
 		}
 
 		console.log("arg with", local_parameters);
