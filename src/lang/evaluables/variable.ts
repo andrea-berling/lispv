@@ -3,14 +3,18 @@ import { GLOBAL_ENV } from "../environment";
 import { Evaluable } from "../evaluable";
 
 export class EVariable extends Evaluable {
+	name: string = "";
 
-	evaluate(node: Ast) {
+	evaluate(node: Ast): EVariable {
 		let name: string;
 		if (!node.literal)
 			throw new Error("variable name cannot be empty");
 
+
+		let result = new EVariable();
 		name = node.literal;
-		GLOBAL_ENV.variables.set(name, 0);
+
+		return result;
 	}
 
 }

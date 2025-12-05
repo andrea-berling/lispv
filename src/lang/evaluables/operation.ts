@@ -1,3 +1,4 @@
+import { Ast } from "../../parser/ast";
 import { Evaluable } from "../evaluable";
 
 export class EOperation extends Evaluable {
@@ -5,6 +6,6 @@ export class EOperation extends Evaluable {
 		super();
 	}
 
-	evaluate() {
+	evaluate(node: Ast) {
 	}
 }

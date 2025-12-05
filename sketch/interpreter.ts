@@ -4,7 +4,8 @@ import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SP
 import { GLOBAL_ENV } from "../src/lang/environment";
 
 const p = new Parser(GRAMMAR);
-const text = "(defun f (args a b c) (+ a c (- b)))";
+let text = "(defun f (args a b c) (+ a c (- b)))";
+// text = "(args a b c) (+ a c (- b)))";
 
 // p.debug = true;
 let result = p.parse(text);
@@ -16,7 +17,7 @@ if (result.parsed) {
 	ast.wipe(ONE_OR_MORE_SPACES, LBRACKET, RBRACKET, ZERO_OR_MORE_SPACES);
 
 	// remove picked grammar patterns that are not of use
-	ast.simplify(GRAMMAR);
+	ast.simplify(GRAMMAR, OPERATION);
 
 	// collapse the digits of a number in a node of name number, 
 	ast.collapse(NUMBER, VARIABLE, FUNCTION);
@@ -24,8 +25,8 @@ if (result.parsed) {
 	console.log(ast);
 
 	let traversal = new Traversal(ast);
-
+	
 	traversal.start();
-
+	
 	console.log(GLOBAL_ENV)
 }

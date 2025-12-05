@@ -14,7 +14,6 @@ export class Ast {
 		if (!this.literal)
 			this.children = [];
 	}
-
 	/**
 	 * wipe rules off of the AST, together with its children.
 	 */
@@ -22,7 +21,6 @@ export class Ast {
 		function explore(explored: Ast) {
 			if (!explored.children)
 				return;
-
 			for (let i = explored.children.length - 1; i >= 0; i--) {
 				let child = explored.children[i];
 				let shouldRemove = rules.some(rule =>
@@ -30,6 +28,8 @@ export class Ast {
 				);
 				if (shouldRemove) {
 					explored.children.splice(i, 1);
+					// Clear parent reference
+					child.parent = undefined;
 				} else {
 					explore(child);
 				}
@@ -43,28 +43,33 @@ export class Ast {
 	 * simplify unwanted rules but maintain their children.
 	 */
 	simplify(...rules: Rule[]) {
-		function explore(parent: Ast | null, explored: Ast) {
+		function explore(explored: Ast) {
 			if (!explored.children)
 				return;
 
+			// First explore children
 			for (let i = explored.children.length - 1; i >= 0; i--) {
-				let child = explored.children[i];
-				explore(explored, child);
+				explore(explored.children[i]);
 			}
 
+			// Then check if this node should be simplified
 			let shouldSimplify = rules.some(rule =>
 				explored.name && explored.name == rule.name
 			);
 
-			if (shouldSimplify && parent && parent.children) {
-				let index = parent.children.findIndex(c => c === explored);
-
+			if (shouldSimplify && explored.parent && explored.parent.children) {
+				let index = explored.parent.children.findIndex(c => c === explored);
 				if (index !== -1) {
-					parent.children.splice(index, 1, ...explored.children);
+					// Update parent references for children
+					explored.children.forEach(child => {
+						child.parent = explored.parent;
+					});
+					// Replace this node with its children
+					explored.parent.children.splice(index, 1, ...explored.children);
 				}
 			}
 		}
-		explore(null, this);
+		explore(this);
 		return this;
 	}
 
@@ -72,32 +77,34 @@ export class Ast {
 	 * collapse wrapper rules to their text. a literal Ast node is added.
 	 */
 	collapse(...rules: Rule[]) {
-		function explore(parent: Ast | null, explored: Ast) {
+		function explore(explored: Ast) {
 			if (!explored.children)
 				return;
 
+			// First explore children
 			for (let i = explored.children.length - 1; i >= 0; i--) {
-				let child = explored.children[i];
-				explore(explored, child);
+				explore(explored.children[i]);
 			}
 
-			let shouldSimplify = rules.some(rule =>
+			// Then check if this node should be collapsed
+			let shouldCollapse = rules.some(rule =>
 				explored.name && explored.name == rule.name
 			);
 
-			if (shouldSimplify && parent && parent.children) {
-				let index = parent.children.findIndex(c => c === explored);
-
+			if (shouldCollapse && explored.parent && explored.parent.children) {
+				let index = explored.parent.children.findIndex(c => c === explored);
 				if (index !== -1) {
-					let added = new Ast(explored.name, explored.getText())
+					let added = new Ast(explored.name, explored.getText());
 					added.evaluableType = explored.evaluableType;
-					parent.children.splice(index, 1, added);
+					added.parent = explored.parent;
+					explored.parent.children.splice(index, 1, added);
 				}
 			}
 		}
-		explore(null, this);
+		explore(this);
 		return this;
 	}
+
 
 	flatten(): Ast[] {
 		let result: Ast[] = [];

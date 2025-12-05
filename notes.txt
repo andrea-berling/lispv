@@ -18,5 +18,13 @@ roadmap
 			rem
 	[ ] lang
 		[ ] grammar
-		[ ] parser combinator library
+		[x] parser combinator library
+			[x] literals
+			[x] and
+			[x] or
+			[x] one or more
+			[x] zero or more
 		[ ] execution
+			
+		optimizations
+			[ ] tail recursion
