@@ -1,7 +1,7 @@
-import { Rule, RuleMethod } from "../src/parser/rule";
 import { Parser } from "../src/parser/parser";
 import { Traversal } from "../src/lang/traversal"
 import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE } from "../src/lang/grammar"
+import { GLOBAL_ENV } from "../src/lang/environment";
 
 const p = new Parser(GRAMMAR);
 const text = "(defun f (args a b c) (+ a c (- b)))";
@@ -26,4 +26,6 @@ if (result.parsed) {
 	let traversal = new Traversal(ast);
 
 	traversal.start();
+
+	console.log(GLOBAL_ENV)
 }

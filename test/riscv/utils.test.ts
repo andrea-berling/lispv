@@ -14,4 +14,5 @@ describe("utils", () => {
 		let n = 0x12abcdef;
 		expect(n).toBe(flipEndianness(flipEndianness(n)));
 	});
+
 })

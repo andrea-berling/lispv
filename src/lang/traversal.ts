@@ -21,7 +21,6 @@ export class Traversal {
 		}
 		explore(this.tree);
 
-
 	}
 
 }

@@ -28,5 +28,8 @@ export default {
 		compress: true,
 		port: 9000,
 		hot: true,
+		client: {
+			logging: 'none',
+		},
 	}
 };

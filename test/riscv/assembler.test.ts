@@ -1,14 +1,6 @@
-import { bin, hex } from "../../src/riscv/utils";
-import { Instruction } from "../../src/riscv/instruction";
-import { AddInstruction, SubInstruction } from "../../src/riscv/instructions/rtype"
-import { JalrInstruction, LwInstruction, AddiInstruction } from "../../src/riscv/instructions/itype"
-import { Registers } from "../../src/riscv/register";
 import { Memory } from "../../src/riscv/memory";
-import { SwInstruction } from "../../src/riscv/instructions/stype";
 import { Pipeline } from "../../src/riscv//pipeline";
-import { Immediate12 } from "../../src/riscv/immediate";
 import { Assembler } from "../../src/riscv/assembler"
-import { InstructionRegistry } from "../../src/riscv/instructionRegistry";
 
 // side effect imports
 import "../../src/riscv/instructions/btype"

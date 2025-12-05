@@ -7,7 +7,7 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
 			"args": [
-				"--runInBand", // evita parallelismo e fa funzionare i breakpoint
+				"--runInBand",
 				"--watchAll=false"
 			],
 			"cwd": "${workspaceFolder}",
@@ -25,7 +25,7 @@
 			"request": "launch",
 			"runtimeExecutable": "tsx",
 			"runtimeArgs": [
-				"${workspaceFolder}/src/riscv/index.ts"
+				"${workspaceFolder}/sketch/interpreter.ts"
 			],
 			"cwd": "${workspaceFolder}",
 			"console": "integratedTerminal",
