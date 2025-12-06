@@ -6,7 +6,8 @@ import { GLOBAL_ENV } from "../src/lang/environment";
 const p = new Parser(GRAMMAR);
 let text = "(defun f (args a b c) (+ a c (- b)))";
 // text = "(+ 1 (- 1 2 3) 3)"
-// text = "(())"
+text = "(def a 88)"
+// text = "(a)"
 
 // p.debug = true;
 let result = p.parse(text);

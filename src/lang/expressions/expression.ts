@@ -8,7 +8,6 @@ import { EVariable } from "./variable";
 
 export class EExpression implements Evaluable {
 
-	value?: number;
 	context: any;
 
 	static parameters(node: Ast): { first_child: Ast, first_child_type: typeof Evaluable, other_childs: Ast[] } {
@@ -30,30 +29,31 @@ export class EExpression implements Evaluable {
 
 	static evaluate(node: Ast): number {
 
-		let { first_child, first_child_type } = EExpression.parameters(node);
-
-		switch (first_child_type) {
+		switch (node.evaluableType) {
 
 			case ENumber: {
-				return ENumber.evaluate(first_child);
+				return ENumber.evaluate(node);
 			}
 
 			case EVariable: {
-				return EVariable.evaluate(first_child);
+				return EVariable.evaluate(node);
 			}
+		}
 
-			case EExpression: {
-				return EExpression.evaluate(first_child);
-			}
+		let { first_child, first_child_type } = EExpression.parameters(node);
+
+		switch (first_child_type) {
 
 			case EApplication: {
 				return EApplication.evaluate(first_child);
 			}
 
+			case EExpression: {
+				return EExpression.evaluate(first_child);
+			}
 		}
 
-
-		return 1;
+		return 0;
 	}
 
 }
