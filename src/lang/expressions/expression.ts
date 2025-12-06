@@ -53,7 +53,8 @@ export class EExpression implements Evaluable {
 			}
 		}
 
-		return 0;
+		throw new Error("impossible");
+
 	}
 
 }
