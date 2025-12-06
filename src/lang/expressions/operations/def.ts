@@ -1,4 +1,5 @@
 import { Ast } from "../../../parser/ast";
+import { Environment, GLOBAL_ENV } from "../../environment";
 import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
@@ -12,7 +13,12 @@ export class EDef extends EOperation {
 
 		let name = other_childs[0].literal;
 
+		if (!name)
+			throw new Error("variables must have a name");
+
 		let value = EExpression.evaluate(other_childs[1]);
+
+		GLOBAL_ENV.variables.set(name, value);
 
 		return value;
 	}

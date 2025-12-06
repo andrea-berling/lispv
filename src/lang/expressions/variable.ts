@@ -11,7 +11,13 @@ export class EVariable extends Evaluable {
 		if (!node.literal)
 			throw new Error("variable name cannot be empty");
 
-		let value = 100;
+		name = node.literal;
+
+		let value = GLOBAL_ENV.variables.get(name);
+
+		if (!value)
+			throw new Error(`variable ${name} undefined`);
+
 		return value;
 	}
 

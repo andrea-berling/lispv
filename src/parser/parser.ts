@@ -42,7 +42,7 @@ export class Parser {
 		debug && console.log("parsing", text);
 
 		const recursiveResult = this.parseRecursive(this.rule, text, this.parsed);
-		const fullyParsed = recursiveResult.matched && recursiveResult.remaining.trim() === "";
+		const fullyParsed = recursiveResult.matched && recursiveResult.remaining === "";
 
 		let result: ParseResult = {
 			matched: fullyParsed,

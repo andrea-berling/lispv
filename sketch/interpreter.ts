@@ -3,33 +3,50 @@ import { Traversal } from "../src/lang/traversal"
 import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
 import { GLOBAL_ENV } from "../src/lang/environment";
 
-const p = new Parser(GRAMMAR);
-let text = "(defun f (args a b c) (+ a c (- b)))";
-// text = "(+ 1 (- 1 2 3) 3)"
-text = "(def a 88)"
-// text = "(a)"
 
-// p.debug = true;
-let result = p.parse(text);
+// (defun f (args a b c) (+ a c (- b)))
 
-if (result.parsed) {
-	let ast = result.parsed.copyAsAst();
+let source = `
+(def a 1)
+(def a (+ a a))
+(def a (+ a a))
+(def a (+ a a))
+(def a (+ a a))
+`
 
-	// wipe rules that were added for parsing purposes
-	ast.wipe(ONE_OR_MORE_SPACES, LBRACKET, RBRACKET, ZERO_OR_MORE_SPACES)
+let lines = source.split("\n");
+console.log(lines)
 
-	// remove picked grammar patterns that are not of use
-	ast.simplify(GRAMMAR, OPERATION, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION);
+for (let line of lines) {
 
-	// collapse the digits of a number in a node of name number, 
-	ast.collapse(NUMBER, VARIABLE, FUNCTION);
+	const p = new Parser(GRAMMAR);
 
-	console.log(ast);
+	let result = p.parse(line);
 
-	let traversal = new Traversal(ast);
+	if (result.parsed) {
+		console.log(result.parsed);
 
-	let traversal_result = traversal.start();
-	console.log(traversal_result);
+		let ast = result.parsed.copyAsAst();
 
-	console.log(GLOBAL_ENV)
+		// wipe rules that were added for parsing purposes
+		ast.wipe(ONE_OR_MORE_SPACES, LBRACKET, RBRACKET, ZERO_OR_MORE_SPACES)
+
+		// remove picked grammar patterns that are not of use
+		ast.simplify(GRAMMAR, OPERATION, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION);
+
+		// collapse the digits of a number in a node of name number, 
+		ast.collapse(NUMBER, VARIABLE, FUNCTION);
+
+		console.log(ast);
+
+		let traversal = new Traversal(ast);
+
+		let traversal_result = traversal.start();
+		console.log(traversal_result);
+
+		console.log(GLOBAL_ENV)
+
+
+		result.parsed = undefined;
+	}
 }
