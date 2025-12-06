@@ -17,10 +17,9 @@ export class Traversal {
 			base_expression.parent = this.tree;
 			this.tree.children = [base_expression];
 		}
-		console.log(this.tree);
 	}
 
-	start() {
+	start(): number {
 		function explore(node: Ast): number | undefined {
 			if (node.evaluableType === EExpression) {
 				return (node.evaluableType as typeof EExpression).evaluate(node);
@@ -39,7 +38,7 @@ export class Traversal {
 		if (result === undefined)
 			throw new Error("must have at least one expression");
 
-		console.log(result);
+		return result;
 	}
 
 }
