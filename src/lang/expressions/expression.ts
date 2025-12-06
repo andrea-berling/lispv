@@ -1,5 +1,6 @@
 import { Ast } from "../../parser/ast";
 import { Evaluable } from "../evaluable";
+import { EXPRESSION, NUMBER, VARIABLE } from "../grammar";
 import { ENumber } from "./number";
 import { EVariable } from "./variable";
 
@@ -21,15 +22,21 @@ export class EExpression implements Evaluable {
 		let first_child_type = first_child.evaluableType;
 
 		if (!first_child_type)
-			throw new Error("impossible")
+			throw new Error("impossible");
 
-		if (first_child_type === ENumber) {
+
+		if (first_child_type == ENumber) {
 			return ENumber.evaluate(first_child);
 		}
 
-		if (first_child_type === EVariable) {
+		if (first_child_type == EVariable) {
 			return EVariable.evaluate(first_child);
 		}
+
+		if (first_child_type == EExpression) {
+			return EExpression.evaluate(first_child);
+		}
+
 		return 1;
 	}
 

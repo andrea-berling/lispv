@@ -11,8 +11,7 @@ export class EVariable extends Evaluable {
 		if (!node.literal)
 			throw new Error("variable name cannot be empty");
 
-		let value = 10;
-
+		let value = 100;
 		return value;
 	}
 
