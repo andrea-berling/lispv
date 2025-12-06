@@ -18,6 +18,7 @@ roadmap
 			rem
 	[ ] lang
 		[ ] grammar
+			[ ] syntax errors from Evaluable definition
 		[x] parser combinator library
 			[x] literals
 			[x] and

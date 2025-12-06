@@ -2,20 +2,17 @@ import { Parser } from "../src/parser/parser";
 import { Traversal } from "../src/lang/traversal"
 import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
 import { GLOBAL_ENV } from "../src/lang/environment";
+import { DEBUG, DEBUG_INTERPRETER } from "../src/flags";
 
+let debug = DEBUG || DEBUG_INTERPRETER;
 
 // (defun f (args a b c) (+ a c (- b)))
 
 let source = `
-(def a 1)
-(def a (+ a a))
-(def a (+ a a))
-(def a (+ a a))
-(def a (+ a a))
+(defun f (args a b) (+ a b))
 `
 
 let lines = source.split("\n");
-console.log(lines)
 
 for (let line of lines) {
 
@@ -24,8 +21,6 @@ for (let line of lines) {
 	let result = p.parse(line);
 
 	if (result.parsed) {
-		console.log(result.parsed);
-
 		let ast = result.parsed.copyAsAst();
 
 		// wipe rules that were added for parsing purposes
@@ -37,16 +32,12 @@ for (let line of lines) {
 		// collapse the digits of a number in a node of name number, 
 		ast.collapse(NUMBER, VARIABLE, FUNCTION);
 
-		console.log(ast);
+		debug && console.log(ast);
 
 		let traversal = new Traversal(ast);
 
 		let traversal_result = traversal.start();
+
 		console.log(traversal_result);
-
-		console.log(GLOBAL_ENV)
-
-
-		result.parsed = undefined;
 	}
 }
