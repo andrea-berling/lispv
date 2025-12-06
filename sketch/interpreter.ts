@@ -1,6 +1,6 @@
 import { Parser } from "../src/parser/parser";
 import { Traversal } from "../src/lang/traversal"
-import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION, APPLICATION } from "../src/lang/grammar"
+import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
 import { GLOBAL_ENV } from "../src/lang/environment";
 
 const p = new Parser(GRAMMAR);

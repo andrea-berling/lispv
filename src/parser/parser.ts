@@ -1,8 +1,8 @@
 import { Rule, RuleMethod } from "./rule";
 import { Parsed } from "./parsed";
-import { DEBUG_PARSER } from "../flags";
+import { DEBUG, DEBUG_PARSER } from "../flags";
 
-const DEBUG = DEBUG_PARSER;
+const debug = DEBUG_PARSER || DEBUG;
 
 export interface ParseError {
 	position: number;
@@ -22,7 +22,7 @@ export interface ParseResult {
 export class Parser {
 	rule: Rule;
 	private parsed: Parsed;
-	debug: boolean = DEBUG;
+	debug: boolean = debug;
 
 	constructor(rule: Rule) {
 		this.rule = rule;
@@ -38,6 +38,9 @@ export class Parser {
 
 	parse(text: string): ParseResult {
 		let inputLength = text.length;
+
+		debug && console.log("parsing", text);
+
 		const recursiveResult = this.parseRecursive(this.rule, text, this.parsed);
 		const fullyParsed = recursiveResult.matched && recursiveResult.remaining.trim() === "";
 
