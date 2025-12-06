@@ -1,16 +1,17 @@
-import { ENumber } from "./evaluables/number";
-import { EOperation } from "./evaluables/operation";
-import { EPlus } from "./evaluables/operations/plus";
-import { EExpression } from "./evaluables/expression";
-
 import { Rule, RuleMethod } from "../parser/rule";
-import { EVariable } from "./evaluables/variable";
-import { EMinus } from "./evaluables/operations/minus";
-import { EIf } from "./evaluables/operations/if";
-import { EDef } from "./evaluables/operations/def";
-import { EDefun } from "./evaluables/operations/defun";
-import { EFunction } from "./evaluables/operations/function";
-import { EArgs } from "./evaluables/operations/args";
+
+import { EExpression } from "./expressions/expression";
+import { ENumber } from "./expressions/number";
+import { EVariable } from "./expressions/variable";
+import { EApplication } from "./expressions/application";
+
+import { EPlus } from "./expressions/operations/plus";
+import { EMinus } from "./expressions/operations/minus";
+import { EIf } from "./expressions/operations/if";
+import { EDef } from "./expressions/operations/def";
+import { EDefun } from "./expressions/operations/defun";
+import { EFunction } from "./expressions/operations/function";
+import { EArgs } from "./expressions/operations/args";
 
 // we define here a CFG (Context Free Grammar) for our language. it is a Chomsky-level-2 language.
 
@@ -70,25 +71,36 @@ export const EXPRESSION = new Rule().addEvaluable(EExpression);
 EXPRESSION.name = "expression";
 
 // expressions can themselves be numbers or variables
-export const NUMBER_OR_CUSTOM_OR_EXPRESSION = Rule.or("", NUMBER, VARIABLE, EXPRESSION)
+export const NUMBER_OR_VARIABLE_OR_EXPRESSION = Rule.or("", NUMBER, VARIABLE, EXPRESSION)
 
 // expressions can be surrounded by optional spaces
-export const EXPRESSION_AND_OPTIONAL_SPACES = Rule.and("", ZERO_OR_MORE_SPACES, NUMBER_OR_CUSTOM_OR_EXPRESSION, ZERO_OR_MORE_SPACES);
+export const EXPRESSION_AND_OPTIONAL_SPACES = Rule.and("", ZERO_OR_MORE_SPACES, NUMBER_OR_VARIABLE_OR_EXPRESSION, ZERO_OR_MORE_SPACES);
 
 export const ZERO_OR_MORE_EXPRESSIONS = Rule.zeroOrMore("", EXPRESSION_AND_OPTIONAL_SPACES);
+
+export const APPLICATION = Rule.and("application",
+	OPERATION,
+	ONE_OR_MORE_SPACES,
+	ZERO_OR_MORE_EXPRESSIONS,
+).addEvaluable(EApplication);
+
+export const APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION = Rule.or("application_or_variable_or_number");
+APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION.define([
+	APPLICATION,
+	VARIABLE,
+	NUMBER,
+	EXPRESSION
+])
 
 // ultimately, the expression is defined as a parenthesized application of one operation to zero or more expressions
 EXPRESSION.method = RuleMethod.And;
 EXPRESSION.define([
 	LBRACKET,
 	ZERO_OR_MORE_SPACES,
-	OPERATION,
-	ONE_OR_MORE_SPACES,
-	ZERO_OR_MORE_EXPRESSIONS,
+	APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION,
 	RBRACKET,
 ]);
 
 // the grammar consists of just an expression. it is in the time of the traversal of the ast that we decide if the operations have been applied with care
-export const GRAMMAR = new Rule();
-GRAMMAR.name = "grammar";
-GRAMMAR.define([EXPRESSION]);
+export const GRAMMAR = Rule.or("grammar");
+GRAMMAR.define([NUMBER_OR_VARIABLE_OR_EXPRESSION]);

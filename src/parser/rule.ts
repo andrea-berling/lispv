@@ -31,8 +31,14 @@ export class Rule {
 	}
 
 	debug(depth: number) {
-		if (this.name != "" || this.literal != "")
-			console.log("  ".repeat(depth) + ((this.name) ? this.name : this.literal))
+		if (this.name) {
+			console.log("  ".repeat(depth) + (this.name));
+			return;
+		}
+		if (this.literal) {
+			console.log("  ".repeat(depth) + (this.literal));
+			return;
+		}
 	}
 
 	match(text: string): RecursiveParseResult {

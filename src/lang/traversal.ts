@@ -1,12 +1,23 @@
 import { Ast } from "../parser/ast";
-import { Evaluable } from "./evaluable";
-import { EExpression } from "./evaluables/expression";
+import { EExpression } from "./expressions/expression";
 
 export class Traversal {
 	tree: Ast;
 
 	constructor(tree: Ast) {
 		this.tree = tree;
+
+		if (!this.tree.children)
+			throw new Error("impossible");
+
+		if (this.tree.children.at(0)?.name != "expression") {
+			let base_expression = new Ast("expression");
+			base_expression.evaluableType = EExpression;
+			base_expression.children = this.tree.children;
+			base_expression.parent = this.tree;
+			this.tree.children = [base_expression];
+		}
+		console.log(this.tree);
 	}
 
 	start() {

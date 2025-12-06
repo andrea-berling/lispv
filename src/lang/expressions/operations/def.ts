@@ -3,8 +3,8 @@ import { EOperation } from "../operation";
 
 export class EDef extends EOperation {
 
-	static evaluate(node: Ast): void {
-		console.log("evaluating def")
+	static evaluate(node: Ast): number {
+		return 10;
 	}
 
 }

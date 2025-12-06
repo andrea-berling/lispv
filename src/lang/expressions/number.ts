@@ -1,10 +1,11 @@
 import { Ast } from "../../parser/ast";
 import { Evaluable } from "../evaluable";
 
-export class EExpression extends Evaluable {
-	value?: number;
+export class ENumber extends Evaluable {
 
 	static evaluate(node: Ast): number {
-		return 1;
+		let value = Number.parseInt(node.literal || "");
+		return value;
 	}
+
 }
