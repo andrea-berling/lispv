@@ -12,6 +12,7 @@ import { EDef } from "./expressions/operations/def";
 import { EDefun } from "./expressions/operations/defun";
 import { EFunction } from "./expressions/operations/function";
 import { EArgs } from "./expressions/operations/args";
+import { EEq, EGreater, ELess, ENot } from "./expressions/operations/predicates";
 
 // we define here a CFG (Context Free Grammar) for our language. it is a Chomsky-level-2 language.
 
@@ -44,6 +45,15 @@ export const DEF = Rule.literal("def").addEvaluable(EDef);
 
 export const ARGS = Rule.literal("args").addEvaluable(EArgs);
 
+// predicates
+export const LESS = Rule.literal("less").addEvaluable(ELess);
+
+export const GREATER = Rule.literal("greater").addEvaluable(EGreater);
+
+export const EQ = Rule.literal("eq").addEvaluable(EEq);
+
+export const NOT = Rule.literal("not").addEvaluable(ENot);
+
 // custom one-words
 export const LETTER = Rule.or("letter", ..."abcdefghijklmnopqrstuvz".split("").map((x) => Rule.literal(x)));
 
@@ -54,12 +64,16 @@ export const OPERATION = Rule.or("operation");
 
 // we need to be careful to have FUNCTION being the last rule that gets checked, cause it can have arbitrary characters. Also DEFUN must come before DEF because it would be ignored otherwise.
 OPERATION.define([
-	PLUS,
-	MINUS,
-	IF,
+	ARGS,
 	DEFUN,
 	DEF,
-	ARGS,
+	EQ,
+	GREATER,
+	IF,
+	LESS,
+	MINUS,
+	NOT,
+	PLUS,
 	FUNCTION
 ]);
 

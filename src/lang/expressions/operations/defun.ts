@@ -20,12 +20,12 @@ export class EDefun extends EOperation {
 		let func: FunctionDefinition;
 
 		if (other_childs?.length != this.syntax.length - 1)
-			throw new Error("defun <name> (args <variable1 ... variablen>) (<expression>)");
+			throw new Error("syntax: defun <name> (args <variable1 ... variablen>) (<expression>)");
 
 		let function_name_node = other_childs.at(0);
 
 		if (function_name_node?.evaluableType !== EVariable)
-			throw new Error("defun <name> (args <variable1 ... variablen>) (<expression>)");
+			throw new Error("syntax: defun <name> (args <variable1 ... variablen>) (<expression>)");
 
 		let function_name = function_name_node.literal;
 

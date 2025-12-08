@@ -4,7 +4,6 @@ import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
 export class EFunction extends EOperation {
-
 	static evaluate(node: Ast): number {
 		let { first_child, other_childs } = EExpression.parameters(node);
 
@@ -19,8 +18,6 @@ export class EFunction extends EOperation {
 			throw new Error(`function ${name} undefined`);
 
 		let args_nodes = other_childs;
-
-		console.log(func);
 
 		// here we match parameters with arguments. excess arguments are ignored
 		for (let i = 0; i < args_nodes.length; i++) {

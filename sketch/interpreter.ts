@@ -6,11 +6,8 @@ import { DEBUG, DEBUG_INTERPRETER } from "../src/flags";
 
 let debug = DEBUG || DEBUG_INTERPRETER;
 
-// (defun f (args a b c) (+ a c (- b)))
-
 let source = `
-(defun f (args a b c) (+ a b c))
-(f 1 2 3)
+(if (eq 1 1) 20 30)
 `
 
 let lines = source.split("\n");
