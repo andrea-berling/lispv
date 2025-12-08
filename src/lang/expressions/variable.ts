@@ -3,9 +3,6 @@ import { GLOBAL_ENV } from "../environment";
 import { Evaluable } from "../evaluable";
 
 export class EVariable extends Evaluable {
-	name: string = "";
-	value: number = 100;
-
 	static evaluate(node: Ast): number {
 		let name: string;
 		if (!node.literal)
@@ -20,5 +17,4 @@ export class EVariable extends Evaluable {
 
 		return value;
 	}
-
 }

@@ -1,19 +1,16 @@
 import { Parser } from "../src/parser/parser";
 import { Traversal } from "../src/lang/traversal"
-import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
+import { NUMBER, GRAMMAR, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
 import { DEBUG, DEBUG_INTERPRETER } from "../src/flags";
 import { GLOBAL_ENV } from "../src/lang/environment";
 
 let debug = DEBUG || DEBUG_INTERPRETER;
 
+// (defun loop (args a b c) (if (greater c 0) (a b (loop a b (+ c (- 1)))) (1) ))
 let source = `
-(defun f (args a) (if (eq a 1) 1 (+ a (f (+ a (- 1))))))
-(f 1)
-(f 2)
-(f 3)
-(f 4)
-(f 5)
-(f 6)
+(defun loop (args a b c) (if (greater c 0) (a b (loop a b (+ c (- 1)))) (1) ))
+(defun plus (args a b c) (+ a b c))
+(loop plus 10 3)
 `
 
 let lines = source.split("\n");
@@ -40,9 +37,9 @@ for (let line of lines) {
 
 		let traversal = new Traversal(ast);
 
-		let traversal_result = traversal.start();
-
-		console.log(traversal_result);
+		// let traversal_result = traversal.start();
+		//
+		// console.log(traversal_result);
 	}
 }
 
