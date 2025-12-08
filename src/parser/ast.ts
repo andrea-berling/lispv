@@ -1,3 +1,4 @@
+import { Environment } from "../lang/environment";
 import { Evaluable } from "../lang/evaluable";
 import { Rule } from "./rule";
 
@@ -6,6 +7,7 @@ export class Ast {
 	literal?: string;
 	parent?: Ast;
 	children?: Ast[];
+	environment?: Environment;
 	evaluableType?: typeof Evaluable;
 
 	constructor(name: string, literal?: string) {

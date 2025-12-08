@@ -1,8 +1,10 @@
 import { Ast } from "../../../parser/ast";
-import { GLOBAL_ENV } from "../../environment";
+import { EExpression } from "../expression";
 import { EOperation } from "../operation";
-import { EVariable } from "../variable";
 
+/**
+ * this should really be called `params`, but in lisp tradition we will stick with `args`.
+ */
 export class EArgs extends EOperation {
 
 }

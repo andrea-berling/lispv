@@ -9,7 +9,8 @@ let debug = DEBUG || DEBUG_INTERPRETER;
 // (defun f (args a b c) (+ a c (- b)))
 
 let source = `
-(defun f (args a b) (+ a b))
+(defun f (args a b c) (+ a b c))
+(f 1 2 3)
 `
 
 let lines = source.split("\n");
