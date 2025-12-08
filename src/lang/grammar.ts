@@ -55,7 +55,7 @@ export const EQ = Rule.literal("eq").addEvaluable(EEq);
 export const NOT = Rule.literal("not").addEvaluable(ENot);
 
 // custom one-words
-export const LETTER = Rule.or("letter", ..."abcdefghijklmnopqrstuvz".split("").map((x) => Rule.literal(x)));
+export const LETTER = Rule.or("letter", ..."abcdefghijklmnopqrstuvwxyz".split("").map((x) => Rule.literal(x)));
 
 export const FUNCTION = Rule.oneOrMore("function", LETTER).addEvaluable(EFunction);
 

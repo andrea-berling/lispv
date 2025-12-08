@@ -1,5 +1,5 @@
 import { Ast } from "../../../parser/ast";
-import { GLOBAL_ENV } from "../../environment";
+import { FunctionDefinition, GLOBAL_ENV } from "../../environment";
 import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
@@ -27,11 +27,19 @@ export class EFunction extends EOperation {
 			if (!evt)
 				throw new Error(`cannot evaluate ${args_nodes[i].name}`)
 
-			let value = evt.evaluate(args_nodes[i]);
+			if (!GLOBAL_ENV.functions.get(args_nodes[i].literal || "")) {
+				let value = evt.evaluate(args_nodes[i]);
 
-			// in the current scope we are assigning variables to their values
+				// in the current scope we are assigning variables to their values
 
-			GLOBAL_ENV.variables.set(name, value);
+				GLOBAL_ENV.variables.set(name, value);
+			} else {
+				let new_name = args_nodes[i].literal || "";
+				let updated_func = (GLOBAL_ENV.functions.get(new_name) as FunctionDefinition);
+				updated_func.name = func.args[i];
+				GLOBAL_ENV.functions.set(func.args[i], updated_func);
+			}
+
 		}
 
 		return EExpression.evaluate(func.definition);

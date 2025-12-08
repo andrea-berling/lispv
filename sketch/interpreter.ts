@@ -7,9 +7,10 @@ import { GLOBAL_ENV } from "../src/lang/environment";
 let debug = DEBUG || DEBUG_INTERPRETER;
 
 // (defun loop (args a b c) (if (greater c 0) (a b (loop a b (+ c (- 1)))) (1) ))
+
 let source = `
-(defun loop (args a b c) (if (greater c 0) (a b (loop a b (+ c (- 1)))) (1) ))
-(defun plus (args a b c) (+ a b c))
+(defun loop (args a b c) (if (greater c 5) (a b c) (b) ))
+(defun plus (args a b) (+ a b))
 (loop plus 10 3)
 `
 
@@ -37,9 +38,9 @@ for (let line of lines) {
 
 		let traversal = new Traversal(ast);
 
-		// let traversal_result = traversal.start();
-		//
-		// console.log(traversal_result);
+		let traversal_result = traversal.start();
+
+		console.log(traversal_result);
 	}
 }
 
