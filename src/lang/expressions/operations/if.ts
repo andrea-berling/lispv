@@ -10,10 +10,23 @@ export class EIf extends EOperation {
 			throw new Error("syntax: if (<condition>) <expression if true> <expression if false>")
 
 		let condition_node = other_childs.at(0);
-		
+
 		if (!condition_node)
 			throw new Error("impossible")
 
-		return 100;
+		let condition = EExpression.evaluate(condition_node);
+
+		let result_node: Ast | undefined;
+
+		if (condition) {
+			result_node = other_childs.at(1);
+		} else {
+			result_node = other_childs.at(2);
+		}
+
+		if (!result_node)
+			throw new Error("impossible")
+
+		return EExpression.evaluate(result_node);
 	}
 }

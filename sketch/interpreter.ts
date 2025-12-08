@@ -1,13 +1,19 @@
 import { Parser } from "../src/parser/parser";
 import { Traversal } from "../src/lang/traversal"
 import { NUMBER, GRAMMAR, EXPRESSION, SPACE, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
-import { GLOBAL_ENV } from "../src/lang/environment";
 import { DEBUG, DEBUG_INTERPRETER } from "../src/flags";
+import { GLOBAL_ENV } from "../src/lang/environment";
 
 let debug = DEBUG || DEBUG_INTERPRETER;
 
 let source = `
-(if (eq 1 1) 20 30)
+(defun f (args a) (if (eq a 1) 1 (+ a (f (+ a (- 1))))))
+(f 1)
+(f 2)
+(f 3)
+(f 4)
+(f 5)
+(f 6)
 `
 
 let lines = source.split("\n");
@@ -39,3 +45,5 @@ for (let line of lines) {
 		console.log(traversal_result);
 	}
 }
+
+console.log(GLOBAL_ENV)
