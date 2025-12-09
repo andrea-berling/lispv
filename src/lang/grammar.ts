@@ -87,8 +87,9 @@ OPERATION.define([
 export const VARIABLE = Rule.oneOrMore("variable", LETTER).addEvaluable(EVariable);
 
 // expressions are of different kinds, and recursively defined
-export const EXPRESSION = new Rule().addEvaluable(EExpression);
+export const EXPRESSION = new Rule();
 EXPRESSION.name = "expression";
+EXPRESSION.addEvaluable(EExpression);
 
 // expressions can themselves be numbers or variables
 export const NUMBER_OR_VARIABLE_OR_EXPRESSION = Rule.or("", NUMBER, VARIABLE, EXPRESSION)

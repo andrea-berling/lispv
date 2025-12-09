@@ -4,10 +4,7 @@ import { EApplication } from "./application";
 import { ENumber } from "./number";
 import { EVariable } from "./variable";
 
-export class EExpression implements Evaluable {
-
-	context: any;
-
+export class EExpression extends Evaluable {
 	static parameters(node: Ast): { first_child: Ast, first_child_type: typeof Evaluable, other_childs: Ast[] } {
 		if (!node.children)
 			throw new Error("no children");

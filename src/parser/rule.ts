@@ -55,6 +55,7 @@ export class Rule {
 
 	addEvaluable(evaluableType: typeof Evaluable) {
 		this.evaluableType = evaluableType;
+		this.evaluableType.tag = this.name || this.literal;
 		return this;
 	}
 

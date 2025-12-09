@@ -1,4 +1,4 @@
-import { Register, Registers } from "../src/riscv/register";
+import { Registers } from "../src/riscv/register";
 import { Memory } from "../src/riscv/memory";
 import { Pipeline } from "../src/riscv/pipeline";
 import { Assembler } from "../src/riscv/assembler";
@@ -11,9 +11,10 @@ import "../src/riscv/instructions/stype"
 import "../src/riscv/instructions/utype"
 import { Labels } from "../src/riscv/label";
 
-Pipeline.init();
+export function main() {
+	Pipeline.init();
 
-let instructions = `
+	let instructions = `
 addi i10, i0, 1
 addi i11, i0, 1
 addi i1, i0, 40
@@ -33,13 +34,14 @@ mult_loop:
     bne i1, i0, loop
 `
 
-Assembler.parse(instructions.split("\n"));
+	Assembler.parse(instructions.split("\n"));
 
-Memory.show();
+	Memory.show();
 
-Labels.show();
+	Labels.show();
 
-Pipeline.run();
-Memory.show();
+	Pipeline.run();
+	Memory.show();
 
-Registers.show();
+	Registers.show();
+}

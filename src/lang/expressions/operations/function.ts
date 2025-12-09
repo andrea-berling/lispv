@@ -41,7 +41,7 @@ export class EFunction extends EOperation {
 			}
 
 		}
-
 		return EExpression.evaluate(func.definition);
 	}
 }
+

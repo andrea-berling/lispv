@@ -16,6 +16,13 @@ export class Ast {
 		if (!this.literal)
 			this.children = [];
 	}
+
+	// chain method
+	addChildren(children: Ast[]): Ast {
+		this.children = children;
+		return this;
+	}
+
 	/**
 	 * wipe rules off of the AST, together with its children.
 	 */

@@ -3,7 +3,7 @@ import path from "path";
 const __dirname = path.resolve();
 
 export default {
-	entry: './sketch/interpreter.ts',
+	entry: './sketch/dev.ts',
 	mode: 'development',
 	output: {
 		filename: 'bundle.js',

@@ -28,7 +28,7 @@ function bfs(n: TreeNode) {
 	}
 }
 
-function main() {
+export function main() {
 	////1
 	////	11
 	////		111
@@ -67,5 +67,3 @@ function main() {
 	dfs(n1);
 	bfs(n1);
 }
-
-main();
