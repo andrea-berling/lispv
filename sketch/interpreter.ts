@@ -6,12 +6,10 @@ import { GLOBAL_ENV } from "../src/lang/environment";
 
 let debug = DEBUG || DEBUG_INTERPRETER;
 
-// (defun loop (args a b c) (if (greater c 0) (a b (loop a b (+ c (- 1)))) (1) ))
-
 let source = `
-(defun loop (args a b c) (if (greater c 5) (a b c) (b) ))
+(defun loop (args a b c d) (if (greater c 0) (loop a (a b d) (+ c (- 1)) d) (b) ))
 (defun plus (args a b) (+ a b))
-(loop plus 10 3)
+(loop plus 10 3 10)
 `
 
 let lines = source.split("\n");

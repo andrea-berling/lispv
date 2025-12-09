@@ -6,7 +6,7 @@ export class EPlus extends EOperation {
 
 	static evaluate(node: Ast): number {
 
-		let { first_child, first_child_type, other_childs } = EExpression.parameters(node);
+		let { other_childs } = EExpression.parameters(node);
 
 		let sum = 0;
 		let intermediate: number;

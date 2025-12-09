@@ -12,7 +12,7 @@ import { EDef } from "./expressions/operations/def";
 import { EDefun } from "./expressions/operations/defun";
 import { EFunction } from "./expressions/operations/function";
 import { EArgs } from "./expressions/operations/args";
-import { EEq, EGreater, ELess, ENot } from "./expressions/operations/predicates";
+import { EAnd, EEq, EGreater, ELess, ENot, EOr } from "./expressions/operations/predicates";
 
 // we define here a CFG (Context Free Grammar) for our language. it is a Chomsky-level-2 language.
 
@@ -54,6 +54,10 @@ export const EQ = Rule.literal("eq").addEvaluable(EEq);
 
 export const NOT = Rule.literal("not").addEvaluable(ENot);
 
+export const OR = Rule.literal("or").addEvaluable(EOr);
+
+export const AND = Rule.literal("and").addEvaluable(EAnd);
+
 // custom one-words
 export const LETTER = Rule.or("letter", ..."abcdefghijklmnopqrstuvwxyz".split("").map((x) => Rule.literal(x)));
 
@@ -64,6 +68,7 @@ export const OPERATION = Rule.or("operation");
 
 // we need to be careful to have FUNCTION being the last rule that gets checked, cause it can have arbitrary characters. Also DEFUN must come before DEF because it would be ignored otherwise.
 OPERATION.define([
+	AND,
 	ARGS,
 	DEFUN,
 	DEF,
@@ -73,6 +78,7 @@ OPERATION.define([
 	LESS,
 	MINUS,
 	NOT,
+	OR,
 	PLUS,
 	FUNCTION
 ]);
@@ -112,6 +118,7 @@ EXPRESSION.define([
 	LBRACKET,
 	ZERO_OR_MORE_SPACES,
 	APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION,
+	ZERO_OR_MORE_SPACES,
 	RBRACKET,
 ]);
 

@@ -1,9 +1,7 @@
 import { Ast } from "../../parser/ast";
 import { Evaluable } from "../evaluable";
-import { EXPRESSION, NUMBER, VARIABLE } from "../grammar";
 import { EApplication } from "./application";
 import { ENumber } from "./number";
-import { EOperation } from "./operation";
 import { EVariable } from "./variable";
 
 export class EExpression implements Evaluable {
@@ -30,7 +28,6 @@ export class EExpression implements Evaluable {
 	static evaluate(node: Ast): number {
 
 		switch (node.evaluableType) {
-
 			case ENumber: {
 				return ENumber.evaluate(node);
 			}
@@ -51,10 +48,12 @@ export class EExpression implements Evaluable {
 			case EExpression: {
 				return EExpression.evaluate(first_child);
 			}
+
+			default: {
+				return first_child_type.evaluate(first_child);
+			}
+
 		}
-
-		throw new Error("impossible");
-
 	}
 
 }

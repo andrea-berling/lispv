@@ -4,7 +4,7 @@ import { EOperation } from "../operation";
 
 export class EIf extends EOperation {
 	static evaluate(node: Ast): number {
-		let { first_child, other_childs } = EExpression.parameters(node);
+		let { other_childs } = EExpression.parameters(node);
 
 		if (other_childs.length != 3)
 			throw new Error("syntax: if (<condition>) <expression if true> <expression if false>")
@@ -12,7 +12,7 @@ export class EIf extends EOperation {
 		let condition_node = other_childs.at(0);
 
 		if (!condition_node)
-			throw new Error("impossible")
+			throw new Error("if expression must have a condition")
 
 		let condition = EExpression.evaluate(condition_node);
 
@@ -25,7 +25,7 @@ export class EIf extends EOperation {
 		}
 
 		if (!result_node)
-			throw new Error("impossible")
+			throw new Error("if expression must have a result")
 
 		return EExpression.evaluate(result_node);
 	}

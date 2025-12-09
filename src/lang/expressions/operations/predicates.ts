@@ -3,12 +3,12 @@ import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
 export abstract class EPredicate extends EOperation {
-	static predicate(n1: number, n2: number): number {
+	static predicate(_n1: number, _n2: number): number {
 		throw new Error("not implemented");
 	}
 
 	static evaluate(node: Ast): number {
-		let { first_child, other_childs } = EExpression.parameters(node);
+		let { other_childs } = EExpression.parameters(node);
 
 		if (other_childs.length != 2)
 			throw new Error()
@@ -56,6 +56,18 @@ export class ELess extends EPredicate {
 
 export class ENot extends EPredicate {
 	static predicate(n1: number, _: number): number {
-		return (n1) ? 1 : 0;
+		return (n1) ? 0 : 1;
+	}
+}
+
+export class EAnd extends EPredicate {
+	static predicate(n1: number, n2: number): number {
+		return (n1 && n2);
+	}
+}
+
+export class EOr extends EPredicate {
+	static predicate(n1: number, n2: number): number {
+		return (n1 || n2);
 	}
 }
