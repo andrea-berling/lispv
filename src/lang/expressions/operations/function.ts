@@ -12,6 +12,7 @@ export class EFunction extends EOperation {
 		if (!name)
 			throw new Error("<function> must have a name");
 
+		// functions are in a global environment. we dont make a distinction between closures.
 		let func = GLOBAL_ENV.functions.get(name);
 
 		if (!func)
@@ -19,29 +20,36 @@ export class EFunction extends EOperation {
 
 		let args_nodes = other_childs;
 
+		// since we are applying a function, we should create an isolated environment for the new parameter-argument associations
+		GLOBAL_ENV.variables.push();
+
 		// here we match parameters with arguments. excess arguments are ignored
 		for (let i = 0; i < args_nodes.length; i++) {
-			let name = func.args[i];
+			// the function parameter, as defined in the signature
+			let parameter_name = func.params[i];
 
+			// the current argument, that can be evaluated
 			let evt = args_nodes[i].evaluableType
+
 			if (!evt)
 				throw new Error(`cannot evaluate ${args_nodes[i].name}`)
 
+			// if the parameter name is in the space of the defined functions
 			if (!GLOBAL_ENV.functions.get(args_nodes[i].literal || "")) {
 				let value = evt.evaluate(args_nodes[i]);
 
 				// in the current scope we are assigning variables to their values
+				GLOBAL_ENV.variables.set(parameter_name, value);
 
-				GLOBAL_ENV.variables.set(name, value);
-			} else {
-				let new_name = args_nodes[i].literal || "";
-				let updated_func = (GLOBAL_ENV.functions.get(new_name) as FunctionDefinition);
-				updated_func.name = func.args[i];
-				GLOBAL_ENV.functions.set(func.args[i], updated_func);
 			}
-
 		}
-		return EExpression.evaluate(func.definition);
+
+		let result = EExpression.evaluate(func.definition);
+
+		// release the parameter-argument associations
+		GLOBAL_ENV.variables.pop();
+
+		return result;
 	}
 }
 

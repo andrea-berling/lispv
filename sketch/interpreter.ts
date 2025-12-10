@@ -1,21 +1,21 @@
 import { Parser } from "../src/parser/parser";
 import { Traversal } from "../src/lang/traversal"
-import { NUMBER, GRAMMAR, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION, EXPRESSION } from "../src/lang/grammar"
+import { NUMBER, GRAMMAR, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
 import { DEBUG, DEBUG_INTERPRETER } from "../src/flags";
 import { GLOBAL_ENV } from "../src/lang/environment";
 
 export function main() {
 	let debug = DEBUG || DEBUG_INTERPRETER;
 
-	// 	let source = `
-	// (defun loop (args a b c d) (if (greater c 0) (loop a (a b d) (+ c (- 1)) d) (b) ))
-	// (defun plus (args a b) (+ a b))
-	// (loop plus 10 3 10)
-	// `
-
 	let source = `
-(defun plus (args a b) (+ a b))
-(plus 10 20)
+(defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1))   ) )  (1) ) )
+(defun times (args a b) (if (greater b 0) (+ a (times a (+ b (- 1) ) ) ) (0) ))
+
+(fact 1)
+(fact 2)
+(fact 3)
+(fact 4)
+(fact 5)
 	`
 
 	let lines = source.split("\n");

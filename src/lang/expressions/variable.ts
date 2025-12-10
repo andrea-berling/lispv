@@ -10,10 +10,10 @@ export class EVariable extends Evaluable {
 
 		name = node.literal;
 
-		let value = GLOBAL_ENV.variables.get(name);
+		let value = GLOBAL_ENV.variables.find(name);
 
-		if (!value)
-			throw new Error(`variable ${name} undefined`);
+		if (value === undefined)
+			throw new Error(`variable ${name} undefined at level ${GLOBAL_ENV.variables.current}`);
 
 		return value;
 	}
