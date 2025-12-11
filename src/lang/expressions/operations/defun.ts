@@ -2,6 +2,7 @@ import { Ast } from "../../../parser/ast";
 import { FunctionDefinition, GLOBAL_ENV } from "../../environment";
 import { Evaluable } from "../../evaluable";
 import { EExpression } from "../expression";
+import { ENumber } from "../number";
 import { EOperation } from "../operation";
 import { EVariable } from "../variable";
 import { EArgs } from "./args";
@@ -31,7 +32,7 @@ export class EDefun extends EOperation {
 
 		if (!function_name)
 			throw new Error("function must have a name");
-
+	
 		let args: string[] = [];
 
 		let function_args_node = other_childs.at(1);
@@ -59,9 +60,35 @@ export class EDefun extends EOperation {
 		if (!definition)
 			throw new Error("function must have a definition");
 
+		// valutare valore variabile se non presente negli argomenti
+		
 		func = new FunctionDefinition(function_name, args, definition);
 
 		GLOBAL_ENV.functions.set(function_name, func);
+
+		function try_to_evaluate_names_not_passed_as_arguments(d: Ast) {
+			if (d.evaluableType == EVariable) {
+				let variable_node = d;
+				let variable_name = d.literal || "";
+
+				// variable not present in definition:
+				// understand if it is not a function and a variable thats not a parameter to the funciton
+				if (!GLOBAL_ENV.functions.get(variable_name) && args.indexOf(variable_name) == -1) {
+					let number_value = EVariable.evaluate(variable_node);
+					variable_node.name = "number"
+					variable_node.literal = number_value + "";
+					variable_node.evaluableType = ENumber;
+				}
+			}
+
+			for (let child of d.children?.slice(1) || []) {
+				try_to_evaluate_names_not_passed_as_arguments(child);
+			}
+		}
+
+		try_to_evaluate_names_not_passed_as_arguments(definition);
+		// console.log(definition);
+
 
 		return args.length;
 	}

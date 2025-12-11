@@ -36,15 +36,10 @@ export function main() {
 (apply plus 2 3)
 (apply times 2 3)
 
-;; defun non ammesso
+;; non ammesso in runtime riscv
 ;; (defun create (args x) (defun created (args y) (+ x y)) )
 ;; (create 10)
 ;; (created 20)
-
-;; in ambiente interpretato
-;; (0)
-;; (defun create (args x) (if (defun created (args y) (+ x y)) (created 10 x) (0) ) )
-;; (create 20)
 	`
 
 	let lines = source.split("\n");
