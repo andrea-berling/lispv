@@ -12,18 +12,18 @@ export class FunctionDefinition {
 	}
 }
 
-export class Stack {
-	levels: Map<string, number>[];
+export class Stack<T> {
+	levels: Map<string, T>[];
 	current: number;
 
 	constructor() {
 		this.levels = [
-			new Map<string, number>()
+			new Map<string, T>()
 		];
 		this.current = 0;
 	}
 
-	set(name: string, value: number) {
+	set(name: string, value: T) {
 		this.levels[this.current].set(name, value);
 	}
 
@@ -43,7 +43,7 @@ export class Stack {
 
 	push() {
 		this.current++;
-		this.levels[this.current] = new Map<string, number>();
+		this.levels[this.current] = new Map<string, T>();
 	}
 
 	pop() {
@@ -52,12 +52,12 @@ export class Stack {
 }
 
 export class Environment {
-	functions: Map<string, FunctionDefinition>;
-	variables: Stack;
+	variables: Stack<number>;
+	functions: Stack<FunctionDefinition>;
 
 	constructor() {
 		this.variables = new Stack();
-		this.functions = new Map<string, FunctionDefinition>();
+		this.functions = new Stack();
 	}
 }
 

@@ -8,7 +8,7 @@ export function main() {
 	let debug = DEBUG || DEBUG_INTERPRETER;
 
 	let source = `
-(defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1))   ) )  (1) ) )
+(defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1)) ) )  (1) ) )
 (defun times (args a b) (if (greater b 0) (+ a (times a (+ b (- 1) ) ) ) (0) ))
 
 (fact 1)
@@ -16,6 +16,17 @@ export function main() {
 (fact 3)
 (fact 4)
 (fact 5)
+
+
+(defun plus (args a b) (+ a b))
+
+(plus 2 3)
+(times 2 3)
+
+(defun apply (args a b c) (a b c))
+
+(apply plus 2 3)
+(apply times 2 3)
 	`
 
 	let lines = source.split("\n");

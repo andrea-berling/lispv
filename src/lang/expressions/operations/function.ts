@@ -34,13 +34,23 @@ export class EFunction extends EOperation {
 			if (!evt)
 				throw new Error(`cannot evaluate ${args_nodes[i].name}`)
 
+			let arg_name = args_nodes[i].literal;
+
+			if (!arg_name)
+				throw new Error("argument must have a name")
+
+
+			let definition_to_substitute = GLOBAL_ENV.functions.find(arg_name);
+
 			// if the parameter name is in the space of the defined functions
-			if (!GLOBAL_ENV.functions.get(args_nodes[i].literal || "")) {
+			if (!definition_to_substitute) {
 				let value = evt.evaluate(args_nodes[i]);
 
 				// in the current scope we are assigning variables to their values
 				GLOBAL_ENV.variables.set(parameter_name, value);
 
+			} else {
+				GLOBAL_ENV.functions.set(func.params[i], definition_to_substitute);
 			}
 		}
 
