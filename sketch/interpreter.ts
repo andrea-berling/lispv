@@ -8,8 +8,9 @@ export function main() {
 	let debug = DEBUG || DEBUG_INTERPRETER;
 
 	let source = `
-(defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1))   ) )  (1) ) )
-(defun times (args a b) (if (greater b 0) (+ a (times a (+ b (- 1) ) ) ) (0) ))
+;; ricorsione
+(defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1))) ) (1) ))
+(defun times (args a b) (if (greater b 0) (+ a (times a (+ b (- 1))) ) (0) ))
 
 (0)
 
@@ -21,6 +22,7 @@ export function main() {
 
 (0)
 
+;; passaggio di funzioni come argomento
 (defun plus (args a b) (+ a b))
 (defun apply (args a b c) (a b c))
 
@@ -33,6 +35,16 @@ export function main() {
 
 (apply plus 2 3)
 (apply times 2 3)
+
+;; defun non ammesso
+;; (defun create (args x) (defun created (args y) (+ x y)) )
+;; (create 10)
+;; (created 20)
+
+;; in ambiente interpretato
+;; (0)
+;; (defun create (args x) (if (defun created (args y) (+ x y)) (created 10 x) (0) ) )
+;; (create 20)
 	`
 
 	let lines = source.split("\n");
@@ -65,6 +77,6 @@ export function main() {
 		}
 	}
 
-	console.log(GLOBAL_ENV)
+	debug && console.log(GLOBAL_ENV)
 
 }
