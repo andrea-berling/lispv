@@ -22,13 +22,13 @@ export function main() {
 
 (0)
 
-;; passaggio di funzioni come argomento
+;; passaggio di funzioni come argomento (funtori di 1o ordine)
 (defun plus (args a b) (+ a b))
 (defun apply (args a b c) (a b c))
 
 (0)
 
-(+ 2 3)
+(plus 2 3)
 (times 2 3)
 
 (0)
@@ -36,10 +36,10 @@ export function main() {
 (apply plus 2 3)
 (apply times 2 3)
 
-;; creazione di funzioni di funzioni curry-ed
+;; creazione di funzioni curry-ed
 (0)
 (defun create (args x) (defun created (args y) (+ x y)) )
-(create 100)
+(create 50)
 (created 200)
 	`
 
