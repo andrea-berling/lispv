@@ -40,7 +40,11 @@ export class EFunction extends EOperation {
 
 				// in the current scope we are assigning variables to their values
 				GLOBAL_ENV.variables.set(parameter_name, value);
-
+			} else {
+				let new_name = args_nodes[i].literal || "";
+				let updated_func = (GLOBAL_ENV.functions.get(new_name) as FunctionDefinition);
+				updated_func.name = func.params[i];
+				GLOBAL_ENV.functions.set(func.params[i], updated_func);
 			}
 		}
 

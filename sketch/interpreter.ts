@@ -11,11 +11,28 @@ export function main() {
 (defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1))   ) )  (1) ) )
 (defun times (args a b) (if (greater b 0) (+ a (times a (+ b (- 1) ) ) ) (0) ))
 
+(0)
+
 (fact 1)
 (fact 2)
 (fact 3)
 (fact 4)
 (fact 5)
+
+(0)
+
+(defun plus (args a b) (+ a b))
+(defun apply (args a b c) (a b c))
+
+(0)
+
+(+ 2 3)
+(times 2 3)
+
+(0)
+
+(apply plus 2 3)
+(apply times 2 3)
 	`
 
 	let lines = source.split("\n");
