@@ -36,10 +36,11 @@ export function main() {
 (apply plus 2 3)
 (apply times 2 3)
 
-;; non ammesso in runtime riscv
-;; (defun create (args x) (defun created (args y) (+ x y)) )
-;; (create 10)
-;; (created 20)
+;; creazione di funzioni di funzioni curry-ed
+(0)
+(defun create (args x) (defun created (args y) (+ x y)) )
+(create 100)
+(created 200)
 	`
 
 	let lines = source.split("\n");

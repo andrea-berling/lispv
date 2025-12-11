@@ -26,13 +26,13 @@ export class EDefun extends EOperation {
 		let function_name_node = other_childs.at(0);
 
 		if (function_name_node?.evaluableType !== EVariable)
-			throw new Error("syntax: defun <name> (args <variable1 ... variablen>) (<expression>)");
+			throw new Error("syntax: defun <name> (args <variable1 ... variableN>) (<expression>)");
 
 		let function_name = function_name_node.literal;
 
 		if (!function_name)
 			throw new Error("function must have a name");
-	
+
 		let args: string[] = [];
 
 		let function_args_node = other_childs.at(1);
@@ -60,35 +60,30 @@ export class EDefun extends EOperation {
 		if (!definition)
 			throw new Error("function must have a definition");
 
-		// valutare valore variabile se non presente negli argomenti
-		
-		func = new FunctionDefinition(function_name, args, definition);
+		function explore(a: Ast) {
 
-		GLOBAL_ENV.functions.set(function_name, func);
+			if (a.evaluableType == EVariable) {
+				let variable_name = a.literal as string;
 
-		function try_to_evaluate_names_not_passed_as_arguments(d: Ast) {
-			if (d.evaluableType == EVariable) {
-				let variable_node = d;
-				let variable_name = d.literal || "";
+				let found_value = GLOBAL_ENV.variables.find(variable_name)
 
-				// variable not present in definition:
-				// understand if it is not a function and a variable thats not a parameter to the funciton
-				if (!GLOBAL_ENV.functions.get(variable_name) && args.indexOf(variable_name) == -1) {
-					let number_value = EVariable.evaluate(variable_node);
-					variable_node.name = "number"
-					variable_node.literal = number_value + "";
-					variable_node.evaluableType = ENumber;
+				if (found_value){
+					a.evaluableType = ENumber;
+					a.name = ENumber.tag as string;
+					a.literal = found_value + "";
 				}
 			}
-
-			for (let child of d.children?.slice(1) || []) {
-				try_to_evaluate_names_not_passed_as_arguments(child);
+			
+			for (let child of a.children || []) {
+				explore(child);
 			}
 		}
 
-		try_to_evaluate_names_not_passed_as_arguments(definition);
-		// console.log(definition);
+		explore(definition);
 
+		func = new FunctionDefinition(function_name, args, definition);
+
+		GLOBAL_ENV.functions.set(function_name, func);
 
 		return args.length;
 	}
