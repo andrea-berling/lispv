@@ -9,8 +9,8 @@ export function main() {
 
 	let source = `
 ;; ricorsione
-(defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1))) ) (1) ))
 (defun times (args a b) (if (greater b 0) (+ a (times a (+ b (- 1))) ) (0) ))
+(defun fact (args a) (if (greater a 0) (times a (fact (+ a (- 1))) ) (1) ))
 
 (0)
 
