@@ -5,6 +5,7 @@
 		"DEFUN",
 		"evaluable",
 		"jalr",
+		"Lispv",
 		"Neumann",
 		"subword",
 		"writeback"

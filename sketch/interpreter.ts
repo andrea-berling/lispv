@@ -5,8 +5,8 @@ import { DEBUG, DEBUG_INTERPRETER } from "../src/flags";
 import { GLOBAL_ENV } from "../src/lang/environment";
 
 export function main() {
-	let debug = DEBUG || DEBUG_INTERPRETER;
 
+	let debug = DEBUG || DEBUG_INTERPRETER;
 	let source = `
 ;; ricorsione
 (defun times (args a b) (if (greater b 0) (+ a (times a (+ b (- 1))) ) (0) ))
