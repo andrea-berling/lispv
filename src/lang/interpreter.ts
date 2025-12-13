@@ -4,11 +4,6 @@ import { APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION, FUNCTION, GRAMMAR, LBR
 import { Traversal } from "./traversal";
 import { DEBUG, DEBUG_INTERPRETER } from "../flags";
 
-export interface LineAndAnswer {
-	line: string,
-	answer: number
-}
-
 export class Interpreter {
 	lines: string[];
 	debug = DEBUG || DEBUG_INTERPRETER;
@@ -17,11 +12,13 @@ export class Interpreter {
 		this.lines = lines;
 	}
 
-	run(): LineAndAnswer[] {
+	run(): Map<number, number> {
 
-		let lines_and_answers: LineAndAnswer[] = [];
+		let m = new Map<number, number>();
 
-		for (let line of this.lines) {
+		for (let i = 0; i < this.lines.length; i++) {
+
+			let line = this.lines[i];
 
 			const p = new Parser(GRAMMAR);
 
@@ -43,18 +40,49 @@ export class Interpreter {
 
 				let traversal = new Traversal(ast);
 
-				let traversal_result = traversal.start();
+				let answer = traversal.start();
 
-				lines_and_answers.push(
-					{ line, answer: traversal_result }
-				)
+
+				m.set(i, answer)
 			}
 		}
 
-		return lines_and_answers;
+		return m;
 	}
 
-	log(): void {
+	runAndGetAnswerFromLine(line: string) {
+		let index = this.lines.findIndex(x => x == line.trim());
+
+		if (!index)
+			throw new Error(`line ${line} was not in source`);
+
+		return this.run().get(index);
+	}
+
+	log(options?: { includeLines?: boolean, includeIndexes?: boolean }): void {
+
+
+		let m = this.run();
+
+		for (let i of m.keys()) {
+			if (options?.includeIndexes) {
+				if (options.includeLines) {
+					console.log(i, this.lines.at(i) + ":", m.get(i))
+				}
+				else {
+					console.log(i, ":", m.get(i))
+				}
+			}
+			else {
+				if (options?.includeLines) {
+					console.log(this.lines.at(i) + ":", m.get(i))
+				}
+				else if (!options?.includeLines) {
+					console.log(m.get(i))
+				}
+			}
+		}
+
 
 	}
 

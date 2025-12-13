@@ -24,6 +24,28 @@ export class Assembler {
 		let label: string;
 		let line: string;
 
+		// first populate the labels map
+		for (let lineNum = 0; lineNum < lines.length; lineNum++) {
+			line = lines[lineNum];
+
+			line = line.replace(Assembler.comment, "").trim();
+
+			if (line == "")
+				continue;
+
+			if (line.includes(":")) {
+				label = line.replace(this.afterLabel, "");
+				Labels.set(label, addr)
+				continue;
+			}
+
+			addr += 4;
+
+		}
+
+		addr = 0;
+
+		// then assemble the instructions, with the right label values
 		for (let lineNum = 0; lineNum < lines.length; lineNum++) {
 			line = lines[lineNum];
 
@@ -33,11 +55,11 @@ export class Assembler {
 				continue;
 
 			try {
-				if (line.includes(":")) {
-					label = line.replace(this.afterLabel, "");
-					Labels.set(label, addr)
+				// but skip labels this time.
+
+				if (line.includes(":"))
 					continue;
-				}
+
 				i = Instruction.assemble(line);
 				i.address = addr;
 				debug && console.log(i);

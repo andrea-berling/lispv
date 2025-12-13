@@ -71,8 +71,11 @@ export class JalrInstruction extends ITypeInstruction {
 	static opcode = 0b1100111;
 
 	execute(): void {
-		this.destination.value = ProgramCounter.address;
-		ProgramCounter.address = this.source.value + this.immediate.value;
+		let current_address = ProgramCounter.address
+
+		ProgramCounter.address = (this.source.value + this.immediate.value) - 4
+
+		this.destination.value = current_address;
 	}
 
 	static {

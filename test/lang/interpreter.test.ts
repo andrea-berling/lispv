@@ -13,15 +13,9 @@ describe("interpreter", () => {
 `
 		let i = new Interpreter(source.split("\n"));
 
-		let lines_and_answers = i.run();
-
-		let f4 = lines_and_answers.find(x => x.line == "(fact 4)")?.answer
-
-		if (f4 === undefined)
-			throw new Error("undefined");
+		let f4 = i.runAndGetAnswerFromLine("(fact 4)");
 
 		expect(f4).toBe(24);
-
 	})
 
 	test("functions as arguments", () => {
@@ -33,12 +27,7 @@ describe("interpreter", () => {
 `
 		let i = new Interpreter(source.split("\n"));
 
-		let lines_and_answers = i.run();
-
-		let application = lines_and_answers.find(x => x.line == "(apply plus 2 3)")?.answer
-
-		if (application === undefined)
-			throw new Error("undefined");
+		let application = i.runAndGetAnswerFromLine("(apply plus 2 3)");
 
 		expect(application).toBe(5);
 
@@ -53,12 +42,7 @@ describe("interpreter", () => {
 `
 		let i = new Interpreter(source.split("\n"));
 
-		let lines_and_answers = i.run();
-
-		let result = lines_and_answers.find(x => x.line == "(created 200)")?.answer
-
-		if (result === undefined)
-			throw new Error("undefined");
+		let result = i.runAndGetAnswerFromLine("(created 200)");
 
 		expect(result).toBe(300);
 

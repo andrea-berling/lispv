@@ -2,6 +2,7 @@ import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { InstructionRegistry } from "../instructionRegistry";
 import { Immediate20 } from "../immediate";
+import { ProgramCounter } from "../programCounter";
 
 abstract class JTypeInstruction extends Instruction {
 	destination: Register;
@@ -69,29 +70,27 @@ abstract class JTypeInstruction extends Instruction {
 	}
 
 	disassemble(): string {
-		return `${this.tag} ${this.destination}, ${this.immediate}`
+		return `${this.tag} ${this.destination}, ${this.immediate.value}`
 	}
 
 	static factoryFromAssembly(parameters: string): Instruction {
 		let p = parameters.split(",");
-		const source1 = Registers.parse(p[0]);
-		const source2 = Registers.parse(p[1]);
-		const immediate = Immediate20.parse(p[2]);
+		const destination = Registers.parse(p[0]);
+		const immediate = Immediate20.parse(p[1]);
 
 		return new (this as any)(
-			source1,
-			source2,
+			destination,
 			immediate
 		) as Instruction
 	}
 }
 
 export class JalInstruction extends JTypeInstruction {
-	static tag = "lui";
+	static tag = "jal";
 	static opcode = 0b1101111;
 
 	execute(): void {
-
+		ProgramCounter.address = this.destination.value + this.immediate.value;
 	}
 
 	static {

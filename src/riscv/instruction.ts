@@ -116,6 +116,10 @@ export class HaltInstruction extends Instruction {
 		return new (this as any)() as Instruction;
 	}
 
+	static factoryFromAssembly(parameters: string): Instruction {
+		return new HaltInstruction();
+	}
+
 	static {
 		InstructionRegistry.register(this);
 	}

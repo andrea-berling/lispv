@@ -5,16 +5,16 @@ export abstract class Immediate {
 	value: number = 0;
 	label: Label | undefined;
 
-	// TODO remove eval
 	static flatten(s: string): { value: number, label: Label | undefined } {
 		s = s.trim();
 
 		let label = Labels.get(s)
 
 		if (label) {
-			return { value: 0, label }
+			return { value: label.address, label }
 		}
 
+		// TODO remove eval
 		return { value: Number.parseInt(eval(s.trim())), label: undefined }
 	}
 
