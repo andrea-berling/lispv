@@ -9,6 +9,7 @@ import "../../src/riscv/instructions/jtype"
 import "../../src/riscv/instructions/rtype"
 import "../../src/riscv/instructions/stype"
 import "../../src/riscv/instructions/utype"
+import { Registers } from "../../src/riscv/register";
 
 describe('assembling', () => {
 	test('assemble string and run', () => {
@@ -51,6 +52,94 @@ describe('assembling', () => {
 		Pipeline.run();
 
 		expect(Memory.get(0x100)).toBe(55);
+	});
+
+	test("function call and return", () => {
+
+		Pipeline.init();
+
+		let instructions = `
+			addi i10, i0, 0x10
+			jalr i3, fun(i0)
+			addi i2, i0, 2
+			halt
+			addi i4, i0, 0x4
+			fun:
+			addi i1, i0, 0x1
+			jal i3, 0
+		`
+
+		Assembler.parse(instructions.split("\n"));
+
+		Pipeline.run(100);
+
+		expect(Registers.parse("i1").value).toBe(1);
+		expect(Registers.parse("i2").value).toBe(2);
+		expect(Registers.parse("i4").value).toBe(0);
+
+	});
+
+	test("diff of sums", () => {
+
+		Pipeline.init();
+
+		let instructions = `
+			main:
+			addi a0, zero, 2 # argument 0 = 2
+			addi a1, zero, 3 # argument 1 = 3
+			addi a2, zero, 4 # argument 2 = 4
+			addi a3, zero, 5 # argument 3 = 5
+			jalr ra, diffofsums(zero) # call function
+
+			add s7, a0, zero # y = returned value
+
+			halt
+
+			diffofsums:
+			add t0, a0, a1 # t0 = f+g
+			add t1, a2, a3 # t1 = h+i
+			sub s3, t0, t1 # result = (f+g)−(h+i)
+			add a0, s3, zero # put return value in a0
+			jal ra, 0
+		`
+
+		Assembler.parse(instructions.split("\n"));
+
+		Pipeline.run(100);
+
+		expect(Registers.parse("s7").value).toBe(-4);
+
+	});
+
+	test("stack pointer", () => {
+
+		Pipeline.init();
+
+		let instructions = `
+			addi i2, i0, 0x100     # sp = 256
+
+			addi i2, i2, -4
+			addi i1, i0, 11
+			sw   i1, 0(i2)
+
+			addi i2, i2, -4
+			addi i1, i0, 22
+			sw   i1, 0(i2)
+
+			lw   i4, 0(i2)         # pop
+			addi i2, i2, 4
+
+			lw   i5, 0(i2)         # pop
+			addi i2, i2, 4
+		`
+
+		Assembler.parse(instructions.split("\n"));
+
+		Pipeline.run(100);
+
+		expect(Registers.parse("i4").value).toBe(22)
+
+		expect(Registers.parse("i5").value).toBe(11)
 	});
 
 });

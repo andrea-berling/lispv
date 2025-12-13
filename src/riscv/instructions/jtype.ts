@@ -90,7 +90,7 @@ export class JalInstruction extends JTypeInstruction {
 	static opcode = 0b1101111;
 
 	execute(): void {
-		ProgramCounter.address = this.destination.value + this.immediate.value;
+		ProgramCounter.address = this.destination.value + this.immediate.value - 4;
 	}
 
 	static {

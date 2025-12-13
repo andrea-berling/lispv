@@ -9,5 +9,9 @@
 		"Neumann",
 		"subword",
 		"writeback"
-	]
+	],
+	"jest.runMode": {
+		"type": "on-demand"
+	},
+	"todo-tree.tree.showBadges": true
 }

@@ -44,7 +44,7 @@ export class Pipeline {
 			iter++;
 		} while (i.tag != "halt" && (maxIterations ? iter < maxIterations : true));
 
-		debug && console.log("run finished at", Date(), `with ${Memory.getAccesses()} accesses`);
+		debug && console.log("run finished at", Date(), `with ${Memory.getAccesses().write + Memory.getAccesses().read} accesses, in ${iter} iterations.`);
 
 	}
 }

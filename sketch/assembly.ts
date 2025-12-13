@@ -15,99 +15,57 @@ import { Registers } from "../src/riscv/register"
 export function main() {
 
 	Pipeline.init();
-
-	let source = `
-addi i10, i0, 0x10
-jalr i3, fun(i0)
-addi i2, i0, 2
-halt
-addi i4, i0, 0x4
-fun:
-addi i1, i0, 0x1
-jal i3, 0
-	`
+	let source: string;
 
 	source = `
 # main
-addi i2, i0, 0x100    # sp = 0x100
-jal i3, local
+addi i2, i0, 0x200
+addi i1, i0, 3        # n = 3
+jal  i3, count
 halt
 
-local:
-addi i2, i2, -4       # alloca 1 word
-addi i1, i0, 42
-sw i1, 0(i2)        # local = 42
-
-lw i1, 0(i2)
-addi i1, i1, 1        # local++
-
-addi i2, i2, 4        # dealloca
-jalr i3, 0(i0)
-	`
-
-	source = `
-addi i2, i0, 0x100     # sp = 256
-
-addi i2, i2, -4
-addi i1, i0, 11
+count:
+addi i2, i2, -8
+sw   i3, 4(i2)
 sw   i1, 0(i2)
 
-addi i2, i2, -4
-addi i1, i0, 22
-sw   i1, 0(i2)
+beq  i1, i0, base
 
-lw   i4, 0(i2)         # pop
-addi i2, i2, 4
+addi i1, i1, -1
+jal  i3, count
 
-lw   i5, 0(i2)         # pop
-addi i2, i2, 4
-
-halt
-	`
-
-	source = `
-addi i2, i0, 0x100
-
-addi i2, i2, -8        # alloca 2 word
-
-addi i1, i0, 10
-sw   i1, 0(i2)         # local_a
-
-addi i1, i0, 20
-sw   i1, 4(i2)         # local_b
-
-lw   i4, 0(i2)
-lw   i5, 4(i2)
-
+base:
+lw   i1, 0(i2)
+lw   i3, 4(i2)
 addi i2, i2, 8
-halt
+jalr i3, 0(i0)
 	`
 
 	source = `
-addi i2, i0, 0x100
-jal  i3, f
+main:
+addi a0, zero, 2 # argument 0 = 2
+addi a1, zero, 3 # argument 1 = 3
+addi a2, zero, 4 # argument 2 = 4
+addi a3, zero, 5 # argument 3 = 5
+jalr ra, diffofsums(zero) # call function
+
+add s7, a0, zero # y = returned value
+
 halt
 
-f:
-addi i2, i2, -4
-sw   i3, 0(i2)
-
-jal  i3, g
-
-lw   i3, 0(i2)
-addi i2, i2, 4
-jalr i3, 0(i0)
-
-g:
-addi i4, i0, 99
-jalr i3, 0(i0)
-	`
+diffofsums:
+add t0, a0, a1 # t0 = f+g
+add t1, a2, a3 # t1 = h+i
+sub s3, t0, t1 # result = (f+g)−(h+i)
+add a0, s3, zero # put return value in a0
+jal ra, 0
+`
 
 	Assembler.parse(source.split("\n"));
 
 	Labels.show()
 
-	Pipeline.run(100);
+	Pipeline.run(120);
 
 	Memory.show()
 

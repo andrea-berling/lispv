@@ -75,7 +75,7 @@ export class JalrInstruction extends ITypeInstruction {
 
 		ProgramCounter.address = (this.source.value + this.immediate.value) - 4
 
-		this.destination.value = current_address;
+		this.destination.value = current_address + 4;
 	}
 
 	static {
