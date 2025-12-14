@@ -22,7 +22,7 @@ export class Traversal {
 	start(): number {
 		function explore(node: Ast): number | undefined {
 			if (node.evaluableType === EExpression) {
-				return (node.evaluableType as typeof EExpression).evaluate(node);
+				return EExpression.evaluate(node);
 			}
 
 			for (const child of node.children || []) {

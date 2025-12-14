@@ -11,4 +11,12 @@ export class ENumber extends Answer {
 		return value;
 	}
 
+	static compile(node: Ast): string[] {
+		let asm: string[] = [
+			 `addi a0, zero, ${Number.parseInt(node.literal || "")}`
+		];
+
+		return asm;
+	}
+
 }

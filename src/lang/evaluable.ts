@@ -15,4 +15,8 @@ export abstract class Evaluable {
 	static evaluate(_node: Ast): number {
 		throw new Error("not implemented");
 	};
+
+	static compile(_node: Ast): string[] {
+		throw new Error("not implemented");
+	}
 }

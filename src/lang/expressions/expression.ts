@@ -2,6 +2,8 @@ import { Ast } from "../../parser/ast";
 import { Evaluable } from "../evaluable";
 import { EApplication } from "./application";
 import { ENumber } from "./number";
+import { EDef } from "./operations/def";
+import { EDefun } from "./operations/defun";
 import { EVariable } from "./variable";
 
 export class EExpression extends Evaluable {
@@ -20,6 +22,37 @@ export class EExpression extends Evaluable {
 			throw new Error("impossible");
 
 		return { first_child, first_child_type, other_childs: node.children.slice(1) }
+	}
+
+
+	static compile(node: Ast): string[] {
+		switch (node.evaluableType) {
+			case ENumber: {
+				return ENumber.compile(node);
+			}
+
+			// case EVariable: {
+			// 	return EVariable.compile(node);
+			// }
+		}
+
+		let { first_child, first_child_type } = EExpression.parameters(node);
+
+		switch (first_child_type) {
+
+			// case EApplication: {
+			// 	return EApplication.compile(first_child);
+			// }
+			
+			case EExpression: {
+				return EExpression.compile(first_child);
+			}
+
+			default: {
+				return first_child_type.compile(first_child);
+			}
+
+		}
 	}
 
 	static evaluate(node: Ast): number {

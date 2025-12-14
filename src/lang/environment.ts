@@ -59,6 +59,11 @@ export class Environment {
 		this.variables = new Stack();
 		this.functions = new Map<string, FunctionDefinition>();
 	}
+
+	clean() {
+		this.variables = new Stack();
+		this.functions = new Map<string, FunctionDefinition>();
+	}
 }
 
 export const GLOBAL_ENV = new Environment();

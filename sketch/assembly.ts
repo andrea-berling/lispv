@@ -1,5 +1,12 @@
-import { Assembler } from "../src/riscv/assembler"
-import { Immediate20 } from "../src/riscv/immediate"
+import { EApplication } from "../src/lang/expressions/application"
+import { EExpression } from "../src/lang/expressions/expression"
+import { ENumber } from "../src/lang/expressions/number"
+import { EArgs } from "../src/lang/expressions/operations/args"
+import { EDefun } from "../src/lang/expressions/operations/defun"
+import { EFunction } from "../src/lang/expressions/operations/function"
+import { EPlus } from "../src/lang/expressions/operations/plus"
+import { EVariable } from "../src/lang/expressions/variable"
+import { Traversal } from "../src/lang/traversal"
 
 import "../src/riscv/instructions/btype"
 import "../src/riscv/instructions/itype"
@@ -7,54 +14,52 @@ import "../src/riscv/instructions/jtype"
 import "../src/riscv/instructions/rtype"
 import "../src/riscv/instructions/stype"
 import "../src/riscv/instructions/utype"
+
 import { Labels } from "../src/riscv/label"
 import { Memory } from "../src/riscv/memory"
 import { Pipeline } from "../src/riscv/pipeline"
 import { Registers } from "../src/riscv/register"
+import { Assembler } from "../src/riscv/assembler"
+import { Compiler, Interpreter } from "../src/lang/interpreter"
 
 export function main() {
 
 	// jal rs, 0
 	// jalr rd, 0(rs)
 
-	Pipeline.init();
-	let source: string;
+	// addi a0, zero, 100
+	// jalr ra, fun1(zero)
+	// add t3, zero, a0
+	// halt
+	// 
+	// fun1:
+	// 	addi sp, sp, -8 # make space
+	// 	sw ra, 4(sp) # store return address
+	// 	sw a0, 0(sp) # store first argument
+	// 
+	// 	addi a0, a0, 10 # body of the function
+	// 
+	// 	lw ra, 4(sp)
+	// 
+	// 	addi sp, sp, 8
+	// 	jal ra, 0
 
-	source = `
-addi a0, zero, 100
-jalr ra, fun1(zero)
-add t3, zero, a0
-halt
-
-fun1:
-	addi sp, sp, -8
-	sw ra, 4(sp)
-	sw a0, 0(sp)
-
-	addi a0, a0, 10
-	# jalr ra, fun2(zero)
-	sw t2, 0(a0)
-
-	lw ra, 4(sp)
-	lw a0, 0(sp)
-	addi sp, sp, 8
-
-	add a0, t2, zero
-	jal ra, 0
-	
-# fun2:
-# 	addi a0, a0, 1
-# 	jal ra, 0
+	let source = `
+(1)
 `
 
-	Assembler.parse(source.split("\n"));
+	let c = new Compiler(source.split("\n"));
+	let assembly = c.compile();
 
-	Labels.show()
+	console.log(assembly);
 
-	Pipeline.run(1000);
-
-	Memory.show()
-
-	Registers.show();
-
+	// Assembler.parse(assembly.split("\n"));
+	//
+	// Labels.show()
+	//
+	// Pipeline.run(1000);
+	//
+	// Memory.show()
+	//
+	// Registers.show();
 }

@@ -5,7 +5,6 @@ import { EExpression } from "../expression";
 import { ENumber } from "../number";
 import { EOperation } from "../operation";
 import { EVariable } from "../variable";
-import { EArgs } from "./args";
 
 export class EDefun extends EOperation {
 
@@ -16,9 +15,8 @@ export class EDefun extends EOperation {
 		EExpression
 	]
 
-	static evaluate(node: Ast): number {
-		let { first_child, first_child_type, other_childs } = EExpression.parameters(node);
-		let func: FunctionDefinition;
+	static parameters(node: Ast): { function_name: string, args: string[], definition: Ast } {
+		let { other_childs } = EExpression.parameters(node);
 
 		if (other_childs?.length != this.syntax.length - 1)
 			throw new Error("syntax: defun <name> (args <variable1 ... variablen>) (<expression>)");
@@ -60,6 +58,13 @@ export class EDefun extends EOperation {
 		if (!definition)
 			throw new Error("function must have a definition");
 
+		return { function_name, args, definition };
+	}
+
+	static evaluate(node: Ast): number {
+
+		let { function_name, args, definition } = this.parameters(node);
+
 		function explore(a: Ast) {
 
 			if (a.evaluableType == EVariable) {
@@ -67,13 +72,13 @@ export class EDefun extends EOperation {
 
 				let found_value = GLOBAL_ENV.variables.find(variable_name)
 
-				if (found_value){
+				if (found_value) {
 					a.evaluableType = ENumber;
 					a.name = ENumber.tag as string;
 					a.literal = found_value + "";
 				}
 			}
-			
+
 			for (let child of a.children || []) {
 				explore(child);
 			}
@@ -81,11 +86,57 @@ export class EDefun extends EOperation {
 
 		explore(definition);
 
-		func = new FunctionDefinition(function_name, args, definition);
+		let func = new FunctionDefinition(function_name, args, definition);
 
 		GLOBAL_ENV.functions.set(function_name, func);
 
 		return args.length;
+	}
+
+	static compile(node: Ast): string[] {
+
+		let { function_name, args, definition } = this.parameters(node);
+
+		let lines: string[] = [];
+		let argn = args.length + 1;
+
+		if (argn > 8)
+			throw new Error("cant have more than 8 arguments")
+
+
+		// label
+		lines.push(`${function_name}:`)
+
+		// saving
+		let offset = argn * 4;
+		lines.push(`\taddi sp, sp, -${offset}`);
+		offset = offset - 4;
+		lines.push(`\tsw ra, ${offset}(sp)`);
+		offset = offset - 4;
+		for (let i = 0; offset >= 0; offset -= 4, i++) {
+			lines.push(`\tsw a${i}, ${offset}(sp)`);
+		}
+
+		// body
+		
+		lines.push(definition.getText());
+
+		// restoring
+		offset = 0;
+		for (let i = argn - 2; i >= 1; offset += 4, i--) {
+			lines.push(`\tlw a${i}, ${offset}(sp)`);
+		}
+
+		offset = offset + 4;
+		lines.push(`\tlw ra, ${offset}(sp)`);
+		offset = offset + 4;
+		lines.push(`\taddi sp, sp, ${offset}`);
+
+		// returning
+
+		lines.push("\tjal ra, 0");
+
+		return lines;
 	}
 
 }
