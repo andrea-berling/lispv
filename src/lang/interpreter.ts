@@ -70,6 +70,9 @@ export class Interpreter extends LispEngine {
 	}
 
 
+	/**
+	* runs the interpreter and logs with possible opttions.
+	*/
 	log(options?: { includeLines?: boolean, includeIndexes?: boolean }): void {
 
 		let m = this.run();

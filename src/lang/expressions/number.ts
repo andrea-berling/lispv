@@ -13,7 +13,7 @@ export class ENumber extends Answer {
 
 	static compile(node: Ast): string[] {
 		let asm: string[] = [
-			 `addi a0, zero, ${Number.parseInt(node.literal || "")}`
+			 `\taddi a0, zero, ${Number.parseInt(node.literal || "")}`
 		];
 		return asm;
 	}

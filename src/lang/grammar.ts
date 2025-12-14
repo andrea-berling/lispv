@@ -12,7 +12,12 @@ import { EDef } from "./expressions/operations/def";
 import { EDefun } from "./expressions/operations/defun";
 import { EFunction } from "./expressions/operations/function";
 import { EArgs } from "./expressions/operations/args";
-import { EAnd, EEq, EGreater, ELess, ENot, EOr } from "./expressions/operations/predicates";
+import { EAnd} from "./expressions/operations/predicates/and"
+import { ENot } from "./expressions/operations/predicates/not";
+import { EOr } from "./expressions/operations/predicates/or";
+import { EGreater } from "./expressions/operations/predicates/greater";
+import { ELess } from "./expressions/operations/predicates/less";
+import { EEq } from "./expressions/operations/predicates/eq";
 
 // we define here a CFG (Context Free Grammar) for our language. it is a Chomsky-level-2 language.
 

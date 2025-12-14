@@ -103,6 +103,8 @@ export class EDefun extends EOperation {
 		if (argn > 8)
 			throw new Error("cant have more than 8 arguments")
 
+		// jump to end
+		lines.push(`\tjal zero, end-${function_name}`)
 
 		// label
 		lines.push(`${function_name}:`)
@@ -119,7 +121,7 @@ export class EDefun extends EOperation {
 
 		// body
 		
-		lines.push(definition.getText());
+		lines = lines.concat(EExpression.compile(definition));
 
 		// restoring
 		offset = 0;
@@ -135,6 +137,8 @@ export class EDefun extends EOperation {
 		// returning
 
 		lines.push("\tjal ra, 0");
+
+		lines.push(`end-${function_name}:`)
 
 		return lines;
 	}

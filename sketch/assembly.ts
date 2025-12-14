@@ -47,15 +47,13 @@ export function main() {
 
 	let source = `
 (1)
-(2)
-(3)
-(defun f (args) (1))
+(+ 1 2 3 4)
+// (defun plus (args x y) (+ 1 2))
 `
-
 	let c = new Compiler(source.split("\n"));
 	let assembly = c.compile();
 
-	// console.log(assembly);
+	assembly.forEach(line => console.log(line));
 
 	Assembler.parse(assembly);
 
