@@ -9,76 +9,7 @@ import { EExpression } from "./expressions/expression";
 import { EDefun } from "./expressions/operations/defun";
 
 export abstract class LispEngine {
-	static cleanAst(line: string) {
 
-		const p = new Parser(GRAMMAR);
-
-		let result = p.parse(line);
-
-		if (result.parsed) {
-			let ast = result.parsed.copyAsAst();
-
-			// wipe rules that were added for parsing purposes
-			ast.wipe(ONE_OR_MORE_SPACES, LBRACKET, RBRACKET, ZERO_OR_MORE_SPACES)
-
-			// remove picked grammar patterns that are not of use
-			ast.simplify(GRAMMAR, OPERATION, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION);
-
-			// collapse the digits of a number in a node of name number, 
-			ast.collapse(NUMBER, VARIABLE, FUNCTION);
-
-			return ast;
-		}
-	}
-
-}
-
-export class Compiler extends LispEngine {
-	lines: string[];
-
-	constructor(lines: string[], cleanEnv = true) {
-		super();
-		if (cleanEnv)
-			GLOBAL_ENV.clean()
-		this.lines = lines;
-	}
-
-	compile(): string[] {
-
-		let asm: string[] = [];
-
-		for (let i = 0; i < this.lines.length; i++) {
-
-			let line = this.lines[i];
-
-			let ast = Compiler.cleanAst(line)
-
-			if (!ast)
-				continue;
-
-			function explore(node: Ast): string[] | undefined {
-				if (node.evaluableType === EExpression) {
-					return EExpression.compile(node);
-				}
-
-				for (const child of node.children || []) {
-					const res = explore(child);
-					if (res !== undefined) return res;
-				}
-
-				return undefined;
-			}
-
-			const result = explore(ast);
-
-			if (result === undefined)
-				throw new Error("no defun found");
-
-			asm = asm.concat(result);
-		}
-
-		return asm;
-	}
 }
 
 export class Interpreter extends LispEngine {
@@ -98,16 +29,30 @@ export class Interpreter extends LispEngine {
 
 		for (let i = 0; i < this.lines.length; i++) {
 
-			let ast = Interpreter.cleanAst(this.lines[i]);
+			let ast = Traversal.cleanAst(this.lines[i]);
 
 			if (ast) {
 				this.debug && console.log(ast);
 
-				let traversal = new Traversal(ast);
+				function explore(node: Ast): number | undefined {
+					if (node.evaluableType === EExpression) {
+						return EExpression.evaluate(node);
+					}
 
-				let answer = traversal.start();
+					for (const child of node.children || []) {
+						const res = explore(child);
+						if (res !== undefined) return res;
+					}
 
-				m.set(i, answer)
+					return undefined;
+				}
+
+				const result = explore(ast);
+
+				if (result === undefined)
+					throw new Error("must have at least one expression");
+
+				m.set(i, result)
 			}
 		}
 

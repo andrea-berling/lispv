@@ -20,7 +20,8 @@ import { Memory } from "../src/riscv/memory"
 import { Pipeline } from "../src/riscv/pipeline"
 import { Registers } from "../src/riscv/register"
 import { Assembler } from "../src/riscv/assembler"
-import { Compiler, Interpreter } from "../src/lang/interpreter"
+import { Interpreter } from "../src/lang/interpreter"
+import { Compiler } from "../src/lang/compiler"
 
 export function main() {
 
@@ -46,20 +47,23 @@ export function main() {
 
 	let source = `
 (1)
+(2)
+(3)
+(defun f (args) (1))
 `
 
 	let c = new Compiler(source.split("\n"));
 	let assembly = c.compile();
 
-	console.log(assembly);
+	// console.log(assembly);
 
-	// Assembler.parse(assembly.split("\n"));
-	//
-	// Labels.show()
-	//
-	// Pipeline.run(1000);
-	//
-	// Memory.show()
-	//
-	// Registers.show();
+	Assembler.parse(assembly);
+
+	Labels.show()
+
+	Pipeline.run(1000);
+
+	Memory.show()
+
+	Registers.show();
 }

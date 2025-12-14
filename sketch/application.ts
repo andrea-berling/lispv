@@ -40,6 +40,8 @@ export function main() {
 
 		definition.children = [application];
 
+		console.log(application)
+
 
 		let f = new FunctionDefinition("f", ["a", "b"], definition)
 
