@@ -31,9 +31,9 @@ export class EExpression extends Evaluable {
 				return ENumber.compile(node);
 			}
 
-			// case EVariable: {
-			// 	return EVariable.compile(node);
-			// }
+			case EVariable: {
+				return EVariable.compile(node);
+			}
 		}
 
 		let { first_child, first_child_type } = EExpression.parameters(node);

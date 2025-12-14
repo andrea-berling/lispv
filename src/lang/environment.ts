@@ -67,3 +67,5 @@ export class Environment {
 }
 
 export const GLOBAL_ENV = new Environment();
+
+export let COMPILING_FUNCTION: FunctionDefinition;

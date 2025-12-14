@@ -17,4 +17,15 @@ export class EVariable extends Evaluable {
 
 		return value;
 	}
+
+	static compile(node: Ast): string[] {
+		let asm: string[] = [ ]
+
+		if (!node.literal)
+			throw new Error("variable name cannot be empty");
+
+		asm.push(node.literal);
+
+		return asm;
+	}
 }
