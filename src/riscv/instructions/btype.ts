@@ -124,6 +124,8 @@ export class BeqInstruction extends BTypeInstruction {
 	static tag = "beq";
 
 	execute(): void {
+		if (this.source1.value != this.source2.value)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
 	}
 
 	static {
@@ -136,6 +138,83 @@ export class BneInstruction extends BTypeInstruction {
 
 	execute(): void {
 		if (this.source1.value != this.source2.value)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class BgtInstruction extends BTypeInstruction {
+	static tag = "bgt";
+
+	execute(): void {
+		if (this.source1.value > this.source2.value)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class BgeInstruction extends BTypeInstruction {
+	static tag = "bge";
+
+	execute(): void {
+		if (this.source1.value >= this.source2.value)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class BltInstruction extends BTypeInstruction {
+	static tag = "blt";
+
+	execute(): void {
+		if (this.source1.value < this.source2.value)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+
+/**
+ * branch if source1 unsigned is less than or equals to source2 unsigned
+ */
+export class BltuInstruction extends BTypeInstruction {
+	static tag = "bltu";
+
+	execute(): void {
+		let condition = (this.source1.value >>> 0) <= (this.source2.value >>> 0)
+
+		if (condition)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+/**
+ * branch if source1 unsigned is greater than source2 unsigned
+ */
+
+export class BgtuInstruction extends BTypeInstruction {
+	static tag = "bgtu";
+
+	execute(): void {
+		let condition = (this.source1.value >>> 0) > (this.source2.value >>> 0)
+
+		if (condition)
 			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
 	}
 

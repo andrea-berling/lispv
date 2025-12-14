@@ -41,6 +41,7 @@ export abstract class Registers {
 		["tp", "i4"], // thread pointer
 		["t0", "i5"], // temporary registers
 		["t1", "i6"],
+		["t2", "i7"],
 		["fp", "i8"], // frame pointer
 		["s0", "i8"], // saved registers
 		["s1", "i9"],

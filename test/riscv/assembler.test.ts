@@ -85,22 +85,22 @@ describe('assembling', () => {
 
 		let instructions = `
 			main:
-			addi a0, zero, 2 # argument 0 = 2
-			addi a1, zero, 3 # argument 1 = 3
-			addi a2, zero, 4 # argument 2 = 4
-			addi a3, zero, 5 # argument 3 = 5
-			jalr ra, diffofsums(zero) # call function
+				addi a0, zero, 2 # argument 0 = 2
+				addi a1, zero, 3 # argument 1 = 3
+				addi a2, zero, 4 # argument 2 = 4
+				addi a3, zero, 5 # argument 3 = 5
+				jalr ra, diffofsums(zero) # call function
 
 			add s7, a0, zero # y = returned value
 
 			halt
 
 			diffofsums:
-			add t0, a0, a1 # t0 = f+g
-			add t1, a2, a3 # t1 = h+i
-			sub s3, t0, t1 # result = (f+g)−(h+i)
-			add a0, s3, zero # put return value in a0
-			jal ra, 0
+				add t0, a0, a1 # t0 = f+g
+				add t1, a2, a3 # t1 = h+i
+				sub s3, t0, t1 # result = (f+g)−(h+i)
+				add a0, s3, zero # put return value in a0
+				jal ra, 0
 		`
 
 		Assembler.parse(instructions.split("\n"));
@@ -140,6 +140,23 @@ describe('assembling', () => {
 		expect(Registers.parse("i4").value).toBe(22)
 
 		expect(Registers.parse("i5").value).toBe(11)
+	});
+
+	test("stack pointer wrapping", () => {
+
+		Pipeline.init();
+
+		let instructions = `
+			addi ra, zero, 1000
+			addi sp, sp, -4
+			sw ra, 0(sp)
+		`
+
+		Assembler.parse(instructions.split("\n"));
+
+		Pipeline.run(100);
+
+		expect(Memory.get(0xffff_fffc)).toBe(1000);
 	});
 
 });

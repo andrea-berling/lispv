@@ -11,7 +11,7 @@
 		"watch-interpreter": "tsx --watch sketch/interpreter.ts",
 		"repl": "tsx -i",
 		"test": "jest --runInBand",
-		"dev": "webpack serve --open",
+		"dev": "webpack serve",
 		"pack": "webpack"
 	},
 	"devDependencies": {
