@@ -48,8 +48,8 @@ export function main() {
 	let source = `
 (1)
 (+ 1 2)
-(defun plus (args x y) (+ x y))
-(plus 1 2)
+(defun plus (args x y z) (+ x y z))
+(plus 1 2 3)
 `
 	let c = new Compiler(source.split("\n"));
 	let assembly = c.compile();

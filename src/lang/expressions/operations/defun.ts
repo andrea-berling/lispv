@@ -130,6 +130,8 @@ export class EDefun extends EOperation {
 		for (let i = argn - 2; i >= 1; offset += 4, i--) {
 			lines.push(`\tlw a${i}, ${offset}(sp)`);
 		}
+		
+		lines.push(`\tadd a0, zero, t2`); // bring back the return value where it should.
 
 		offset = offset + 4;
 		lines.push(`\tlw ra, ${offset}(sp)`);
