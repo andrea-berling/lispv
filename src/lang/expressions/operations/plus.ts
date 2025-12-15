@@ -29,9 +29,6 @@ export class EPlus extends EOperation {
 
 		let { other_childs } = EExpression.parameters(node);
 
-		let sum = 0;
-		let intermediate: number;
-
 		asm.push(`\tadd t2, zero, zero`); // set t2 to 0
 
 		for (let child of other_childs) {

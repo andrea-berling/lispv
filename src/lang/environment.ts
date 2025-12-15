@@ -68,4 +68,29 @@ export class Environment {
 
 export const GLOBAL_ENV = new Environment();
 
-export let COMPILING_FUNCTION: FunctionDefinition;
+// associate the functions variables with the registers
+
+export class CompilerEnvironment {
+	static env: CompilerEnvironment;
+	index: number = 0;
+
+	static {
+		this.env = new CompilerEnvironment();
+	}
+
+	reset() {
+		this.index = 0;
+	}
+
+	increase() {
+		this.index++;
+		if (this.index > 8)
+			throw new Error("cant have more than 8 arguments");
+	}
+
+	getRegisterName() {
+		return "a" + this.index;
+	}
+
+
+}

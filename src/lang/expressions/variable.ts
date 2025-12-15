@@ -1,5 +1,5 @@
 import { Ast } from "../../parser/ast";
-import { GLOBAL_ENV } from "../environment";
+import { CompilerEnvironment, GLOBAL_ENV } from "../environment";
 import { Evaluable } from "../evaluable";
 
 export class EVariable extends Evaluable {
@@ -19,12 +19,14 @@ export class EVariable extends Evaluable {
 	}
 
 	static compile(node: Ast): string[] {
-		let asm: string[] = [ ]
+		let asm: string[] = []
 
 		if (!node.literal)
 			throw new Error("variable name cannot be empty");
 
-		asm.push(node.literal);
+		asm.push(`\tadd a0, zero, ${CompilerEnvironment.env.getRegisterName()}`);
+
+		CompilerEnvironment.env.increase();
 
 		return asm;
 	}

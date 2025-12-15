@@ -1,5 +1,5 @@
 import { Ast } from "../../../parser/ast";
-import { FunctionDefinition, GLOBAL_ENV } from "../../environment";
+import { CompilerEnvironment, FunctionDefinition, GLOBAL_ENV } from "../../environment";
 import { Evaluable } from "../../evaluable";
 import { EExpression } from "../expression";
 import { ENumber } from "../number";
@@ -120,7 +120,9 @@ export class EDefun extends EOperation {
 		}
 
 		// body
-		
+
+		CompilerEnvironment.env.reset();
+
 		lines = lines.concat(EExpression.compile(definition));
 
 		// restoring
@@ -139,6 +141,10 @@ export class EDefun extends EOperation {
 		lines.push("\tjal ra, 0");
 
 		lines.push(`end-${function_name}:`)
+
+		let func = new FunctionDefinition(function_name, args, new Ast("body"));
+
+		GLOBAL_ENV.functions.set(function_name, func);
 
 		return lines;
 	}

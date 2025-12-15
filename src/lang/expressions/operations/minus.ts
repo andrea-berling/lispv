@@ -6,7 +6,7 @@ export class EMinus extends EOperation {
 
 	static evaluate(node: Ast): number {
 
-		let { first_child, first_child_type, other_childs } = EExpression.parameters(node);
+		let { other_childs } = EExpression.parameters(node);
 
 		let sum = 0;
 		let intermediate: number;
@@ -21,6 +21,25 @@ export class EMinus extends EOperation {
 		}
 
 		return sum;
+	}
+
+	static compile(node: Ast): string[] {
+		let asm: string[] = [];
+
+		let { other_childs } = EExpression.parameters(node);
+
+		asm.push(`\tadd t2, zero, zero`); // set t2 to 0
+
+		for (let child of other_childs) {
+
+			if (!child.evaluableType)
+				throw new Error("impossible")
+
+			asm = asm.concat(EExpression.compile(child));
+			asm.push(`\tsub t2, t2, a0`);
+		}
+
+		return asm;
 	}
 
 }
