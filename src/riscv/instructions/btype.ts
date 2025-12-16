@@ -135,6 +135,7 @@ export class BeqInstruction extends BTypeInstruction {
 
 export class BneInstruction extends BTypeInstruction {
 	static tag = "bne";
+	static f3 = 0b001;
 
 	execute(): void {
 		if (this.source1.value != this.source2.value)
@@ -146,34 +147,9 @@ export class BneInstruction extends BTypeInstruction {
 	}
 }
 
-export class BgtInstruction extends BTypeInstruction {
-	static tag = "bgt";
-
-	execute(): void {
-		if (this.source1.value > this.source2.value)
-			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
-	}
-
-	static {
-		InstructionRegistry.register(this);
-	}
-}
-
-export class BgeInstruction extends BTypeInstruction {
-	static tag = "bge";
-
-	execute(): void {
-		if (this.source1.value >= this.source2.value)
-			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
-	}
-
-	static {
-		InstructionRegistry.register(this);
-	}
-}
-
 export class BltInstruction extends BTypeInstruction {
 	static tag = "blt";
+	static f3 = 0b100;
 
 	execute(): void {
 		if (this.source1.value < this.source2.value)
@@ -186,11 +162,26 @@ export class BltInstruction extends BTypeInstruction {
 }
 
 
+export class BgeInstruction extends BTypeInstruction {
+	static tag = "bge";
+	static f3 = 0b101;
+
+	execute(): void {
+		if (this.source1.value >= this.source2.value)
+			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
 /**
  * branch if source1 unsigned is less than or equals to source2 unsigned
  */
 export class BltuInstruction extends BTypeInstruction {
 	static tag = "bltu";
+	static f3 = 0b110;
 
 	execute(): void {
 		let condition = (this.source1.value >>> 0) <= (this.source2.value >>> 0)
@@ -210,6 +201,7 @@ export class BltuInstruction extends BTypeInstruction {
 
 export class BgtuInstruction extends BTypeInstruction {
 	static tag = "bgtu";
+	static f3 = 0b111;
 
 	execute(): void {
 		let condition = (this.source1.value >>> 0) > (this.source2.value >>> 0)

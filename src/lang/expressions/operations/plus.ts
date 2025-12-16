@@ -29,10 +29,9 @@ export class EPlus extends EOperation {
 
 		let { other_childs } = EExpression.parameters(node);
 
-		asm.push(`\tadd t2, zero, zero`); // set t2 to 0
-
 		this.debug_compiler && asm.push(`\t# add ${node.getText()}`)
-		// this.debug_compiler && console.log(node);
+
+		asm.push(`\tadd t2, zero, zero`); // set t2 to 0
 
 		for (let child of other_childs) {
 
@@ -45,6 +44,21 @@ export class EPlus extends EOperation {
 		}
 
 		return asm;
+	}
+
+	static primitives() {
+		return `
++1:
+	add a0, zero, a0
+	jal ra, 0
++2:
+	add a0, a0, a1
+	jal ra, 0
+`
+	}
+
+	static {
+		// Primitives.addToRegistry(this.primitives());
 	}
 
 }

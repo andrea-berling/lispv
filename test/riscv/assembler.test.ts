@@ -23,7 +23,9 @@ describe('assembling', () => {
 		sw i2, 0x0(i3)
 		`
 
-		Assembler.parse(instructions.split("\n"));
+		let as = new Assembler(instructions.split("\n"));
+
+		as.parse();
 
 		Pipeline.run();
 
@@ -47,7 +49,9 @@ describe('assembling', () => {
 			bne i1, i0, loop # while i1 > 0
 		`
 
-		Assembler.parse(instructions.split("\n"));
+		let as = new Assembler(instructions.split("\n"));
+
+		as.parse();
 
 		Pipeline.run();
 
@@ -69,7 +73,9 @@ describe('assembling', () => {
 			jal i3, 0
 		`
 
-		Assembler.parse(instructions.split("\n"));
+		let as = new Assembler(instructions.split("\n"));
+
+		as.parse();
 
 		Pipeline.run(100);
 
@@ -103,7 +109,9 @@ describe('assembling', () => {
 				jal ra, 0
 		`
 
-		Assembler.parse(instructions.split("\n"));
+		let as = new Assembler(instructions.split("\n"));
+
+		as.parse();
 
 		Pipeline.run(100);
 
@@ -133,7 +141,9 @@ describe('assembling', () => {
 			addi i2, i2, 4
 		`
 
-		Assembler.parse(instructions.split("\n"));
+		let as = new Assembler(instructions.split("\n"));
+
+		as.parse();
 
 		Pipeline.run(100);
 
@@ -152,7 +162,9 @@ describe('assembling', () => {
 			sw ra, 0(sp)
 		`
 
-		Assembler.parse(instructions.split("\n"));
+		let as = new Assembler(instructions.split("\n"));
+
+		as.parse();
 
 		Pipeline.run(100);
 

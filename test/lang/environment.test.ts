@@ -1,6 +1,6 @@
 import { EExpression } from "../../src/lang/expressions/expression"
 import { EApplication } from "../../src/lang/expressions/application";
-import { GLOBAL_ENV } from "../../src/lang/environment";
+import { INTERPRETER_ENV } from "../../src/lang/environment";
 import { ENumber } from "../../src/lang/expressions/number";
 import { EArgs } from "../../src/lang/expressions/operations/args";
 import { EDefun } from "../../src/lang/expressions/operations/defun";
@@ -49,6 +49,6 @@ describe("environment", () => {
 		t = new Traversal(e2);
 		t.start();
 
-		expect(GLOBAL_ENV.variables.levels.at(1)?.get("a")).toBe(10);
+		expect(INTERPRETER_ENV.variables.levels.at(1)?.get("a")).toBe(10);
 	})
 })

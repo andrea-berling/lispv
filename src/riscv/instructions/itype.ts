@@ -1,4 +1,4 @@
-import { bin } from "../utils";
+import { bin, signExtend, unsigned } from "../utils";
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../memory";
@@ -152,6 +152,83 @@ export class AddiInstruction extends IntegerRegisterImmediateInstruction {
 
 	execute(): void {
 		this.destination.value = this.source.value + this.immediate.value;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SltiInstruction extends IntegerRegisterImmediateInstruction {
+	static tag = "slti";
+	static f3 = 0b010;
+
+	execute(): void {
+		this.destination.value = (this.source.value < this.immediate.value) ? 1 : 0
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SltiuInstruction extends IntegerRegisterImmediateInstruction {
+	static tag = "sltiu";
+	static f3 = 0b011;
+
+	execute(): void {
+		this.destination.value = (unsigned(this.source.value) < unsigned(this.immediate.value)) ? 1 : 0
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class XoriInstruction extends IntegerRegisterImmediateInstruction {
+	static tag = "xori";
+	static f3 = 0b100;
+
+	execute(): void {
+		this.destination.value = this.source.value ^ signExtend(this.immediate.value, this.immediate.bits);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class OriInstruction extends IntegerRegisterImmediateInstruction {
+	static tag = "ori";
+	static f3 = 0b110;
+
+	execute(): void {
+		this.destination.value = this.source.value | signExtend(this.immediate.value, this.immediate.bits);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class AndiInstruction extends IntegerRegisterImmediateInstruction {
+	static tag = "andi";
+	static f3 = 0b111;
+
+	execute(): void {
+		this.destination.value = this.source.value & signExtend(this.immediate.value, this.immediate.bits);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SlliInstruction extends IntegerRegisterImmediateInstruction {
+	static tag = "slli";
+
+	execute(): void {
+		this.destination.value = this.source.value & signExtend(this.immediate.value, this.immediate.bits);
 	}
 
 	static {

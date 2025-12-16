@@ -1,15 +1,19 @@
 import { Ast } from "../parser/ast";
-import { INTERPRETER_ENV } from "./environment";
+import { COMPILER_ENV } from "./environment";
 import { EExpression } from "./expressions/expression";
+import { LispReader } from "./interpreter";
 import { Traversal } from "./traversal";
 
-export class Compiler {
+export class Compiler extends LispReader {
 	lines: string[];
 
-	constructor(lines: string[], cleanEnv = true) {
+	constructor(lines: string[] | string, cleanEnv = true) {
+		super();
 		if (cleanEnv)
-			INTERPRETER_ENV.clean()
-		this.lines = lines;
+			COMPILER_ENV.clean()
+		this.lines = LispReader.lines(lines);
+
+		LispReader.debug_reader && this.lines.forEach(x => console.log(x));
 	}
 
 	compile(): string[] {
@@ -25,23 +29,10 @@ export class Compiler {
 			if (!ast)
 				continue;
 
-			function explore(node: Ast): string[] | undefined {
-				if (node.evaluableType === EExpression) {
-					return EExpression.compile(node);
-				}
-
-				for (const child of node.children || []) {
-					const res = explore(child);
-					if (res !== undefined) return res;
-				}
-
-				return undefined;
-			}
-
-			const result = explore(ast);
+			const result = Traversal.explore(ast, EExpression.compile);
 
 			if (result === undefined)
-				throw new Error("no defun found");
+				throw new Error("impossible");
 
 			asm = asm.concat(result);
 		}

@@ -1,11 +1,11 @@
 import { Ast } from "../../../parser/ast";
-import { COMPILER_ENV, FunctionDefinition, INTERPRETER_ENV } from "../../environment";
+import { COMPILER_ENV, Environment, FunctionDefinition, INTERPRETER_ENV } from "../../environment";
 import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
 export class EFunction extends EOperation {
 
-	static parameters(node: Ast): { func: FunctionDefinition, args_nodes: Ast[] } {
+	static parameters(node: Ast, env: Environment): { func: FunctionDefinition, args_nodes: Ast[] } {
 
 		let { first_child, other_childs } = EExpression.parameters(node);
 
@@ -15,7 +15,7 @@ export class EFunction extends EOperation {
 			throw new Error("<function> must have a name");
 
 		// functions are in a global environment. we dont make a distinction between closures.
-		let func = INTERPRETER_ENV.functions.get(function_name);
+		let func = env.functions.get(function_name);
 
 		if (!func)
 			throw new Error(`function ${function_name} undefined`);
@@ -28,7 +28,7 @@ export class EFunction extends EOperation {
 
 	static evaluate(node: Ast): number {
 
-		let { func, args_nodes } = this.parameters(node);
+		let { func, args_nodes } = this.parameters(node, INTERPRETER_ENV);
 
 		// since we are applying a function, we should create an isolated environment for the new parameter-argument associations
 		INTERPRETER_ENV.variables.push();
@@ -63,7 +63,7 @@ export class EFunction extends EOperation {
 	static compile(node: Ast): string[] {
 		let asm: string[] = [];
 
-		let { func, args_nodes } = this.parameters(node);
+		let { func, args_nodes } = this.parameters(node, COMPILER_ENV);
 
 		for (let i = 0; i < args_nodes.length; i++) {
 			// the function parameter, as defined in the signature
@@ -82,6 +82,7 @@ export class EFunction extends EOperation {
 				}
 
 			} else {
+				// TODO passing functions
 			}
 		}
 		if (args_nodes.length >= 1)

@@ -1,4 +1,5 @@
 import { DEBUG, DEBUG_ASSEMBLER } from "../flags";
+import { Primitives } from "../lang/lib/primitives";
 import { Instruction } from "./instruction";
 import { Labels } from "./label";
 import { Memory } from "./memory";
@@ -9,15 +10,22 @@ const debug = DEBUG || DEBUG_ASSEMBLER;
  * parse assembly and write to memory
  */
 export class Assembler {
+	lines: string[];
+
 	static comment: RegExp = new RegExp("#.*");
 	static label: RegExp = new RegExp("\S+:");
 	static afterLabel: RegExp = new RegExp(":.*")
+
+	constructor(lines: string[]) {
+		this.lines = Primitives.getPrologue().concat(lines);
+	}
 
 	/**
 	 * @param lines An array of strings representing the instructions in asm.
 	 * @param startAddr The address of memory where to start writing.
 	 */
-	static parse(lines: string[], startAddr: number = 0) {
+	parse(startAddr: number = 0) {
+		let lines = this.lines;
 		let addr = startAddr;
 		let i: Instruction;
 		let encoded: number;
@@ -34,7 +42,7 @@ export class Assembler {
 				continue;
 
 			if (line.includes(":")) {
-				label = line.replace(this.afterLabel, "");
+				label = line.replace(Assembler.afterLabel, "");
 				Labels.set(label, addr)
 				continue;
 			}
@@ -71,6 +79,12 @@ export class Assembler {
 			catch (e: any) {
 				console.error(e);
 			}
+		}
+	}
+
+	log() {
+		for (let i = 0; i < this.lines.length; i++) {
+			console.log(this.lines[i]);
 		}
 	}
 

@@ -1,29 +1,39 @@
-import { debug } from "console";
-import { Parser } from "../parser/parser";
-import { APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION, FUNCTION, GRAMMAR, LBRACKET, NUMBER, ONE_OR_MORE_SPACES, OPERATION, RBRACKET, VARIABLE, ZERO_OR_MORE_SPACES } from "./grammar";
 import { Traversal } from "./traversal";
-import { DEBUG, DEBUG_INTERPRETER } from "../flags";
+import { DEBUG, DEBUG_INTERPRETER, DEBUG_READER } from "../flags";
 import { INTERPRETER_ENV } from "./environment";
 import { Ast } from "../parser/ast";
 import { EExpression } from "./expressions/expression";
-import { EDefun } from "./expressions/operations/defun";
 
-export abstract class LispEngine {
+export abstract class LispReader {
+	abstract lines: string[];
+	static debug_reader = DEBUG || DEBUG_READER;
 
+	static lines(lines: string[] | string) {
+		if (typeof lines === "string")
+			return lines.split("\n").map(x => x.trim()).filter(x => x.trim() != "");
+		else
+			return lines.map(x => x.trim()).filter(x => x.trim() != "");
+	}
 }
 
-export class Interpreter extends LispEngine {
+export class Interpreter extends LispReader {
 	lines: string[];
 	debug = DEBUG || DEBUG_INTERPRETER;
 
-	constructor(lines: string[], cleanEnv = true) {
+	constructor(lines: string[] | string, cleanEnv = true) {
 		super();
 		if (cleanEnv)
 			INTERPRETER_ENV.clean()
-		this.lines = lines;
+		this.lines = LispReader.lines(lines);
+
+		LispReader.debug_reader && this.lines.forEach(x => console.log(x));
 	}
 
-	run(): Map<number, number> {
+	run() {
+		return this.runAndGetAnswerFromLineNumber(this.lines.length - 1);
+	}
+
+	runAndGetLineNumberToAnswerMap(): Map<number, number> {
 
 		let m = new Map<number, number>();
 
@@ -34,28 +44,14 @@ export class Interpreter extends LispEngine {
 			if (ast) {
 				this.debug && console.log(ast);
 
-				function explore(node: Ast): number | undefined {
-					if (node.evaluableType === EExpression) {
-						return EExpression.evaluate(node);
-					}
-
-					for (const child of node.children || []) {
-						const res = explore(child);
-						if (res !== undefined) return res;
-					}
-
-					return undefined;
-				}
-
-				const result = explore(ast);
+				const result = Traversal.explore(ast, EExpression.evaluate);
 
 				if (result === undefined)
-					throw new Error("must have at least one expression");
+					throw new Error("impossible");
 
 				m.set(i, result)
 			}
 		}
-
 		return m;
 	}
 
@@ -66,16 +62,26 @@ export class Interpreter extends LispEngine {
 		if (!index)
 			throw new Error(`line ${line} was not in source`);
 
-		return this.run().get(index);
+		return this.runAndGetLineNumberToAnswerMap().get(index);
 	}
 
+	runAndGetAnswerFromLineNumber(n: number) {
+		let index = n;
+
+		let answer = this.runAndGetLineNumberToAnswerMap().get(index);
+
+		if (answer === undefined)
+			throw new Error(`line at ${n} was not in source`);
+
+		return answer;
+	}
 
 	/**
-	* runs the interpreter and logs with possible opttions.
+	* runs the interpreter and logs with possible options.
 	*/
 	log(options?: { includeLines?: boolean, includeIndexes?: boolean }): void {
 
-		let m = this.run();
+		let m = this.runAndGetLineNumberToAnswerMap();
 
 		for (let i of m.keys()) {
 			if (options?.includeIndexes) {
@@ -95,7 +101,5 @@ export class Interpreter extends LispEngine {
 				}
 			}
 		}
-
 	}
-
 }

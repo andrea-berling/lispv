@@ -22,48 +22,48 @@ import { Registers } from "../src/riscv/register"
 import { Assembler } from "../src/riscv/assembler"
 import { Interpreter } from "../src/lang/interpreter"
 import { Compiler } from "../src/lang/compiler"
+import { Primitives } from "../src/lang/lib/primitives"
+import { COMPILER_ENV } from "../src/lang/environment"
+import { InstructionRegistry } from "../src/riscv/instructionRegistry"
+import { bin, signExtend } from "../src/riscv/utils"
 
 export function main() {
 
 	// jal rs, 0
-	// jalr rd, 0(rs)
-
-	// addi a0, zero, 100
-	// jalr ra, fun1(zero)
-	// add t3, zero, a0
-	// halt
-	// 
-	// fun1:
-	// 	addi sp, sp, -8 # make space
-	// 	sw ra, 4(sp) # store return address
-	// 	sw a0, 0(sp) # store first argument
-	// 
-	// 	addi a0, a0, 10 # body of the function
-	// 
-	// 	lw ra, 4(sp)
-	// 
-	// 	addi sp, sp, 8
-	// 	jal ra, 0
+	// jalr rd, 0(zero)
 
 	let source = `
-(defun minus (args x y) (+ x (- y)))
-(minus 1 2)
-`.split("\n").filter(x => x.trim() != "");
-
-	source.forEach(x => console.log(x));
+		(defun plus (args x y) (+ x y))
+		(defun minus (args z) (- z))
+		(defun pm (args a b) (plus a (minus b)))
+		(plus 3 4)
+	`
 
 	let c = new Compiler(source);
+
 	let assembly = c.compile();
 
-	assembly.forEach(line => console.log(line));
+	let as = new Assembler(assembly);
 
-	Assembler.parse(assembly);
+	as.log();
 
-	Labels.show()
+	as.parse();
+
+	// Labels.show()
 
 	Pipeline.run(1000);
 
-	Memory.show()
+	// Memory.show()
 
 	Registers.show();
+
+	let i = new Interpreter(source);
+
+	console.log(Registers.parse("a0").value == i.run());
+
+	Array.from(InstructionRegistry.tagRegistry.entries()).forEach(x => console.log(x));
+
+	console.log(Array.from(InstructionRegistry.tagRegistry.entries()).length);
+
+
 }

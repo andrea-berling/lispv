@@ -147,7 +147,7 @@ export class EDefun extends EOperation {
 
 		let func = new FunctionDefinition(function_name, args, new Ast("body"));
 
-		INTERPRETER_ENV.functions.set(function_name, func);
+		COMPILER_ENV.functions.set(function_name, func);
 
 		return lines;
 	}

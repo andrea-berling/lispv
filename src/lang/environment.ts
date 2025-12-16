@@ -67,7 +67,6 @@ export class Environment {
 }
 
 export class CompilerEnvironment extends Environment {
-	
 	constructor() {
 		super();
 	}

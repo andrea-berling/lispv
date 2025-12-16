@@ -121,7 +121,7 @@ export abstract class Memory {
 	}
 
 	static getAccesses() {
-		return { write: Memory.writeAccesses, read: Memory.readAccesses }
+		return { write: Memory.writeAccesses, read: Memory.readAccesses, total: Memory.writeAccesses + Memory.readAccesses }
 	}
 
 	/**

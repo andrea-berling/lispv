@@ -43,6 +43,21 @@ export class Traversal {
 		return result;
 	}
 
+
+	static explore<T>(node: Ast, lambda: (node: Ast) => T): T | undefined {
+		if (node.evaluableType === EExpression) {
+			return lambda(node);
+		}
+
+		for (const child of node.children || []) {
+			const res = this.explore(child, lambda);
+			if (res !== undefined) return res;
+		}
+
+		return undefined;
+	}
+
+
 	static cleanAst(line: string) {
 
 		const p = new Parser(GRAMMAR);

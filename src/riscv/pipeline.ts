@@ -30,12 +30,11 @@ export class Pipeline {
 			// fetch
 			addr = ProgramCounter.address;
 			encoded = Memory.get(addr);
-			debug && console.log("fetched: ", hex(encoded), "at", hex(addr));
 
 			// decode. if the decoding fails the simulator crashes.
 			i = Instruction.decode(encoded);
 			i.address = ProgramCounter.address
-			debug && console.log("decoded", i);
+			debug && console.log(`${ProgramCounter.address}: ${i.disassemble()}`);
 
 			// execute, memory, writeback
 			i.execute();
@@ -44,7 +43,7 @@ export class Pipeline {
 			iter++;
 		} while (i.tag != "halt" && (maxIterations ? iter < maxIterations : true));
 
-		debug && console.log("run finished at", Date(), `with ${Memory.getAccesses().write + Memory.getAccesses().read} accesses, in ${iter} iterations.`);
+		debug && console.log("run finished at", Date(), `with ${Memory.getAccesses().total} accesses(r: ${Memory.getAccesses().read}, w: ${Memory.getAccesses().write}), in ${iter} iterations.`);
 
 	}
 }
