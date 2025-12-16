@@ -29,6 +29,7 @@ export class EMinus extends EOperation {
 		let { other_childs } = EExpression.parameters(node);
 
 		asm.push(`\tadd t2, zero, zero`); // set t2 to 0
+		this.debug_compiler && asm.push(`\t# sub ${node.getText()}`)
 
 		for (let child of other_childs) {
 

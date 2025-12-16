@@ -1,5 +1,5 @@
 import { Ast } from "../../../parser/ast";
-import { CompilerEnvironment, FunctionDefinition, GLOBAL_ENV } from "../../environment";
+import { COMPILER_ENV, FunctionDefinition, INTERPRETER_ENV } from "../../environment";
 import { Evaluable } from "../../evaluable";
 import { EExpression } from "../expression";
 import { ENumber } from "../number";
@@ -70,7 +70,7 @@ export class EDefun extends EOperation {
 			if (a.evaluableType == EVariable) {
 				let variable_name = a.literal as string;
 
-				let found_value = GLOBAL_ENV.variables.find(variable_name)
+				let found_value = INTERPRETER_ENV.variables.find(variable_name)
 
 				if (found_value) {
 					a.evaluableType = ENumber;
@@ -88,7 +88,7 @@ export class EDefun extends EOperation {
 
 		let func = new FunctionDefinition(function_name, args, definition);
 
-		GLOBAL_ENV.functions.set(function_name, func);
+		INTERPRETER_ENV.functions.set(function_name, func);
 
 		return args.length;
 	}
@@ -119,9 +119,10 @@ export class EDefun extends EOperation {
 			lines.push(`\tsw a${i}, ${offset}(sp)`);
 		}
 
-		// body
-
-		CompilerEnvironment.env.reset();
+		// a-indexes are assigned to the variable, in this level.
+		for (let i = 0; i < args.length; i++) {
+			COMPILER_ENV.variables.set(args[i], i);
+		}
 
 		lines = lines.concat(EExpression.compile(definition));
 
@@ -130,7 +131,7 @@ export class EDefun extends EOperation {
 		for (let i = argn - 2; i >= 1; offset += 4, i--) {
 			lines.push(`\tlw a${i}, ${offset}(sp)`);
 		}
-		
+
 		lines.push(`\tadd a0, zero, t2`); // bring back the return value where it should.
 
 		offset = offset + 4;
@@ -146,7 +147,7 @@ export class EDefun extends EOperation {
 
 		let func = new FunctionDefinition(function_name, args, new Ast("body"));
 
-		GLOBAL_ENV.functions.set(function_name, func);
+		INTERPRETER_ENV.functions.set(function_name, func);
 
 		return lines;
 	}

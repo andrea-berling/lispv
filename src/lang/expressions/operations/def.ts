@@ -1,5 +1,5 @@
 import { Ast } from "../../../parser/ast";
-import { Environment, GLOBAL_ENV } from "../../environment";
+import { Environment, INTERPRETER_ENV } from "../../environment";
 import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
@@ -18,7 +18,7 @@ export class EDef extends EOperation {
 
 		let value = EExpression.evaluate(other_childs[1]);
 
-		GLOBAL_ENV.variables.set(name, value);
+		INTERPRETER_ENV.variables.set(name, value);
 
 		return value;
 	}

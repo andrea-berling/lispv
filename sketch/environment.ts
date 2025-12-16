@@ -8,7 +8,7 @@ import "../src/lang/grammar";
 import { EPlus } from "../src/lang/expressions/operations/plus";
 import { ENumber } from "../src/lang/expressions/number";
 import { Traversal } from "../src/lang/traversal";
-import { GLOBAL_ENV } from "../src/lang/environment";
+import { INTERPRETER_ENV } from "../src/lang/environment";
 import { EFunction } from "../src/lang/expressions/operations/function";
 
 export function main() {
@@ -50,6 +50,6 @@ export function main() {
 	t = new Traversal(e2);
 	console.log(t.start())
 
-	console.log(GLOBAL_ENV)
+	console.log(INTERPRETER_ENV)
 
 }

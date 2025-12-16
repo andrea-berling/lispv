@@ -66,31 +66,13 @@ export class Environment {
 	}
 }
 
-export const GLOBAL_ENV = new Environment();
-
-// associate the functions variables with the registers
-
-export class CompilerEnvironment {
-	static env: CompilerEnvironment;
-	index: number = 0;
-
-	static {
-		this.env = new CompilerEnvironment();
+export class CompilerEnvironment extends Environment {
+	
+	constructor() {
+		super();
 	}
-
-	reset() {
-		this.index = 0;
-	}
-
-	increase() {
-		this.index++;
-		if (this.index > 8)
-			throw new Error("cant have more than 8 arguments");
-	}
-
-	getRegisterName() {
-		return "a" + this.index;
-	}
-
-
 }
+
+export const INTERPRETER_ENV = new Environment();
+export const COMPILER_ENV = new CompilerEnvironment();
+

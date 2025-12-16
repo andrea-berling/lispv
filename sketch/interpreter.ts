@@ -2,7 +2,7 @@ import { Parser } from "../src/parser/parser";
 import { Traversal } from "../src/lang/traversal"
 import { NUMBER, GRAMMAR, ONE_OR_MORE_SPACES, ZERO_OR_MORE_SPACES, LBRACKET, RBRACKET, OPERATION, FUNCTION, VARIABLE, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION } from "../src/lang/grammar"
 import { DEBUG, DEBUG_INTERPRETER } from "../src/flags";
-import { GLOBAL_ENV } from "../src/lang/environment";
+import { INTERPRETER_ENV } from "../src/lang/environment";
 import { Interpreter } from "../src/lang/interpreter";
 
 export function main() {

@@ -40,10 +40,10 @@ export class EExpression extends Evaluable {
 
 		switch (first_child_type) {
 
-			// case EApplication: {
-			// 	return EApplication.compile(first_child);
-			// }
-			
+			case EApplication: {
+				return EApplication.compile(first_child);
+			}
+
 			case EExpression: {
 				return EExpression.compile(first_child);
 			}

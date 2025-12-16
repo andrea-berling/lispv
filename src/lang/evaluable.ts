@@ -1,7 +1,9 @@
+import { DEBUG, DEBUG_COMPILER } from "../flags";
 import { Ast } from "../parser/ast";
 
 export abstract class Evaluable {
 	static tag?: string;
+	static debug_compiler?: boolean = DEBUG || DEBUG_COMPILER;
 
 	static createAst(literal?: string): Ast {
 		if (!this.tag)

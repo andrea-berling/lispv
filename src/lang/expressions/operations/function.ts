@@ -1,5 +1,5 @@
 import { Ast } from "../../../parser/ast";
-import { CompilerEnvironment, FunctionDefinition, GLOBAL_ENV } from "../../environment";
+import { COMPILER_ENV, FunctionDefinition, INTERPRETER_ENV } from "../../environment";
 import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
@@ -15,7 +15,7 @@ export class EFunction extends EOperation {
 			throw new Error("<function> must have a name");
 
 		// functions are in a global environment. we dont make a distinction between closures.
-		let func = GLOBAL_ENV.functions.get(function_name);
+		let func = INTERPRETER_ENV.functions.get(function_name);
 
 		if (!func)
 			throw new Error(`function ${function_name} undefined`);
@@ -31,7 +31,7 @@ export class EFunction extends EOperation {
 		let { func, args_nodes } = this.parameters(node);
 
 		// since we are applying a function, we should create an isolated environment for the new parameter-argument associations
-		GLOBAL_ENV.variables.push();
+		INTERPRETER_ENV.variables.push();
 
 		// here we match parameters with arguments. excess arguments are ignored
 		for (let i = 0; i < args_nodes.length; i++) {
@@ -39,23 +39,23 @@ export class EFunction extends EOperation {
 			let parameter_name = func.params[i];
 
 			// if the parameter name is in the space of the defined functions
-			if (!GLOBAL_ENV.functions.get(args_nodes[i].literal || "")) {
+			if (!INTERPRETER_ENV.functions.get(args_nodes[i].literal || "")) {
 				let value = EExpression.evaluate(args_nodes[i]);
 
 				// in the current scope we are assigning variables to their values
-				GLOBAL_ENV.variables.set(parameter_name, value);
+				INTERPRETER_ENV.variables.set(parameter_name, value);
 			} else {
 				let new_name = args_nodes[i].literal || "";
-				let updated_func = (GLOBAL_ENV.functions.get(new_name) as FunctionDefinition);
+				let updated_func = (INTERPRETER_ENV.functions.get(new_name) as FunctionDefinition);
 				updated_func.name = func.params[i];
-				GLOBAL_ENV.functions.set(func.params[i], updated_func);
+				INTERPRETER_ENV.functions.set(func.params[i], updated_func);
 			}
 		}
 
 		let result = EExpression.evaluate(func.definition);
 
 		// release the parameter-argument associations
-		GLOBAL_ENV.variables.pop();
+		INTERPRETER_ENV.variables.pop();
 
 		return result;
 	}
@@ -65,23 +65,25 @@ export class EFunction extends EOperation {
 
 		let { func, args_nodes } = this.parameters(node);
 
-		CompilerEnvironment.env.reset();
-
 		for (let i = 0; i < args_nodes.length; i++) {
-			let node = args_nodes[i];
+			// the function parameter, as defined in the signature
+			let parameter_name = func.params[i];
 
-			asm = asm.concat(EExpression.compile(node));
+			// if the parameter name is in the space of the defined functions
+			if (!COMPILER_ENV.functions.get(args_nodes[i].literal || "")) {
 
-			if (i == 0) {
-				asm.push(`\tadd t1, zero, a0`)
+				asm = asm.concat(EExpression.compile(args_nodes[i]));
+
+				if (i == 0) {
+					asm.push(`\tadd t1, zero, a0`)
+				}
+				else {
+					asm.push(`\tadd a${COMPILER_ENV.variables.get(parameter_name)}, zero, a0`)
+				}
+
+			} else {
 			}
-			else {
-				asm.push(`\tadd a${CompilerEnvironment.env.index}, zero, a0`)
-			}
-
-			CompilerEnvironment.env.increase();
 		}
-
 		if (args_nodes.length >= 1)
 			asm.push(`\tadd a0, t1, zero`);
 

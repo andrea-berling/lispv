@@ -1,5 +1,5 @@
 import { Ast } from "../parser/ast";
-import { GLOBAL_ENV } from "./environment";
+import { INTERPRETER_ENV } from "./environment";
 import { EExpression } from "./expressions/expression";
 import { Traversal } from "./traversal";
 
@@ -8,7 +8,7 @@ export class Compiler {
 
 	constructor(lines: string[], cleanEnv = true) {
 		if (cleanEnv)
-			GLOBAL_ENV.clean()
+			INTERPRETER_ENV.clean()
 		this.lines = lines;
 	}
 

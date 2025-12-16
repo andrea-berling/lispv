@@ -1,6 +1,5 @@
 import { Ast } from "../../../parser/ast";
 import { EExpression } from "../expression";
-import { ENumber } from "../number";
 import { EOperation } from "../operation";
 
 export class EPlus extends EOperation {
@@ -26,17 +25,22 @@ export class EPlus extends EOperation {
 
 	static compile(node: Ast): string[] {
 		let asm: string[] = [];
+		let intermediate: string[];
 
 		let { other_childs } = EExpression.parameters(node);
 
 		asm.push(`\tadd t2, zero, zero`); // set t2 to 0
+
+		this.debug_compiler && asm.push(`\t# add ${node.getText()}`)
+		// this.debug_compiler && console.log(node);
 
 		for (let child of other_childs) {
 
 			if (!child.evaluableType)
 				throw new Error("impossible")
 
-			asm = asm.concat(EExpression.compile(child));
+			intermediate = EExpression.compile(child)
+			asm = asm.concat(intermediate);
 			asm.push(`\tadd t2, t2, a0`);
 		}
 

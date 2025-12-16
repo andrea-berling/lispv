@@ -20,7 +20,6 @@ export class EApplication extends Evaluable {
 		let { first_child, first_child_type } = EExpression.parameters(node);
 
 		if (!(first_child_type.prototype instanceof EOperation)) {
-
 			throw new Error(`invalid operation ${first_child.literal || first_child.name}`);
 		}
 

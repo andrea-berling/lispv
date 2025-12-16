@@ -3,7 +3,7 @@ import { Parser } from "../parser/parser";
 import { APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION, FUNCTION, GRAMMAR, LBRACKET, NUMBER, ONE_OR_MORE_SPACES, OPERATION, RBRACKET, VARIABLE, ZERO_OR_MORE_SPACES } from "./grammar";
 import { Traversal } from "./traversal";
 import { DEBUG, DEBUG_INTERPRETER } from "../flags";
-import { GLOBAL_ENV } from "./environment";
+import { INTERPRETER_ENV } from "./environment";
 import { Ast } from "../parser/ast";
 import { EExpression } from "./expressions/expression";
 import { EDefun } from "./expressions/operations/defun";
@@ -19,7 +19,7 @@ export class Interpreter extends LispEngine {
 	constructor(lines: string[], cleanEnv = true) {
 		super();
 		if (cleanEnv)
-			GLOBAL_ENV.clean()
+			INTERPRETER_ENV.clean()
 		this.lines = lines;
 	}
 

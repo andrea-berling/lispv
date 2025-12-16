@@ -46,12 +46,13 @@ export function main() {
 	// 	jal ra, 0
 
 	let source = `
-(1)
-(+ 1 2)
-(defun plus (args x y z) (+ x y z))
-(plus 1 2 3)
-`
-	let c = new Compiler(source.split("\n"));
+(defun minus (args x y) (+ x (- y)))
+(minus 1 2)
+`.split("\n").filter(x => x.trim() != "");
+
+	source.forEach(x => console.log(x));
+
+	let c = new Compiler(source);
 	let assembly = c.compile();
 
 	assembly.forEach(line => console.log(line));
