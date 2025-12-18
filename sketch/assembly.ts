@@ -34,8 +34,6 @@ export function main() {
 
 	let source = `
 		(defun plus (args x y) (+ x y))
-		(defun minus (args z) (- z))
-		(defun pm (args a b) (plus a (minus b)))
 		(plus 3 4)
 	`
 
@@ -61,9 +59,9 @@ export function main() {
 
 	console.log(Registers.parse("a0").value == i.run());
 
-	Array.from(InstructionRegistry.tagRegistry.entries()).forEach(x => console.log(x));
-
-	console.log(Array.from(InstructionRegistry.tagRegistry.entries()).length);
+	// Array.from(InstructionRegistry.tagRegistry.entries()).forEach(x => console.log(x));
+	//
+	// console.log(Array.from(InstructionRegistry.tagRegistry.entries()).length);
 
 
 }
