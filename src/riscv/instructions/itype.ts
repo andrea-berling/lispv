@@ -87,6 +87,33 @@ abstract class MemoryLoadInstruction extends ITypeInstruction {
 	static opcode = 0b0000011;
 }
 
+export class LbInstruction extends MemoryLoadInstruction {
+	static tag = "lb";
+	static f3 = 0b000;
+
+	execute(): void {
+		this.destination.value = signExtend(Memory.get(this.source.value + this.immediate.value, 1), 8);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+
+export class LhInstruction extends MemoryLoadInstruction {
+	static tag = "lh";
+	static f3 = 0b001;
+
+	execute(): void {
+		this.destination.value = signExtend(Memory.get(this.source.value + this.immediate.value, 2), 16);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
 export class LwInstruction extends MemoryLoadInstruction {
 	static tag = "lw";
 	static f3 = 0b010;
@@ -100,12 +127,12 @@ export class LwInstruction extends MemoryLoadInstruction {
 	}
 }
 
-export class LhInstruction extends MemoryLoadInstruction {
-	static tag = "lh";
-	static f3 = 0b001;
+export class LbuInstruction extends MemoryLoadInstruction {
+	static tag = "lbu";
+	static f3 = 0b000;
 
 	execute(): void {
-		this.destination.value = Memory.get(this.source.value + this.immediate.value, 2);
+		this.destination.value = Memory.get(this.source.value + this.immediate.value, 1);
 	}
 
 	static {
@@ -113,12 +140,13 @@ export class LhInstruction extends MemoryLoadInstruction {
 	}
 }
 
-export class LbInstruction extends MemoryLoadInstruction {
-	static tag = "lb";
-	static f3 = 0b000;
+
+export class LhuInstruction extends MemoryLoadInstruction {
+	static tag = "lhu";
+	static f3 = 0b001;
 
 	execute(): void {
-		this.destination.value = Memory.get(this.source.value + this.immediate.value, 1);
+		this.destination.value = Memory.get(this.source.value + this.immediate.value, 2);
 	}
 
 	static {

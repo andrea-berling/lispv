@@ -8,12 +8,12 @@ import { EPlus } from "../src/lang/expressions/operations/plus"
 import { EVariable } from "../src/lang/expressions/variable"
 import { Traversal } from "../src/lang/traversal"
 
+import "../src/riscv/instructions/utype"
+import "../src/riscv/instructions/jtype"
 import "../src/riscv/instructions/btype"
 import "../src/riscv/instructions/itype"
-import "../src/riscv/instructions/jtype"
-import "../src/riscv/instructions/rtype"
 import "../src/riscv/instructions/stype"
-import "../src/riscv/instructions/utype"
+import "../src/riscv/instructions/rtype"
 
 import { Labels } from "../src/riscv/label"
 import { Memory } from "../src/riscv/memory"
@@ -59,9 +59,9 @@ export function main() {
 
 	console.log(Registers.parse("a0").value == i.run());
 
-	// Array.from(InstructionRegistry.tagRegistry.entries()).forEach(x => console.log(x));
-	//
-	// console.log(Array.from(InstructionRegistry.tagRegistry.entries()).length);
+	Array.from(InstructionRegistry.tagRegistry.entries()).forEach(x => console.log(x));
+	
+	console.log(Array.from(InstructionRegistry.tagRegistry.entries()).length);
 
 
 }

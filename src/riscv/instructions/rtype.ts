@@ -1,6 +1,7 @@
 import { Instruction } from "../instruction"
 import { InstructionRegistry } from "../instructionRegistry";
 import { Register, Registers } from "../register";
+import { unsigned } from "../utils";
 
 abstract class RTypeInstruction extends Instruction {
 	destination: Register;
@@ -88,6 +89,43 @@ export class SubInstruction extends RTypeInstruction {
 	}
 }
 
+export class SllInstruction extends RTypeInstruction {
+	static tag = "sll";
+	static f3 = 0b001;
+
+	execute(): void {
+		let amount = unsigned(this.source2.value & 0b11111);
+		this.destination.value = this.source1.value << amount;
+	}
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SltInstruction extends RTypeInstruction {
+	static tag = "slt";
+	static f3 = 0b010;
+
+	execute(): void {
+		this.destination.value = this.source1.value + this.source2.value;
+	}
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SltuInstruction extends RTypeInstruction {
+	static tag = "sltu";
+	static f3 = 0b011;
+
+	execute(): void {
+		this.destination.value = this.source1.value + this.source2.value;
+	}
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
 export class XorInstruction extends RTypeInstruction {
 	static tag = "xor";
 	static f3 = 0b100;
@@ -100,6 +138,34 @@ export class XorInstruction extends RTypeInstruction {
 		InstructionRegistry.register(this);
 	}
 }
+
+export class SrlInstruction extends RTypeInstruction {
+	static tag = "srl";
+	static f3 = 0b101;
+
+	execute(): void {
+		let amount = unsigned(this.source2.value & 0b11111);
+		this.destination.value = this.source1.value << amount;
+	}
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SraInstruction extends RTypeInstruction {
+	static tag = "sra";
+	static f3 = 0b101;
+	static f7 = 0b0100000;
+
+	execute(): void {
+		let amount = unsigned(this.source2.value & 0b11111);
+		this.destination.value = this.source1.value << amount;
+	}
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
 
 export class OrInstruction extends RTypeInstruction {
 	static tag = "or";
