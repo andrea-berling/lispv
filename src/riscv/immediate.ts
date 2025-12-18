@@ -42,6 +42,24 @@ export abstract class UnsignedImmediate extends Immediate {
 /**
  * signed 12 bit immediate.
  */
+export class Immediate5 extends Immediate {
+	readonly bits: 5 = 5;
+	constructor(value: number) {
+		super();
+		this.value = value >>> 0;
+	}
+
+	static parse(s: string) {
+		let { value, label } = Immediate.flatten(s);
+		let imm = new Immediate12(value);
+		imm.label = label;
+		return imm;
+	}
+}
+
+/**
+ * signed 12 bit immediate.
+ */
 export class Immediate12 extends Immediate {
 	readonly bits: 12 = 12;
 	constructor(value: number) {

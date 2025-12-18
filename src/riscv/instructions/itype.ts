@@ -4,7 +4,7 @@ import { Register, Registers } from "../register";
 import { Memory } from "../memory";
 import { ProgramCounter } from "../programCounter";
 import { InstructionRegistry } from "../instructionRegistry";
-import { Immediate12 } from "../immediate";
+import { Immediate12, Immediate5 } from "../immediate";
 
 abstract class ITypeInstruction extends Instruction {
 	destination: Register;
@@ -252,11 +252,111 @@ export class AndiInstruction extends IntegerRegisterImmediateInstruction {
 	}
 }
 
-export class SlliInstruction extends IntegerRegisterImmediateInstruction {
+abstract class ShamtInstruction extends Instruction {
+	destination: Register;
+	source: Register;
+	shamt: Immediate5; // 5 bit: 0-31
+
+	constructor(destination: Register, source: Register, shamt: Immediate5) {
+		super();
+		this.destination = destination;
+		this.source = source;
+		this.shamt = shamt;
+	}
+
+	encode(): number {
+		let encoded = 0;
+		let shift = 0;
+
+		// opcode (7 bit)
+		encoded += this.opcode;
+		shift += 7;
+
+		// rd (5 bit)
+		encoded += this.destination.index << shift;
+		shift += 5;
+
+		// funct3 (3 bit)
+		encoded += (this.f3 || 0) << shift;
+		shift += 3;
+
+		// rs1 (5 bit)
+		encoded += this.source.index << shift;
+		shift += 5;
+
+		// shamt (5 bit)
+		encoded += this.shamt.value << shift;
+		shift += 5;
+
+		// funct7 (7 bit)
+		encoded += (this.f7 || 0) << shift;
+
+		return encoded;
+	}
+
+	static factoryFromBinary(encoded: number): Instruction {
+		const rd = (encoded >> 7) & 0b11111;
+		const rs1 = (encoded >> 15) & 0b11111;
+		const shamt = (encoded >> 20) & 0b11111;
+
+		return new (this as any)(
+			Registers.get(rd),
+			Registers.get(rs1),
+			new Immediate5(shamt)
+		) as Instruction;
+	}
+
+	disassemble(): string {
+		return `${this.tag} ${this.destination}, ${this.source}, ${this.shamt}`;
+	}
+
+	static factoryFromAssembly(parameters: string): Instruction {
+		const p = parameters.split(",").map(s => s.trim());
+		const destination = Registers.parse(p[0]);
+		const source = Registers.parse(p[1]);
+		const shamt = Immediate5.parse(p[2]);
+
+		return new (this as any)(
+			destination,
+			source,
+			shamt
+		) as Instruction;
+	}
+}
+
+export class SlliInstruction extends ShamtInstruction {
 	static tag = "slli";
+	static f3 = 0b001;
 
 	execute(): void {
-		this.destination.value = this.source.value & signExtend(this.immediate.value, this.immediate.bits);
+		this.destination.value = this.source.value << this.shamt.value;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SrliInstruction extends ShamtInstruction {
+	static tag = "srli";
+	static f3 = 0b101;
+
+	execute(): void {
+		this.destination.value = this.source.value >>> this.shamt.value;
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class SraiInstruction extends ShamtInstruction {
+	static tag = "srai";
+	static f3 = 0b101;
+	static f7 = 0b0100000;
+
+	execute(): void {
+		this.destination.value = this.source.value >> this.shamt.value;
 	}
 
 	static {

@@ -82,6 +82,32 @@ abstract class STypeInstruction extends Instruction {
 	}
 }
 
+export class SbInstruction extends STypeInstruction {
+	static tag = "sb";
+	static f3 = 0b000;
+
+	execute(): void {
+		Memory.set(this.source1.value + this.immediate.value, this.source2.value & 0xff, 1);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class ShInstruction extends STypeInstruction {
+	static tag = "sh";
+	static f3 = 0b001;
+
+	execute(): void {
+		Memory.set(this.source1.value + this.immediate.value, this.source2.value & 0xffff, 2);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
 export class SwInstruction extends STypeInstruction {
 	static tag = "sw";
 	static f3 = 0b010;
