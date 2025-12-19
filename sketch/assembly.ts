@@ -34,12 +34,24 @@ export function main() {
 
 	let source = `
 		(defun plus (args x y) (+ x y))
-		(plus 3 4)
+		(plus 1 2)
 	`
 
 	let c = new Compiler(source);
 
 	let assembly = c.compile();
+
+	assembly = `
+	+:
+		add a0, a0, a1
+		jal ra, 0
+	pm:
+		addi sp, zero, -12
+		sw ra, 0(sp)
+		sw a1, 4(sp)
+		sw a0, 8(sp)
+		jalr ra, +(zero)
+	`.split("\n")
 
 	let as = new Assembler(assembly);
 
@@ -58,10 +70,5 @@ export function main() {
 	let i = new Interpreter(source);
 
 	console.log(Registers.parse("a0").value == i.run());
-
-	Array.from(InstructionRegistry.tagRegistry.entries()).forEach(x => console.log(x));
-	
-	console.log(Array.from(InstructionRegistry.tagRegistry.entries()).length);
-
 
 }

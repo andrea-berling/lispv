@@ -145,7 +145,7 @@ export class SrlInstruction extends RTypeInstruction {
 
 	execute(): void {
 		let amount = unsigned(this.source2.value & 0b11111);
-		this.destination.value = this.source1.value << amount;
+		this.destination.value = this.source1.value >> amount;
 	}
 	static {
 		InstructionRegistry.register(this);
@@ -159,7 +159,7 @@ export class SraInstruction extends RTypeInstruction {
 
 	execute(): void {
 		let amount = unsigned(this.source2.value & 0b11111);
-		this.destination.value = this.source1.value << amount;
+		this.destination.value = this.source1.value >>> amount;
 	}
 	static {
 		InstructionRegistry.register(this);

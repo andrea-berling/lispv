@@ -51,7 +51,7 @@ export class Immediate5 extends Immediate {
 
 	static parse(s: string) {
 		let { value, label } = Immediate.flatten(s);
-		let imm = new Immediate12(value);
+		let imm = new Immediate5(value);
 		imm.label = label;
 		return imm;
 	}
