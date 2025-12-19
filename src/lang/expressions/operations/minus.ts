@@ -1,4 +1,6 @@
+import { MAX_PRIMITIVES } from "../../../flags";
 import { Ast } from "../../../parser/ast";
+import { Primitives } from "../../lib/primitives";
 import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
@@ -24,24 +26,26 @@ export class EMinus extends EOperation {
 	}
 
 	static compile(node: Ast): string[] {
-		let asm: string[] = [];
-
 		let { other_childs } = EExpression.parameters(node);
 
-		this.debug_compiler && asm.push(`\t# sub ${node.getText()}`)
-		
-		asm.push(`\tadd t2, zero, zero`); // set t2 to 0
+		let n_operands = other_childs.length;
 
-		for (let child of other_childs) {
-
-			if (!child.evaluableType)
-				throw new Error("impossible")
-
-			asm = asm.concat(EExpression.compile(child));
-			asm.push(`\tsub t2, t2, a0`);
-		}
-
-		return asm;
+		return super.compile(node).concat(`\tjalr ra, -${n_operands}(zero)`)
 	}
 
+	static generatePrimitive(n: number): string {
+		let primitive = `
+-${n}:
+	sub a0, zero, a0
+`;
+		for (let i = 1; i < n; i++) {
+			primitive = primitive.concat(`\tsub a0, a0, a${i}\n`);
+		}
+
+		return primitive.concat("\tjal ra, 0")
+	}
+
+	static {
+		Primitives.addToRegistry(this.primitives());
+	}
 }

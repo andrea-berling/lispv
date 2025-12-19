@@ -33,7 +33,13 @@ export class EVariable extends Evaluable {
 		if (index === undefined)
 			throw new Error(`variable ${name} undefined at level ${INTERPRETER_ENV.variables.current}`);
 
-		asm.push(`\tadd a0, zero, a${index}`);
+
+		let source_register = `a${index}`;
+
+		if (index == 0)
+			source_register = `t0`;
+
+		asm.push(`\tadd a${COMPILER_ENV.get()}, zero, ${source_register}`);
 
 		return asm;
 	}

@@ -33,33 +33,24 @@ export function main() {
 	// jalr rd, 0(zero)
 
 	let source = `
-		(defun plus (args x y) (+ x y))
-		(plus 1 2)
+		(defun b (args ba bb) (- ba bb))
+		(defun a (args aa ab ac) (+ aa (b ab ac)))
+		(a 0 (b 1 2) 3)
 	`
 
 	let c = new Compiler(source);
 
 	let assembly = c.compile();
 
-	assembly = `
-	+:
-		add a0, a0, a1
-		jal ra, 0
-	pm:
-		addi sp, zero, -12
-		sw ra, 0(sp)
-		sw a1, 4(sp)
-		sw a0, 8(sp)
-		jalr ra, +(zero)
-	`.split("\n")
-
 	let as = new Assembler(assembly);
 
 	as.log();
 
-	as.parse();
+	console.log(source);
 
-	// Labels.show()
+	console.log(COMPILER_ENV)
+
+	as.parse();
 
 	Pipeline.run(1000);
 

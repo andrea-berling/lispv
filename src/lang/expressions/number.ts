@@ -1,5 +1,6 @@
 import { Ast } from "../../parser/ast";
 import { Answer, AnswerType } from "../answer";
+import { COMPILER_ENV } from "../environment";
 import { Evaluable } from "../evaluable";
 
 export class ENumber extends Answer {
@@ -13,7 +14,7 @@ export class ENumber extends Answer {
 
 	static compile(node: Ast): string[] {
 		let asm: string[] = [
-			 `\taddi a0, zero, ${Number.parseInt(node.literal || "")}`
+			`\taddi a${COMPILER_ENV.get()}, zero, ${Number.parseInt(node.literal || "")}`
 		];
 		return asm;
 	}

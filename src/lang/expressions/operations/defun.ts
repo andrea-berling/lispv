@@ -97,26 +97,26 @@ export class EDefun extends EOperation {
 
 		let { function_name, args, definition } = this.parameters(node);
 
-		let lines: string[] = [];
+		let asm: string[] = [];
 		let argn = args.length + 1;
 
 		if (argn > 8)
 			throw new Error("cant have more than 8 arguments")
 
 		// jump to end
-		lines.push(`\tjal zero, end-${function_name}`)
+		asm.push(`\tjal zero, end-${function_name}`)
 
 		// label
-		lines.push(`${function_name}:`)
+		asm.push(`${function_name}:`)
 
 		// saving
 		let offset = argn * 4;
-		lines.push(`\taddi sp, sp, -${offset}`);
+		asm.push(`\taddi sp, sp, -${offset}`);
 		offset = offset - 4;
-		lines.push(`\tsw ra, ${offset}(sp)`);
+		asm.push(`\tsw ra, ${offset}(sp)`);
 		offset = offset - 4;
 		for (let i = 0; offset >= 0; offset -= 4, i++) {
-			lines.push(`\tsw a${i}, ${offset}(sp)`);
+			asm.push(`\tsw a${i}, ${offset}(sp)`);
 		}
 
 		// a-indexes are assigned to the variable, in this level.
@@ -124,32 +124,34 @@ export class EDefun extends EOperation {
 			COMPILER_ENV.variables.set(args[i], i);
 		}
 
-		lines = lines.concat(EExpression.compile(definition));
+		// store a0 in t0
+		asm = asm.concat(`\tadd t0, zero, a0`)
+
+		// definition
+		asm = asm.concat(EExpression.compile(definition));
 
 		// restoring
 		offset = 0;
 		for (let i = argn - 2; i >= 1; offset += 4, i--) {
-			lines.push(`\tlw a${i}, ${offset}(sp)`);
+			asm.push(`\tlw a${i}, ${offset}(sp)`);
 		}
 
-		lines.push(`\tadd a0, zero, t2`); // bring back the return value where it should.
-
 		offset = offset + 4;
-		lines.push(`\tlw ra, ${offset}(sp)`);
+		asm.push(`\tlw ra, ${offset}(sp)`);
 		offset = offset + 4;
-		lines.push(`\taddi sp, sp, ${offset}`);
+		asm.push(`\taddi sp, sp, ${offset}`);
 
 		// returning
 
-		lines.push("\tjal ra, 0");
+		asm.push("\tjal ra, 0");
 
-		lines.push(`end-${function_name}:`)
+		asm.push(`end-${function_name}:`)
 
 		let func = new FunctionDefinition(function_name, args, new Ast("body"));
 
 		COMPILER_ENV.functions.set(function_name, func);
 
-		return lines;
+		return asm;
 	}
 
 }

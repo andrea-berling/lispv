@@ -30,7 +30,9 @@ export class Interpreter extends LispReader {
 	}
 
 	run() {
-		return this.runAndGetAnswerFromLineNumber(this.lines.length - 1);
+		let map = this.runAndGetLineNumberToAnswerMap();
+		let entries = Array.from(map.entries());
+		return entries[entries.length - 1][1];
 	}
 
 	runAndGetLineNumberToAnswerMap(): Map<number, number> {

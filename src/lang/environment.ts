@@ -1,3 +1,4 @@
+import { DEBUG, DEBUG_COMPILER } from "../flags";
 import { Ast } from "../parser/ast";
 
 export class FunctionDefinition {
@@ -67,10 +68,40 @@ export class Environment {
 }
 
 export class CompilerEnvironment extends Environment {
+	register: number[];
+	debug = DEBUG || DEBUG_COMPILER;
+
 	constructor() {
 		super();
+		this.register = [0];
+	}
+
+	push(n: number = 0) {
+		this.register.push(n);
+		this.debug && console.log("pushing", this.register);
+	}
+
+	get() {
+		this.debug && console.log("getting", this.register);
+		return this.register.at(this.register.length - 1);
+	}
+
+	increase() {
+		this.register[this.register.length - 1]++;
+		this.debug && console.log("increasing", this.register);
+	}
+
+	decrease() {
+		this.register[this.register.length - 1]--;
+		this.debug && console.log("decreasing", this.register);
+	}
+
+	pop() {
+		this.register.pop();
+		this.debug && console.log("popping", this.register);
 	}
 }
+
 
 export const INTERPRETER_ENV = new Environment();
 export const COMPILER_ENV = new CompilerEnvironment();

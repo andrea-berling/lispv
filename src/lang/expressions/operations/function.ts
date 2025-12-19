@@ -65,30 +65,38 @@ export class EFunction extends EOperation {
 
 		let { func, args_nodes } = this.parameters(node, COMPILER_ENV);
 
-		for (let i = 0; i < args_nodes.length; i++) {
+		let argn = args_nodes.length;
+
+		COMPILER_ENV.push(argn - 1);
+
+		// go through arguments backwards so that we dont need to save a0 many times.
+		for (let i = argn - 1; i >= 0; i--) {
 			// the function parameter, as defined in the signature
 			let parameter_name = func.params[i];
 
 			// if the parameter name is in the space of the defined functions
-			if (!COMPILER_ENV.functions.get(args_nodes[i].literal || "")) {
+			let arg = args_nodes[i].literal;
+
+			if (!COMPILER_ENV.functions.get(arg || "")) {
+
+				asm.push(`\t# ${parameter_name}: ${arg || "nested call"}`)
 
 				asm = asm.concat(EExpression.compile(args_nodes[i]));
 
-				if (i == 0) {
-					asm.push(`\tadd t1, zero, a0`)
-				}
-				else {
-					asm.push(`\tadd a${COMPILER_ENV.variables.get(parameter_name)}, zero, a0`)
-				}
+				COMPILER_ENV.decrease();
 
 			} else {
 				// TODO passing functions
 			}
 		}
-		if (args_nodes.length >= 1)
-			asm.push(`\tadd a0, t1, zero`);
+
+		COMPILER_ENV.pop();
 
 		asm.push(`\tjalr ra, ${func.name}(zero)`);
+
+		let destination_register = COMPILER_ENV.get();
+		if (destination_register != 0)
+			asm.push(`\tadd a${destination_register}, zero, a0`);
 
 		return asm;
 	}
