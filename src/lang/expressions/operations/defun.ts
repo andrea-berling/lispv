@@ -1,3 +1,4 @@
+import { MAX_ARGUMENTS } from "../../../flags";
 import { Ast } from "../../../parser/ast";
 import { COMPILER_ENV, FunctionDefinition, INTERPRETER_ENV } from "../../environment";
 import { Evaluable } from "../../evaluable";
@@ -97,13 +98,19 @@ export class EDefun extends EOperation {
 
 		let { function_name, args, definition } = this.parameters(node);
 
+		let func = new FunctionDefinition(function_name, args, new Ast("body"));
+
+		COMPILER_ENV.functions.set(function_name, func);
+		COMPILER_ENV.definingFunction = func;
+
 		COMPILER_ENV.inDefinition = true;
 
 		let asm: string[] = [];
-		let argn = args.length + 1;
 
-		if (argn > 8)
-			throw new Error("cant have more than 8 arguments")
+		let argn = args.length;
+
+		if (argn > MAX_ARGUMENTS)
+			throw new Error(`cant have more than ${MAX_ARGUMENTS} arguments`);
 
 		// jump to end
 		asm.push(`\tjal zero, end-${function_name}`)
@@ -112,13 +119,14 @@ export class EDefun extends EOperation {
 		asm.push(`${function_name}:`)
 
 		// saving
-		let offset = (argn - 1) * 4;
+		let offset = (argn + 1) * 4;
 		asm.push(`\taddi sp, sp, -${offset}`);
 		offset = offset - 4;
 		asm.push(`\tsw ra, ${offset}(sp)`);
 		offset = offset - 4;
-		for (let i = argn - 1; offset >= 0; offset -= 4, i--) {
-			asm.push(`\tsw a${i - 1}, ${offset}(sp)`);
+
+		for (let i = argn; offset >= 0; offset -= 4, i--) {
+			asm.push(`\tsw a${i}, ${offset}(sp)`);
 		}
 
 		// a-indexes are assigned to the variable, in this level.
@@ -126,22 +134,23 @@ export class EDefun extends EOperation {
 			COMPILER_ENV.variables.set(args[i], i);
 		}
 
-		// save parameter registers, to later use as arguments with other functions calls
-		for (let i = 0; i < argn - 1; i++)
+		// temporary registers for calling other functions. they need to be restored after a function is called.
+		for (let i = 1; i < argn + 1; i++)
 			asm.push(`\tadd t${i}, zero, a${i}`)
 
 		// definition
 		asm = asm.concat(EExpression.compile(definition));
 
-		// restoring
-		offset = 0;
-		for (let i = argn - 2; i >= 1; offset += 4, i--) {
-			asm.push(`\tlw a${argn - 1 - i}, ${offset}(sp)`);
+		offset = (argn + 1) * 4;
+		offset = offset - 4;
+		asm.push(`\tlw ra, ${offset}(sp)`);
+		offset = offset - 4;
+
+		for (let i = argn; offset >= 0; offset -= 4, i--) {
+			asm.push(`\tlw a${i}, ${offset}(sp)`);
 		}
 
-		asm.push(`\tlw ra, ${offset}(sp)`);
-		offset = offset + 4;
-		asm.push(`\taddi sp, sp, ${offset}`);
+		asm.push(`\taddi sp, sp, ${(argn + 1) * 4}`);
 
 		// returning
 
@@ -149,9 +158,6 @@ export class EDefun extends EOperation {
 
 		asm.push(`end-${function_name}:`)
 
-		let func = new FunctionDefinition(function_name, args, new Ast("body"));
-
-		COMPILER_ENV.functions.set(function_name, func);
 
 		COMPILER_ENV.inDefinition = false;
 

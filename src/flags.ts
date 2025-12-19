@@ -9,3 +9,4 @@ export const DEBUG_ASSEMBLER: boolean = false;
 export const DEBUG_PIPELINE: boolean = false;
 
 export const MAX_PRIMITIVES: number = 4;
+export const MAX_ARGUMENTS: number = 7;

@@ -67,7 +67,7 @@ export class EFunction extends EOperation {
 
 		let argn = args_nodes.length;
 
-		COMPILER_ENV.push(argn - 1);
+		COMPILER_ENV.push(argn);
 
 		// go through arguments backwards so that we dont need to save a0 many times.
 
@@ -99,6 +99,21 @@ export class EFunction extends EOperation {
 		let destination_register = COMPILER_ENV.get();
 		if (destination_register != 0)
 			asm.push(`\tadd a${destination_register}, zero, a0`);
+
+		if (COMPILER_ENV.inDefinition) {
+			// restore t-registers, please
+
+			let n = 7;
+
+			let defining_function = COMPILER_ENV.definingFunction;
+
+			if (defining_function)
+				n = defining_function.params.length;
+
+			for (let i = 1; i < n; i++)
+				asm.push(`\tlw t${i}, ${(i - 1) * 4}(sp)`)
+
+		}
 
 		return asm;
 	}

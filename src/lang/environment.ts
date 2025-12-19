@@ -70,15 +70,16 @@ export class Environment {
 export class CompilerEnvironment extends Environment {
 	register: number[];
 	inDefinition: boolean = false;
+	definingFunction: FunctionDefinition | undefined;
 
 	debug = DEBUG || DEBUG_COMPILER;
 
 	constructor() {
 		super();
-		this.register = [0];
+		this.register = [1];
 	}
 
-	push(n: number = 0) {
+	push(n: number = 1) {
 		this.register.push(n);
 		this.debug && console.log("pushing", this.register);
 	}

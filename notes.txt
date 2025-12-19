@@ -29,3 +29,4 @@ roadmap
 			
 		optimizations
 			[ ] tail recursion
+	[ ] make a1 the first argument and stop this madness
