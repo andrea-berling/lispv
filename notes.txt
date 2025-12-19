@@ -17,7 +17,7 @@ roadmap
 			div
 			rem
 	[ ] lang
-		[ ] grammar
+		[x] grammar
 			[ ] syntax errors from Evaluable definition
 		[x] parser combinator library
 			[x] literals
@@ -25,8 +25,11 @@ roadmap
 			[x] or
 			[x] one or more
 			[x] zero or more
-		[ ] execution
+		[x] execution
+		[ ] calling convention
+			[x] make a1 the first argument and stop this madness
+			[ ] save registers in function call out of definition
 			
 		optimizations
 			[ ] tail recursion
-	[ ] make a1 the first argument and stop this madness
+	
