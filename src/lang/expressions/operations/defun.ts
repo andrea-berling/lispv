@@ -131,7 +131,7 @@ export class EDefun extends EOperation {
 
 		// a-indexes are assigned to the variable, in this level.
 		for (let i = 0; i < args.length; i++) {
-			COMPILER_ENV.variables.set(args[i], i);
+			COMPILER_ENV.variables.set(args[i], i + 1);
 		}
 
 		// temporary registers for calling other functions. they need to be restored after a function is called.

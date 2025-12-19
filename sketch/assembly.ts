@@ -36,7 +36,6 @@ export function main() {
 		(defun b (args x y) (- x y))
 		(defun a (args x y z) (+ x (b y z)))
 		(a 5 (b 1 2) 3)
-		(a 1 2 3)
 	`
 
 	let c = new Compiler(source);
