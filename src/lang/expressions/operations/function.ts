@@ -70,6 +70,7 @@ export class EFunction extends EOperation {
 		COMPILER_ENV.push(argn - 1);
 
 		// go through arguments backwards so that we dont need to save a0 many times.
+
 		for (let i = argn - 1; i >= 0; i--) {
 			// the function parameter, as defined in the signature
 			let parameter_name = func.params[i];
@@ -84,6 +85,7 @@ export class EFunction extends EOperation {
 				asm = asm.concat(EExpression.compile(args_nodes[i]));
 
 				COMPILER_ENV.decrease();
+
 
 			} else {
 				// TODO passing functions

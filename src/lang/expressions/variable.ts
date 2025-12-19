@@ -36,8 +36,8 @@ export class EVariable extends Evaluable {
 
 		let source_register = `a${index}`;
 
-		if (index == 0)
-			source_register = `t0`;
+		if (COMPILER_ENV.inDefinition)
+			source_register = `t${index}`;
 
 		asm.push(`\tadd a${COMPILER_ENV.get()}, zero, ${source_register}`);
 

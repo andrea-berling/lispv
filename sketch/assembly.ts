@@ -33,9 +33,9 @@ export function main() {
 	// jalr rd, 0(zero)
 
 	let source = `
-		(defun b (args ba bb) (- ba bb))
-		(defun a (args aa ab ac) (+ aa (b ab ac)))
-		(a 0 (b 1 2) 3)
+		(defun b (args x y) (- x y))
+		(defun a (args x y z) (+ x (b y z)))
+		(a 5 (b 1 2) 3)
 	`
 
 	let c = new Compiler(source);
@@ -52,13 +52,15 @@ export function main() {
 
 	as.parse();
 
-	Pipeline.run(1000);
+	Pipeline.run(10000);
 
 	// Memory.show()
 
 	Registers.show();
 
 	let i = new Interpreter(source);
+
+	console.log(i.run());
 
 	console.log(Registers.parse("a0").value == i.run());
 

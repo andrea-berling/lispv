@@ -69,6 +69,8 @@ export class Environment {
 
 export class CompilerEnvironment extends Environment {
 	register: number[];
+	inDefinition: boolean = false;
+
 	debug = DEBUG || DEBUG_COMPILER;
 
 	constructor() {

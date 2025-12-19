@@ -97,6 +97,8 @@ export class EDefun extends EOperation {
 
 		let { function_name, args, definition } = this.parameters(node);
 
+		COMPILER_ENV.inDefinition = true;
+
 		let asm: string[] = [];
 		let argn = args.length + 1;
 
@@ -110,13 +112,13 @@ export class EDefun extends EOperation {
 		asm.push(`${function_name}:`)
 
 		// saving
-		let offset = argn * 4;
+		let offset = (argn - 1) * 4;
 		asm.push(`\taddi sp, sp, -${offset}`);
 		offset = offset - 4;
 		asm.push(`\tsw ra, ${offset}(sp)`);
 		offset = offset - 4;
-		for (let i = 0; offset >= 0; offset -= 4, i++) {
-			asm.push(`\tsw a${i}, ${offset}(sp)`);
+		for (let i = argn - 1; offset >= 0; offset -= 4, i--) {
+			asm.push(`\tsw a${i - 1}, ${offset}(sp)`);
 		}
 
 		// a-indexes are assigned to the variable, in this level.
@@ -124,8 +126,9 @@ export class EDefun extends EOperation {
 			COMPILER_ENV.variables.set(args[i], i);
 		}
 
-		// store a0 in t0
-		asm = asm.concat(`\tadd t0, zero, a0`)
+		// save parameter registers, to later use as arguments with other functions calls
+		for (let i = 0; i < argn - 1; i++)
+			asm.push(`\tadd t${i}, zero, a${i}`)
 
 		// definition
 		asm = asm.concat(EExpression.compile(definition));
@@ -133,10 +136,9 @@ export class EDefun extends EOperation {
 		// restoring
 		offset = 0;
 		for (let i = argn - 2; i >= 1; offset += 4, i--) {
-			asm.push(`\tlw a${i}, ${offset}(sp)`);
+			asm.push(`\tlw a${argn - 1 - i}, ${offset}(sp)`);
 		}
 
-		offset = offset + 4;
 		asm.push(`\tlw ra, ${offset}(sp)`);
 		offset = offset + 4;
 		asm.push(`\taddi sp, sp, ${offset}`);
@@ -150,6 +152,8 @@ export class EDefun extends EOperation {
 		let func = new FunctionDefinition(function_name, args, new Ast("body"));
 
 		COMPILER_ENV.functions.set(function_name, func);
+
+		COMPILER_ENV.inDefinition = false;
 
 		return asm;
 	}
