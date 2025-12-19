@@ -7,8 +7,7 @@
 	},
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
-		"watch-riscv": "tsx --watch sketch/riscv.ts",
-		"watch-interpreter": "tsx --watch sketch/interpreter.ts",
+		"watch": "tsx --watch sketch/dev.ts",
 		"repl": "tsx -i",
 		"test": "jest --runInBand",
 		"dev": "webpack serve",
