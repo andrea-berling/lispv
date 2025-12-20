@@ -29,13 +29,11 @@ import { bin, signExtend } from "../src/riscv/utils"
 
 export function main() {
 
-	// jal rs, 0
-	// jalr rd, 0(zero)
-
 	let source = `
-		(defun b (args x y) (- x y))
-		(defun a (args x y z) (+ x (b y z)))
-		(a 5 (b 1 2) 3)
+		(defun b (args w x y z) (- w x y z))
+		(defun a (args x y z) (+ x (b y y z 6)))
+		(defun c (args x) (a 5 (b 1 2 3 4) (a 1 2 3)))
+		(c 1)
 	`
 
 	let c = new Compiler(source);
@@ -51,8 +49,6 @@ export function main() {
 	as.parse();
 
 	Pipeline.run(10000);
-
-	// Memory.show()
 
 	Registers.show();
 

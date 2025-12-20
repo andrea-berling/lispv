@@ -1,4 +1,4 @@
-import { DEBUG, DEBUG_COMPILER } from "../flags";
+import { DEBUG, DEBUG_ENVIRONMENT } from "../flags";
 import { Ast } from "../parser/ast";
 
 export class FunctionDefinition {
@@ -72,7 +72,7 @@ export class CompilerEnvironment extends Environment {
 	inDefinition: boolean = false;
 	definingFunction: FunctionDefinition | undefined;
 
-	debug = DEBUG || DEBUG_COMPILER;
+	debug = DEBUG || DEBUG_ENVIRONMENT;
 
 	constructor() {
 		super();
