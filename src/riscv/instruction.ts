@@ -72,7 +72,7 @@ export abstract class Instruction {
 		return (instructionClass as any).factoryFromBinary(encoded);
 	}
 
-	static factoryFromBinary(encoded: number): Instruction {
+	static factoryFromBinary(_encoded: number): Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 
@@ -91,7 +91,7 @@ export abstract class Instruction {
 		return (instructionClass as any).factoryFromAssembly(parameters);
 	}
 
-	static factoryFromAssembly(parameters: string): Instruction {
+	static factoryFromAssembly(_parameters: string): Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 }
@@ -115,11 +115,11 @@ export class HaltInstruction extends Instruction {
 		super();
 	}
 
-	static factoryFromBinary(encoded: number): Instruction {
+	static factoryFromBinary(_encoded: number): Instruction {
 		return new (this as any)() as Instruction;
 	}
 
-	static factoryFromAssembly(parameters: string): Instruction {
+	static factoryFromAssembly(_parameters: string): Instruction {
 		return new HaltInstruction();
 	}
 
