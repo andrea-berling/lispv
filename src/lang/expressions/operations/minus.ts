@@ -1,4 +1,3 @@
-import { MAX_PRIMITIVES } from "../../../flags";
 import { Ast } from "../../../parser/ast";
 import { Primitives } from "../../lib/primitives";
 import { EExpression } from "../expression";
@@ -6,19 +5,18 @@ import { EOperation } from "../operation";
 
 export class EMinus extends EOperation {
 
-	static evaluate(node: Ast): number {
+	static jumpLabel(n: number) {
+		return `\tjalr ra, +${n}(zero)`;
+	}
 
+	static evaluate(node: Ast): number {
 		let { other_childs } = EExpression.parameters(node);
 
 		let sum = 0;
 		let intermediate: number;
 
 		for (let child of other_childs) {
-
-			if (!child.evaluableType)
-				throw new Error("impossible")
-
-			intermediate = child.evaluableType.evaluate(child);
+			intermediate = EExpression.evaluate(child);
 			sum -= intermediate;
 		}
 
@@ -26,11 +24,8 @@ export class EMinus extends EOperation {
 	}
 
 	static compile(node: Ast): string[] {
-		let { other_childs } = EExpression.parameters(node);
-
-		let n_operands = other_childs.length;
-
-		return super.compile(node).concat(`\tjalr ra, -${n_operands}(zero)`)
+		EOperation.jumpLabel = this.jumpLabel;
+		return EOperation.compile(node);
 	}
 
 	static generatePrimitive(n: number): string {

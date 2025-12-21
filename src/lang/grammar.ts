@@ -8,7 +8,6 @@ import { EApplication } from "./expressions/application";
 import { EPlus } from "./expressions/operations/plus";
 import { EMinus } from "./expressions/operations/minus";
 import { EIf } from "./expressions/operations/if";
-import { EDef } from "./expressions/operations/def";
 import { EDefun } from "./expressions/operations/defun";
 import { EFunction } from "./expressions/operations/function";
 import { EArgs } from "./expressions/operations/args";
@@ -46,8 +45,6 @@ export const IF = Rule.literal("if").addEvaluable(EIf);
 
 export const DEFUN = Rule.literal("defun").addEvaluable(EDefun);
 
-export const DEF = Rule.literal("def").addEvaluable(EDef);
-
 export const ARGS = Rule.literal("args").addEvaluable(EArgs);
 
 // predicates
@@ -76,7 +73,6 @@ OPERATION.define([
 	AND,
 	ARGS,
 	DEFUN,
-	DEF,
 	EQ,
 	GREATER,
 	IF,

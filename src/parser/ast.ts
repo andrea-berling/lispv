@@ -165,6 +165,8 @@ export class Ast {
 			return this.literal;
 		if (!this.children)
 			throw new Error("undefined literal and undefined children")
-		return this.children.map(c => c.getText()).join("");
+		if (this.children.length == 1)
+			return this.children.map(c => c.getText()).join(" ");
+		return "(" + this.children.map(c => c.getText()).join(" ") + ")";
 	}
 }

@@ -5,14 +5,17 @@ import { Evaluable } from "../evaluable";
 import { EExpression } from "./expression";
 
 export class EOperation extends Evaluable {
-	static evaluate(node: Ast): number {
+	static jumpLabel(_n: number): string {
+		throw new Error("not implemented");
+	}
+
+	static evaluate(_node: Ast): number {
 		throw new Error("not implemented");
 	}
 
 	static compile(node: Ast): string[] {
 
 		let asm: string[] = [];
-		let atom: string[];
 
 		let { other_childs } = EExpression.parameters(node);
 
@@ -32,10 +35,17 @@ export class EOperation extends Evaluable {
 
 		COMPILER_ENV.pop();
 
+		asm.push(this.jumpLabel(opn));
+
+		let destination_register = COMPILER_ENV.get();
+
+		if (destination_register != 0)
+			asm.push(`\tadd a${destination_register}, zero, a0`);
+
 		return asm;
 	}
 
-	static generatePrimitive(n: number): string {
+	static generatePrimitive(_n: number): string {
 		throw new Error("not implemented");
 	}
 
@@ -48,6 +58,4 @@ export class EOperation extends Evaluable {
 
 		return primitives;
 	}
-
-
 }

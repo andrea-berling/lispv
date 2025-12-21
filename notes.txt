@@ -23,6 +23,16 @@
 	[x] grammar
 		[ ] syntax errors from Evaluable definition
 	[x] interpreter
+		[x] function definitions
+		[x] variable stack
+		[x] primitive operations
+			[x] plus
+			[x] minus
+			[x] conditonals
+		[x] recursive functions
+	[ ] idempotency between interpreter and compiler
+		[ ] make operation calls behave like function calls
+			operations are leaf functions, beacuse they dont call other functions. they dont make a1...a7 registers dirty.
 	[ ] calling convention
 		[x] make a1 the first argument and stop this madness
 			a0 is the function return register, a1...a7 are arguments
@@ -78,5 +88,3 @@
 			what if we make use of temporary registers
 			we can also think of a solution that puts the arguments in a-normal form. since the shape of the call is known at compile time, we can unravel the call. with a more complex example:
 			(b_0 (b_11 (b_21 2 3) 2) (b_12 3 (b_24 4 5)))
-		[ ] make operation calls behave like function calls
-			operations are leaf functions, beacuse they dont call other functions. they dont make a1...a7 registers dirty.

@@ -30,11 +30,13 @@ import { bin, signExtend } from "../src/riscv/utils"
 export function main() {
 
 	let source = `
-		(defun b (args x y) (- y x x x))
+		;; (defun b (args x y) (- y x x x))
 		;; (defun a (args x) (+ x x (b x (b (b x x) x)) x))
 		;; (a (a 20))
-		(b (b 10 20) (b 20 30))
-		(+ (+ 1 2 3))
+		;; (b (b 10 20) (b 20 30))
+		;; (defun f (args x y z) (+ 1 2 (- x y) (+ 2 3 z)))
+		;; (f 10 20 30)
+		(+ 1 (+ 4 5 6 7) 3)
 	`
 
 	let c = new Compiler(source);

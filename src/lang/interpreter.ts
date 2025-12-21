@@ -1,7 +1,6 @@
 import { Traversal } from "./traversal";
 import { DEBUG, DEBUG_INTERPRETER, DEBUG_READER } from "../flags";
 import { INTERPRETER_ENV } from "./environment";
-import { Ast } from "../parser/ast";
 import { EExpression } from "./expressions/expression";
 
 export abstract class LispReader {

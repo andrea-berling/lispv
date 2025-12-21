@@ -2,8 +2,6 @@ import { Ast } from "../../parser/ast";
 import { Evaluable } from "../evaluable";
 import { EApplication } from "./application";
 import { ENumber } from "./number";
-import { EDef } from "./operations/def";
-import { EDefun } from "./operations/defun";
 import { EVariable } from "./variable";
 
 export class EExpression extends Evaluable {
