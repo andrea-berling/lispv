@@ -11,4 +11,4 @@ export const DEBUG_ASSEMBLER: boolean = false;
 export const DEBUG_PIPELINE: boolean = false;
 
 export const MAX_ARGUMENTS: number = 7;
-export const MAX_PRIMITIVES: number = MAX_ARGUMENTS;
+export const MAX_PRIMITIVES: number = (MAX_ARGUMENTS + 1);

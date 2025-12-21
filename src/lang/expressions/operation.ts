@@ -20,7 +20,7 @@ export class EOperation extends Evaluable {
 
 		this.debug_compiler && asm.push(`\t# op ${node.getText()}`)
 
-		COMPILER_ENV.push(opn - 1);
+		COMPILER_ENV.push(opn);
 
 		// go through operands backwards so that we dont need to save a0 many times.
 		for (let i = opn - 1; i >= 0; i--) {
