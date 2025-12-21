@@ -48,6 +48,8 @@ export class EFunction extends EOperation {
 				let new_name = args_nodes[i].literal || "";
 				let updated_func = (INTERPRETER_ENV.functions.get(new_name) as FunctionDefinition);
 				updated_func.name = func.params[i];
+				// add a new function to GLOBAL scope that is named as the parameter and has the definition that the argument provides.
+				// TODO dont make it global
 				INTERPRETER_ENV.functions.set(func.params[i], updated_func);
 			}
 		}

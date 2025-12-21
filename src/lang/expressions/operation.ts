@@ -14,6 +14,7 @@ export class EOperation extends Evaluable {
 	}
 
 	static compile(node: Ast): string[] {
+		console.log(node);
 
 		let asm: string[] = [];
 
@@ -21,13 +22,12 @@ export class EOperation extends Evaluable {
 
 		let opn = other_childs.length;
 
-		this.debug_compiler && asm.push(`\t# op ${node.getText()}`)
+		this.debug_compiler && asm.push(`\t# op ${node.getText(true)}`)
 
 		COMPILER_ENV.push(opn);
 
 		// go through operands backwards so that we dont need to save a0 many times.
 		for (let i = opn - 1; i >= 0; i--) {
-
 			asm = asm.concat(EExpression.compile(other_childs[i]));
 
 			COMPILER_ENV.decrease();

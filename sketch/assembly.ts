@@ -36,35 +36,12 @@ export function main() {
 		;; (b (b 10 20) (b 20 30))
 		;; (defun f (args x y z) (+ 1 2 (- x y) (+ 2 3 z)))
 		;; (f 10 20 30)
-		(+ 1 (+ 4 5 6 7) 3)
+		(+ 2 (+ 4 5 6) 3)
 	`
 
 	let c = new Compiler(source);
 
 	let assembly = c.compile();
-
-// 	assembly = assembly.concat(
-// `
-// 	# y: nested call 
-// 	# y: 30 
-// 	addi a2, zero, 30 
-// 	# x: 20 
-// 	addi a1, zero, 20 
-// 	jalr ra, b(zero) 
-// 	add a2, zero, a0 
-// 	add s2, zero, a2
-// 	# x: nested call 
-// 	# y: 20 
-// 	addi a2, zero, 20 
-// 	# x: 10 
-// 	addi a1, zero, 10 
-// 	jalr ra, b(zero) 
-// 	add a1, zero, a0 
-// 	add a2, zero, s2
-// 	jalr ra, b(zero) 
-// 	add a1, zero, a0
-// `.split("\n")
-// 	)
 
 	let as = new Assembler(assembly);
 

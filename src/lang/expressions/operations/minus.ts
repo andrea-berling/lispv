@@ -24,8 +24,7 @@ export class EMinus extends EOperation {
 	}
 
 	static compile(node: Ast): string[] {
-		EOperation.jumpLabel = this.jumpLabel;
-		return EOperation.compile(node);
+		return super.compile(node);
 	}
 
 	static generatePrimitive(n: number): string {

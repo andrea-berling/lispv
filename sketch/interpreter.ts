@@ -41,4 +41,6 @@ export function main() {
 
 	i.log({ includeLines: true });
 
+	console.log(INTERPRETER_ENV)
+
 }
