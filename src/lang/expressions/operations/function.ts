@@ -79,6 +79,8 @@ export class EFunction extends EOperation {
 			COMPILER_ENV.saveOnStack = true;
 		}
 
+		this.debug_compiler && asm.push(`\t# op ${node.getText(true)}`)
+
 		COMPILER_ENV.push(argn);
 
 		// go through arguments backwards

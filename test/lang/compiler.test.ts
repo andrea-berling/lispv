@@ -80,4 +80,28 @@ describe("compiled", () => {
 		expect(Registers.parse("a0").value).toBe(i.run());
 	})
 
+	test("nested operations and applications in call and definition", () => {
+		Pipeline.init();
+
+		let source = `
+		(defun a (args x) (+ x (+ 2 x x)))
+		(a (+ 10 (a 20) (+ 10 (a (+ 10 20) 20) 20)))
+		`
+
+		let c = new Compiler(source);
+
+		let assembly = c.compile();
+
+		let as = new Assembler(assembly);
+
+		as.parse();
+
+		Pipeline.run();
+
+		let i = new Interpreter(source)
+
+		expect(Registers.parse("a0").value).toBe(i.run());
+
+	})
+
 });
