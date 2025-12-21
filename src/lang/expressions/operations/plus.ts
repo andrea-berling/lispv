@@ -26,7 +26,6 @@ export class EPlus extends EOperation {
 	}
 
 	static compile(node: Ast): string[] {
-
 		let { other_childs } = EExpression.parameters(node);
 
 		let n_operands = other_childs.length;

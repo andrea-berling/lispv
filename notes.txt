@@ -29,6 +29,29 @@ roadmap
 		[ ] calling convention
 			[x] make a1 the first argument and stop this madness
 			[ ] save registers in function call out of definition
+				in an example such as this
+				(defun b (args x y) (+ x y))
+				(b (b 10 20) (b 20 30))
+				# y: nested call 
+				# y: 30 
+				addi a2, zero, 30 
+				# x: 20 
+				addi a1, zero, 20 
+				jalr ra, b(zero) 
+				add a2, zero, a0 
+				# x: nested call 
+				# y: 20 
+				addi a2, zero, 20 
+				# x: 10 
+				addi a1, zero, 10 
+				jalr ra, b(zero) 
+				add a1, zero, a0 
+				jalr ra, b(zero) 
+				add a1, zero, a0
+				the register a1 is destroyed soon after the first evaluation (that should be assigning to it) is done.
+				so (b 20 30) = 50 that is going to be used as the second argument of (b (b 10 20) ...) is trashed as soon as (b 10 20) is called, because a2 is assigned to 20.
+				the algorithm that is being used to compile the ast into assembly does a dfs descent, reading right to left the operands.
+				we need to save the intermediate results, and move them into arguments when needed.
 			
 		optimizations
 			[ ] tail recursion

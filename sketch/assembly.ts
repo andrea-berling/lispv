@@ -32,7 +32,8 @@ export function main() {
 	let source = `
 		(defun b (args x y) (- y x x x))
 		(defun a (args x) (+ x x (b x (b (b x x) x)) x))
-		(a (a 20))
+		;; (a (a 20))
+		(b (b 10 20) (b 20 30))
 	`
 
 	let c = new Compiler(source);
