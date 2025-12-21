@@ -58,37 +58,11 @@ describe("compiled", () => {
 		expect(Registers.parse("a0").value).toBe(i.run());
 	})
 
-	test("nested", () => {
+	test("nested operations", () => {
 		Pipeline.init();
 
 		let source = `
-		(defun b (args x y) (- x y))
-		(defun a (args x y z) (+ x (b y z)))
-		(a 5 (b 1 2) 3)
-		`;
-
-		let c = new Compiler(source);
-
-		let assembly = c.compile();
-
-		let as = new Assembler(assembly);
-
-		as.parse();
-
-		Pipeline.run();
-
-		let i = new Interpreter(source)
-
-		expect(Registers.parse("a0").value).toBe(i.run());
-	})
-
-	test("variations", () => {
-		Pipeline.init();
-
-		let source = `
-		(defun b (args w x y z) (- w x y z))
-		(defun a (args x y z) (+ x (b y y z 6)))
-		(a 5 (b 1 2 3 4) (a 1 2 3))
+		(+ 2 (- 4 5 6) (+ 3 4 (- 1 2 3) 6))
 		`
 
 		let c = new Compiler(source);

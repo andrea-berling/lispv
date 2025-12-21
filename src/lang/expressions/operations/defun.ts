@@ -157,6 +157,8 @@ export class EDefun extends EOperation {
 		asm.push("\tjal ra, 0");
 
 		asm.push(`end-${function_name}:`)
+		asm.push(`\taddi a0, zero, ${argn}`);
+
 
 
 		COMPILER_ENV.inDefinition = false;

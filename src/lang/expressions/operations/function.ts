@@ -67,7 +67,17 @@ export class EFunction extends EOperation {
 
 		let { func, args_nodes } = this.parameters(node, COMPILER_ENV);
 
+		let leaf_call = true;
+		for (let child of args_nodes)
+			if (child.evaluableType == EExpression)
+				leaf_call = false;
+
 		let argn = args_nodes.length;
+
+		if (!leaf_call) {
+			asm.push(`\taddi sp, sp, -${argn * 4}`);
+			COMPILER_ENV.saveOnStack = true;
+		}
 
 		COMPILER_ENV.push(argn);
 
@@ -86,6 +96,11 @@ export class EFunction extends EOperation {
 
 				asm = asm.concat(EExpression.compile(args_nodes[i]));
 
+				if (!leaf_call) {
+					let r = COMPILER_ENV.get() as number;
+					asm.push(`\tsw a${r}, ${(r-1)* 4}(sp)`)
+				}
+
 				COMPILER_ENV.decrease();
 
 			} else {
@@ -95,12 +110,22 @@ export class EFunction extends EOperation {
 
 		COMPILER_ENV.pop();
 
+		// call
+		if (!leaf_call) {
+			for (let i = 1; i <= argn; i ++)
+				asm.push(`\tlw a${i}, ${(i-1)* 4}(sp)`)
+		}
 		asm.push(`\tjalr ra, ${func.name}(zero)`);
 
 		let destination_register = COMPILER_ENV.get();
 
 		if (destination_register != 0)
 			asm.push(`\tadd a${destination_register}, zero, a0`);
+
+		if (!leaf_call) {
+			asm.push(`\taddi sp, sp, ${argn * 4}`);
+			COMPILER_ENV.saveOnStack = false;
+		}
 
 		if (COMPILER_ENV.inDefinition) {
 			// restore t-registers, please

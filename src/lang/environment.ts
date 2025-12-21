@@ -70,6 +70,7 @@ export class Environment {
 export class CompilerEnvironment extends Environment {
 	register: number[];
 	inDefinition: boolean = false;
+	saveOnStack: boolean = false;
 	definingFunction: FunctionDefinition | undefined;
 
 	debug = DEBUG || DEBUG_ENVIRONMENT;
