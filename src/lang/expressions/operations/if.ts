@@ -29,4 +29,13 @@ export class EIf extends EOperation {
 
 		return EExpression.evaluate(result_node);
 	}
+
+	static compile(node: Ast): string[] {
+		let { other_childs } = EExpression.parameters(node);
+
+		let asm: string[] = [];
+
+		return asm;
+	}
+
 }
