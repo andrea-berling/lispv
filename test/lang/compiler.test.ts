@@ -104,4 +104,28 @@ describe("compiled", () => {
 
 	})
 
+	test("triangular numbers without stack saving", () => {
+		Pipeline.init();
+
+		let source = `
+		(defun f (args a) (if (a) (+ (f (+ a (- 1) )) a ) (0) ) )
+		(f 5)
+		`
+
+		let c = new Compiler(source);
+
+		let assembly = c.compile();
+
+		let as = new Assembler(assembly);
+
+		as.parse();
+
+		Pipeline.run();
+
+		let i = new Interpreter(source)
+
+		expect(Registers.parse("a0").value).toBe(i.run());
+
+	})
+
 });

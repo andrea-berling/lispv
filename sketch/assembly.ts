@@ -32,8 +32,7 @@ import { Immediate12, Immediate20 } from "../src/riscv/immediate"
 
 export function main() {
 	let source = `
-		;; + a (f (+ a (- 1) ) )
-		(defun f (args a) (if (a) (+ a (f (+ a (- 1) ) )) (0) ) )
+		(defun f (args a) (if (a) (+ (f (+ a (- 1) )) a ) (0) ) )
 		(f 5)
 	`
 
