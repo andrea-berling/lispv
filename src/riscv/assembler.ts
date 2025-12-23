@@ -82,10 +82,28 @@ export class Assembler {
 		}
 	}
 
-	log(lineAddress: boolean = false) {
+	log(options?: { lineAddress?: boolean, hidePrologue?: boolean }) {
+		let lineAddress = false;
+		let hidePrologue = false;
+		if (options) {
+			lineAddress = options.lineAddress || false;
+			hidePrologue = options.hidePrologue || false;
+		}
+
 		let addr = 0;
-		for (let i = 0; i < this.lines.length; i++) {
-			if (this.lines[i].indexOf(":") >= 0) {
+		let startingLine = 0;
+
+		if (hidePrologue) {
+			startingLine = this.lines.findIndex(x => x.trim() == "_start:");
+			for (let i = 0; i < startingLine; i++) {
+				if (!(this.lines[i].indexOf(":") >= 0 || this.lines[i].replace(Assembler.comment, "").trim() == "")) {
+					addr += 4;
+				}
+			}
+		}
+
+		for (let i = startingLine; i < this.lines.length; i++) {
+			if (this.lines[i].indexOf(":") >= 0 || this.lines[i].replace(Assembler.comment, "").trim() == "") {
 				if (lineAddress)
 					console.log(`            ` + this.lines[i]);
 				else
@@ -101,7 +119,6 @@ export class Assembler {
 	}
 
 	static disassemble() {
-
 		let instructions: Instruction[] = [];
 
 		let addr = 0;
@@ -118,5 +135,4 @@ export class Assembler {
 
 		return instructions;
 	}
-
 }

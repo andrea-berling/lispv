@@ -121,7 +121,7 @@ export class BeqInstruction extends BTypeInstruction {
 	static tag = "beq";
 
 	execute(): void {
-		if (this.source1.value != this.source2.value)
+		if (this.source1.value == this.source2.value)
 			ProgramCounter.address = (ProgramCounter.address + this.immediate.value) - 4;
 	}
 

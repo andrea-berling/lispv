@@ -1,10 +1,11 @@
-import { bin, signExtend, unsigned } from "../utils";
+import { hex, signExtend, unsigned } from "../utils";
 import { Instruction } from "../instruction"
 import { Register, Registers } from "../register";
 import { Memory } from "../memory";
 import { ProgramCounter } from "../programCounter";
 import { InstructionRegistry } from "../instructionRegistry";
 import { Immediate12, Immediate5 } from "../immediate";
+import { DEBUG_PIPELINE_LOG_STACK_POINTER } from "../../flags";
 
 abstract class ITypeInstruction extends Instruction {
 	destination: Register;
@@ -179,6 +180,10 @@ export class AddiInstruction extends IntegerRegisterImmediateInstruction {
 	static tag = "addi";
 
 	execute(): void {
+		// stack pointer
+		if (this.destination.index == 2) {
+			DEBUG_PIPELINE_LOG_STACK_POINTER && console.log(`stack pointer: ${hex(this.destination.value)} (pc: ${hex(ProgramCounter.address)})`)
+		}
 		this.destination.value = this.source.value + this.immediate.value;
 	}
 

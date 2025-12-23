@@ -59,7 +59,7 @@ export class EIf extends EOperation {
 
 		asm = asm.concat(EExpression.compile(condition_node));
 
-		asm.push(`\tbeq a0, zero, if-true-${COMPILER_ENV.ifId}`)
+		asm.push(`\tbne a0, zero, if-true-${COMPILER_ENV.ifId}`)
 		asm.push(`\tjal zero, if-false-${COMPILER_ENV.ifId}`)
 
 		this.debug_compiler && asm.push("\t# " + expression_if_true.getText(true))

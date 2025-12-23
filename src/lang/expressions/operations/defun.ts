@@ -8,7 +8,6 @@ import { EOperation } from "../operation";
 import { EVariable } from "../variable";
 
 export class EDefun extends EOperation {
-
 	static syntax: Evaluable[] = [
 		EDefun,
 		EVariable,
@@ -164,5 +163,4 @@ export class EDefun extends EOperation {
 
 		return asm;
 	}
-
 }

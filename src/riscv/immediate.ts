@@ -18,7 +18,7 @@ export abstract class Immediate {
 		return { value: Number.parseInt(eval(s.trim())), label: undefined }
 	}
 
-	static parse(s: string): Immediate {
+	static parse(_s: string): Immediate {
 		throw new Error("must do static parsing from concrete Immediate subclass")
 	}
 

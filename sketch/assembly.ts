@@ -16,7 +16,7 @@ import "../src/riscv/instructions/stype"
 import "../src/riscv/instructions/rtype"
 
 import { Labels } from "../src/riscv/label"
-import { Memory } from "../src/riscv/memory"
+import { Memory, MemoryMode } from "../src/riscv/memory"
 import { Pipeline } from "../src/riscv/pipeline"
 import { Registers } from "../src/riscv/register"
 import { Assembler } from "../src/riscv/assembler"
@@ -28,12 +28,13 @@ import { InstructionRegistry } from "../src/riscv/instructionRegistry"
 import { bin, signExtend } from "../src/riscv/utils"
 import { Instruction } from "../src/riscv/instruction"
 import { JalInstruction } from "../src/riscv/instructions/jtype"
-import { Immediate20 } from "../src/riscv/immediate"
+import { Immediate12, Immediate20 } from "../src/riscv/immediate"
 
 export function main() {
 	let source = `
-		(defun f (args a) (if (a) (+ (f (+ a (- 1) )) ) (1) ) )
-		(f 2)
+		;; + a (f (+ a (- 1) ) )
+		(defun f (args a) (if (a) (+ a (f (+ a (- 1) ) )) (0) ) )
+		(f 5)
 	`
 
 	let c = new Compiler(source);
@@ -46,9 +47,9 @@ export function main() {
 
 	as.parse();
 
-	as.log(true);
+	as.log({hidePrologue: true, lineAddress: true});
 
-	// Pipeline.run();
+	Pipeline.run();
 
 	Registers.show();
 
@@ -57,7 +58,4 @@ export function main() {
 	console.log(i.run());
 
 	console.log(Registers.parse("a0").value == i.run());
-
-	let j = new JalInstruction(Registers.parse("zero"), new Immediate20(220));
-	console.log(j.encode())
 }

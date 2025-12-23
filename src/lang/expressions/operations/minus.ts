@@ -6,7 +6,7 @@ import { EOperation } from "../operation";
 export class EMinus extends EOperation {
 
 	static jumpLabel(n: number) {
-		return `\tjalr ra, -${n}(zero)`;
+		return `\tjalr ra, minus-${n}(zero)`;
 	}
 
 	static evaluate(node: Ast): number {
@@ -29,7 +29,7 @@ export class EMinus extends EOperation {
 
 	static generatePrimitive(n: number): string {
 		let primitive = `
--${n}:
+minus-${n}:
 	sub a0, zero, zero
 `;
 		for (let i = 1; i < n + 1; i++) {
