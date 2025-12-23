@@ -98,10 +98,7 @@ abstract class BTypeInstruction extends Instruction {
 	disassemble(): string {
 		let asm: string;
 
-		if (this.immediate.label)
-			asm = `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.label.name}`;
-		else
-			asm = `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.value}`;
+		asm = `${this.tag} ${this.source1}, ${this.source2}, ${this.immediate.value}`;
 
 		return asm;
 	}

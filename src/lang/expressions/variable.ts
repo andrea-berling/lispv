@@ -40,6 +40,7 @@ export class EVariable extends Evaluable {
 			source_register = `t${index}`;
 
 		asm.push(`\tadd a${COMPILER_ENV.get()}, zero, ${source_register}`);
+		asm.push(`\tadd a0, zero, ${source_register}`);
 
 		return asm;
 	}

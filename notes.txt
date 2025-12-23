@@ -22,6 +22,7 @@
 [ ] lang
 	[x] grammar
 		[ ] syntax errors from Evaluable definition
+	[ ] empty program
 	[x] interpreter
 		[x] function definitions
 		[x] variable stack
@@ -36,6 +37,7 @@
 	[ ] calling convention
 		[x] make a1 the first argument and stop this madness
 			a0 is the function return register, a1...a7 are arguments
+			[ ] bring back the madness
 		[ ] save registers in function call
 			in an example such as this
 			(defun b (args x y) (+ x y))

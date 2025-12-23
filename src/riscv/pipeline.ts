@@ -2,7 +2,7 @@ import { Instruction } from "./instruction";
 import { Memory } from "./memory";
 import { ProgramCounter } from "./programCounter";
 import { Registers, Register } from "./register";
-import { DEBUG, DEBUG_PIPELINE } from "../flags";
+import { DEBUG, DEBUG_PIPELINE, DEBUG_PIPELINE_DUMP_MEMORY_AT_EVERY_CYCLE, DEBUG_PIPELINE_DUMP_REGISTERS_AT_EVERY_CYCLE } from "../flags";
 import { hex } from "./utils";
 
 const debug = DEBUG || DEBUG_PIPELINE;
@@ -32,13 +32,17 @@ export class Pipeline {
 			encoded = Memory.get(addr);
 
 			// decode. if the decoding fails the simulator crashes.
+			debug && console.log(`decoding: ${hex(ProgramCounter.address)}: ${hex(encoded)}`);
 			i = Instruction.decode(encoded);
 			i.address = ProgramCounter.address
-			debug && console.log(`${ProgramCounter.address}: ${i.disassemble()}`);
+			debug && console.log(`decoded: ${hex(ProgramCounter.address)}: ${i.disassemble()}`);
 
 			// execute, memory, writeback
 			i.execute();
 			ProgramCounter.increase()
+
+			DEBUG_PIPELINE_DUMP_MEMORY_AT_EVERY_CYCLE && Memory.show();
+			DEBUG_PIPELINE_DUMP_REGISTERS_AT_EVERY_CYCLE && Registers.show();
 
 			iter++;
 		} while (i.tag != "halt" && (maxIterations ? iter < maxIterations : true));

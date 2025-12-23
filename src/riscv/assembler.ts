@@ -3,6 +3,7 @@ import { Primitives } from "../lang/lib/primitives";
 import { Instruction } from "./instruction";
 import { Labels } from "./label";
 import { Memory } from "./memory";
+import { hex } from "./utils";
 
 const debug = DEBUG || DEBUG_ASSEMBLER;
 
@@ -48,7 +49,6 @@ export class Assembler {
 			}
 
 			addr += 4;
-
 		}
 
 		addr = 0;
@@ -82,9 +82,21 @@ export class Assembler {
 		}
 	}
 
-	log() {
+	log(lineAddress: boolean = false) {
+		let addr = 0;
 		for (let i = 0; i < this.lines.length; i++) {
-			console.log(this.lines[i]);
+			if (this.lines[i].indexOf(":") >= 0) {
+				if (lineAddress)
+					console.log(`            ` + this.lines[i]);
+				else
+					console.log(this.lines[i]);
+			} else {
+				if (lineAddress)
+					console.log(`${hex(addr)}: ` + this.lines[i]);
+				else
+					console.log(this.lines[i]);
+				addr += 4;
+			}
 		}
 	}
 

@@ -72,6 +72,7 @@ export class CompilerEnvironment extends Environment {
 	inDefinition: boolean = false;
 	saveOnStack: boolean = false;
 	definingFunction: FunctionDefinition | undefined;
+	ifId: number = 0;
 
 	debug = DEBUG || DEBUG_ENVIRONMENT;
 

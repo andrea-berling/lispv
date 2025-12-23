@@ -1,5 +1,6 @@
 import { DEBUG, DEBUG_DECODER } from "../flags";
 import { InstructionRegistry } from "./instructionRegistry";
+import { ProgramCounter } from "./programCounter";
 import { bin, hex } from "./utils";
 
 /**
@@ -66,7 +67,7 @@ export abstract class Instruction {
 		(DEBUG || DEBUG_DECODER) && (console.log("f7: " + bin(f7, 7), "f3: " + bin(f3, 3), "op: " + bin(opcode, 7)));
 
 		if (!instructionClass) {
-			throw new Error(`Unknown instruction ${hex(encoded)}: opcode=${opcode}, f3=${f3}, f7=${f7}`);
+			throw new Error(`unknown instruction at ${hex(ProgramCounter.address)} (${hex(encoded)}): opcode=${opcode}, f3=${f3}, f7=${f7}`);
 		}
 
 		return (instructionClass as any).factoryFromBinary(encoded);

@@ -1,0 +1,133 @@
+add a1, zero, a0 
+
+ addi sp, sp, 8 
+
+ sw a1, 0(sp) 
+
+ lw a1, 0(sp) 
+
+ jalr ra, f(zero) 
+
+ add a1, zero, a0 
+
+ addi sp, sp, 4 
+
+ sw a1, 0(sp) 
+
+ lw a1, 0(sp) 
+
+ jalr ra, +1(zero) 
+
+ add a1, zero, a0 
+
+ addi sp, sp, 4 
+
+ jal zero, if-end-1 
+
+ # 1 
+
+if-false-1: 
+
+ addi a1, zero, 1 
+
+ addi a0, zero, 1 
+
+if-end-1: 
+
+ lw ra, 4(sp) 
+
+ lw a1, 0(sp) 
+
+ addi sp, sp, 8 
+
+ jal ra, 0 
+
+end-f: 
+
+ addi a0, zero, 1 
+
+ # op (f 2) 
+
+ # a: 2 
+
+ addi a1, zero, 2 
+
+ addi a0, zero, 2 
+
+ jalr ra, f(zero) 
+
+ add a1, zero, a0 
+
+
+
+Non capisco perchè questo codice che esce fuori dal mio compilatore da un errore di esecuzione, sul mio simulatore, che dice: Error: unknown instruction at 0x000001a8 (0x00000002): opcode=2, f3=0, f7=0. Il codice caricato sulla memoria nell'intorno di 0x1a8 è:
+
+0x0000019c: 0x00600533 (6292787) [add i10, i0, i6] 
+0x000001a0: 0x00b12023 (11608099) [sw i11, 0(i2)] 
+0x000001a4: 0x00012583 (75139) [lw i11, 0(i2)] 
+0x000001a8: 0x00412603 (4269571) [lw i12, 4(i2)] 
+0x000001ac: 0x010000e7 (16777447) [jalr i1, 16(i0)] 
+0x000001b0: 0x00a005b3 (10487219) [add i11, i0, i10] 
+0x000001b4: 0x00810113 (8454419) [addi i2, i2, 8]
+
+Ma durante l'esecuzione succede:
+
+decoding: 0x00000000: 0x1540006f 
+decoded: 0x00000000: jal i0, 340 
+decoding: 0x00000154: 0x1fc0006f 
+decoded: 0x00000154: jal i0, 508 
+decoding: 0x000001fc: 0x00100513 
+decoded: 0x000001fc: addi i10, i0, 1 
+decoding: 0x00000200: 0x00200593 
+decoded: 0x00000200: addi i11, i0, 2 
+decoding: 0x00000204: 0x00200513 
+decoded: 0x00000204: addi i10, i0, 2 
+decoding: 0x00000208: 0x158000e7 
+decoded: 0x00000208: jalr i1, 344(i0) 
+decoding: 0x00000158: 0xff810113 
+decoded: 0x00000158: addi i2, i2, -8 
+decoding: 0x0000015c: 0x00112223 
+decoded: 0x0000015c: sw i1, 4(i2) 
+decoding: 0x00000160: 0x00b12023 
+decoded: 0x00000160: sw i11, 0(i2) 
+decoding: 0x00000164: 0x00b00333 
+decoded: 0x00000164: add i6, i0, i11 
+decoding: 0x00000168: 0x006005b3 
+decoded: 0x00000168: add i11, i0, i6 
+decoding: 0x0000016c: 0x00600533 
+decoded: 0x0000016c: add i10, i0, i6 
+decoding: 0x00000170: 0x00050463 
+decoded: 0x00000170: beq i10, i0, 8 
+decoding: 0x00000178: 0x0dc10113 
+decoded: 0x00000178: addi i2, i2, 220 
+decoding: 0x0000017c: 0x0dc10113 
+decoded: 0x0000017c: addi i2, i2, 220 
+decoding: 0x00000180: 0xff810113 
+decoded: 0x00000180: addi i2, i2, -8 
+decoding: 0x00000184: 0x00100593 
+decoded: 0x00000184: addi i11, i0, 1 
+decoding: 0x00000188: 0x00100513 
+decoded: 0x00000188: addi i10, i0, 1 
+decoding: 0x0000018c: 0x0ac000e7 
+decoded: 0x0000018c: jalr i1, 172(i0) 
+decoding: 0x000000ac: 0x40000533 
+decoded: 0x000000ac: sub i10, i0, i0 
+decoding: 0x000000b0: 0x40b50533 
+decoded: 0x000000b0: sub i10, i10, i11 
+decoding: 0x000000b4: 0x000000ef 
+decoded: 0x000000b4: jal i1, 0 
+decoding: 0x00000190: 0x00a00633 
+decoded: 0x00000190: add i12, i0, i10 
+decoding: 0x00000194: 0x00c12223 
+decoded: 0x00000194: sw i12, 4(i2) 
+decoding: 0x00000198: 0x006005b3 
+decoded: 0x00000198: add i11, i0, i6 
+decoding: 0x0000019c: 0x00600533 
+decoded: 0x0000019c: add i10, i0, i6 
+decoding: 0x000001a0: 0x00b12023 
+decoded: 0x000001a0: sw i11, 0(i2) 
+decoding: 0x000001a4: 0x00012583 
+decoded: 0x000001a4: lw i11, 0(i2) 
+decoding: 0x000001a8: 0x00000002 
+
+E poi il crash.

@@ -26,11 +26,14 @@ import { Primitives } from "../src/lang/lib/primitives"
 import { COMPILER_ENV } from "../src/lang/environment"
 import { InstructionRegistry } from "../src/riscv/instructionRegistry"
 import { bin, signExtend } from "../src/riscv/utils"
+import { Instruction } from "../src/riscv/instruction"
+import { JalInstruction } from "../src/riscv/instructions/jtype"
+import { Immediate20 } from "../src/riscv/immediate"
 
 export function main() {
-
 	let source = `
-		(if (1) (1) (0))
+		(defun f (args a) (if (a) (+ (f (+ a (- 1) )) ) (1) ) )
+		(f 2)
 	`
 
 	let c = new Compiler(source);
@@ -39,13 +42,13 @@ export function main() {
 
 	let as = new Assembler(assembly);
 
-	as.log();
-
 	console.log(source);
 
 	as.parse();
 
-	Pipeline.run(10000);
+	as.log(true);
+
+	// Pipeline.run();
 
 	Registers.show();
 
@@ -55,4 +58,6 @@ export function main() {
 
 	console.log(Registers.parse("a0").value == i.run());
 
+	let j = new JalInstruction(Registers.parse("zero"), new Immediate20(220));
+	console.log(j.encode())
 }

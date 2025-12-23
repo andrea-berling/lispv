@@ -102,7 +102,6 @@ export class EDefun extends EOperation {
 
 		COMPILER_ENV.functions.set(function_name, func);
 		COMPILER_ENV.definingFunction = func;
-
 		COMPILER_ENV.inDefinition = true;
 
 		let asm: string[] = [];

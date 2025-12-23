@@ -10,7 +10,8 @@ export class ENumber extends Evaluable {
 
 	static compile(node: Ast): string[] {
 		let asm: string[] = [
-			`\taddi a${COMPILER_ENV.get()}, zero, ${Number.parseInt(node.literal || "")}`
+			`\taddi a${COMPILER_ENV.get()}, zero, ${Number.parseInt(node.literal || "")}`,
+			`\taddi a0, zero, ${Number.parseInt(node.literal || "")}`
 		];
 		return asm;
 	}
