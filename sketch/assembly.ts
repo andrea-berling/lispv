@@ -32,8 +32,8 @@ import { Immediate12, Immediate20 } from "../src/riscv/immediate"
 
 export function main() {
 	let source = `
-		(defun f (args a) (if (a) (+ a (f (+ a (- 1) )) a) (0) ) )
-		(f 5)
+		(defun triangular (args a) (if (a) (+ (triangular (+ a (- 1) )) a ) (0) ) )
+		(triangular 6)
 	`
 
 	let c = new Compiler(source);
@@ -46,7 +46,7 @@ export function main() {
 
 	as.parse();
 
-	as.log({hidePrologue: true, lineAddress: true});
+	// as.log({hidePrologue: true, lineAddress: true});
 
 	Pipeline.run();
 
