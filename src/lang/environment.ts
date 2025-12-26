@@ -63,7 +63,7 @@ export class Environment {
 
 	clean() {
 		this.variables = new Stack();
-		this.functions = new Map<string, FunctionDefinition>();
+		this.functions = new Stack();
 	}
 }
 

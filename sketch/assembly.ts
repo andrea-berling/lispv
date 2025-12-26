@@ -46,11 +46,9 @@ export function main() {
 
 	as.parse();
 
-	// as.log({hidePrologue: true, lineAddress: true});
+	as.log({hidePrologue: true, lineAddress: true});
 
 	Pipeline.run();
-
-	Memory.show();
 
 	Registers.show();
 
