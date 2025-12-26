@@ -23,11 +23,23 @@ export function hex(n: number) {
  * @param n the `number` to flip
  * @returns the `number` representation of n flipped
  */
-export function flipEndianness(n:number) {
+export function flipEndianness(n: number) {
 	let n0 = n & 0xff
 	let n1 = (n & 0xff00) >>> 8
 	let n2 = (n & 0xff0000) >>> 16
 	let n3 = (n & 0xff000000) >>> 24
 
 	return n0 << 24 | n1 << 16 | n2 << 8 | n3
+}
+
+export function unsigned(n: number) {
+	return n >>> 0;
+}
+
+export function signExtend(n: number, b: number) {
+	let last_bit = (n & (1 << b - 1));
+	for (let i = b; i < 32; i++) {
+		n += (last_bit << i);
+	}
+	return n;
 }

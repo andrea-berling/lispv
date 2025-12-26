@@ -8,11 +8,15 @@ import { EApplication } from "./expressions/application";
 import { EPlus } from "./expressions/operations/plus";
 import { EMinus } from "./expressions/operations/minus";
 import { EIf } from "./expressions/operations/if";
-import { EDef } from "./expressions/operations/def";
 import { EDefun } from "./expressions/operations/defun";
 import { EFunction } from "./expressions/operations/function";
 import { EArgs } from "./expressions/operations/args";
-import { EAnd, EEq, EGreater, ELess, ENot, EOr } from "./expressions/operations/predicates";
+import { EAnd} from "./expressions/operations/predicates/and"
+import { ENot } from "./expressions/operations/predicates/not";
+import { EOr } from "./expressions/operations/predicates/or";
+import { EGreater } from "./expressions/operations/predicates/greater";
+import { ELess } from "./expressions/operations/predicates/less";
+import { EEq } from "./expressions/operations/predicates/eq";
 
 // we define here a CFG (Context Free Grammar) for our language. it is a Chomsky-level-2 language.
 
@@ -40,8 +44,6 @@ export const MINUS = Rule.literal("-").addEvaluable(EMinus);
 export const IF = Rule.literal("if").addEvaluable(EIf);
 
 export const DEFUN = Rule.literal("defun").addEvaluable(EDefun);
-
-export const DEF = Rule.literal("def").addEvaluable(EDef);
 
 export const ARGS = Rule.literal("args").addEvaluable(EArgs);
 
@@ -71,7 +73,6 @@ OPERATION.define([
 	AND,
 	ARGS,
 	DEFUN,
-	DEF,
 	EQ,
 	GREATER,
 	IF,

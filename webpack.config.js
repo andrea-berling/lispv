@@ -22,6 +22,7 @@ export default {
 		],
 	},
 	devServer: {
+		open: false,
 		static: {
 			directory: path.join(__dirname, 'dist'),
 		},

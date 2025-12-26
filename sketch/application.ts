@@ -1,4 +1,4 @@
-import { FunctionDefinition, GLOBAL_ENV } from "../src/lang/environment";
+import { FunctionDefinition, INTERPRETER_ENV } from "../src/lang/environment";
 import { EApplication } from "../src/lang/expressions/application";
 import { EExpression } from "../src/lang/expressions/expression";
 import { ENumber } from "../src/lang/expressions/number";
@@ -40,13 +40,15 @@ export function main() {
 
 		definition.children = [application];
 
+		console.log(application)
+
 
 		let f = new FunctionDefinition("f", ["a", "b"], definition)
 
-		GLOBAL_ENV.functions.set("f", f);
+		INTERPRETER_ENV.functions.set("f", f);
 	}
 
-	console.log(GLOBAL_ENV)
+	console.log(INTERPRETER_ENV)
 
 	// once the environment is set, we can apply the function
 	// (f 1 2)

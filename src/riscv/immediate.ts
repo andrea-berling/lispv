@@ -5,20 +5,20 @@ export abstract class Immediate {
 	value: number = 0;
 	label: Label | undefined;
 
-	// TODO remove eval
 	static flatten(s: string): { value: number, label: Label | undefined } {
 		s = s.trim();
 
 		let label = Labels.get(s)
 
 		if (label) {
-			return { value: 0, label }
+			return { value: label.address, label }
 		}
 
+		// TODO remove eval
 		return { value: Number.parseInt(eval(s.trim())), label: undefined }
 	}
 
-	static parse(s: string): Immediate {
+	static parse(_s: string): Immediate {
 		throw new Error("must do static parsing from concrete Immediate subclass")
 	}
 
@@ -36,6 +36,24 @@ export abstract class UnsignedImmediate extends Immediate {
 		let min = 0;
 
 		return (this.value < min || this.value > max);
+	}
+}
+
+/**
+ * signed 12 bit immediate.
+ */
+export class Immediate5 extends Immediate {
+	readonly bits: 5 = 5;
+	constructor(value: number) {
+		super();
+		this.value = value >>> 0;
+	}
+
+	static parse(s: string) {
+		let { value, label } = Immediate.flatten(s);
+		let imm = new Immediate5(value);
+		imm.label = label;
+		return imm;
 	}
 }
 

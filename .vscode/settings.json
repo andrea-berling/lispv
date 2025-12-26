@@ -1,12 +1,24 @@
 {
 	"cSpell.words": [
 		"BIRS",
+		"btype",
 		"childs",
 		"DEFUN",
 		"evaluable",
+		"itype",
 		"jalr",
+		"jtype",
+		"Lispv",
 		"Neumann",
+		"riscv",
+		"rtype",
+		"stype",
 		"subword",
+		"utype",
 		"writeback"
-	]
+	],
+	"jest.runMode": {
+		"type": "on-demand"
+	},
+	"todo-tree.tree.showBadges": true
 }

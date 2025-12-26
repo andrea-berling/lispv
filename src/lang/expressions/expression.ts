@@ -53,4 +53,34 @@ export class EExpression extends Evaluable {
 		}
 	}
 
+	static compile(node: Ast): string[] {
+		switch (node.evaluableType) {
+			case ENumber: {
+				return ENumber.compile(node);
+			}
+
+			case EVariable: {
+				return EVariable.compile(node);
+			}
+		}
+
+		let { first_child, first_child_type } = EExpression.parameters(node);
+
+		switch (first_child_type) {
+
+			case EApplication: {
+				return EApplication.compile(first_child);
+			}
+
+			case EExpression: {
+				return EExpression.compile(first_child);
+			}
+
+			default: {
+				return first_child_type.compile(first_child);
+			}
+
+		}
+	}
+
 }

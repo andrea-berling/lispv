@@ -1,4 +1,5 @@
-import { hex } from "./utils";
+import { Instruction } from "./instruction";
+import { hex, unsigned } from "./utils";
 
 export enum MemoryMode {
 	BIG_ENDIAN,
@@ -120,7 +121,7 @@ export abstract class Memory {
 	}
 
 	static getAccesses() {
-		return {write: Memory.writeAccesses, read: Memory.readAccesses}
+		return { write: Memory.writeAccesses, read: Memory.readAccesses, total: Memory.writeAccesses + Memory.readAccesses }
 	}
 
 	/**
@@ -204,11 +205,21 @@ export abstract class Memory {
 
 	static show() {
 		// show memory addresses sorted
-		for (let cell of Array.from(Memory.cells.entries()).sort((a, b) => a[0] - b[0])) {
+		for (let cell of Array.from(Memory.cells.entries()).sort((a, b) => unsigned(a[0]) - unsigned(b[0]))) {
 			let addr = cell[0];
 			let value = cell[1];
+			let disassembled: string = "";
 
-			console.log(`${hex(addr)}: ${hex(value)} (${value})`);
+			try {
+				let i: Instruction = Instruction.decode(value);
+				disassembled = ` [${i.disassemble()}]`
+			}
+			catch (e) {
+
+			}
+			finally {
+				console.log(`${hex(addr)}: ${hex(value)} (${value})${disassembled}`);
+			}
 		}
 	}
 }

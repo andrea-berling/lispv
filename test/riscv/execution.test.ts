@@ -65,4 +65,49 @@ describe('execution', () => {
 
 		expect(Memory.get(0x100)).toBe(0x1fe);
 	});
+
 });
+
+describe("negative numbers", () => {
+	test('sub negs', () => {
+		let r2v, r3v: number;
+		let i: Instruction;
+
+		r2v = 3;
+		r3v = 3;
+		Registers.get(2).value = r2v;
+		Registers.get(3).value = r3v;
+		i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+		i.execute();
+		expect(Registers.get(1).value).toBe((r2v) - (r3v));
+		Registers.clean();
+
+		r2v = -3;
+		r3v = 3;
+		Registers.get(2).value = r2v;
+		Registers.get(3).value = r3v;
+		i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+		i.execute();
+		expect(Registers.get(1).value).toBe((r2v) - (r3v));
+		Registers.clean();
+
+		r2v = 3;
+		r3v = -3;
+		Registers.get(2).value = r2v;
+		Registers.get(3).value = r3v;
+		i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+		i.execute();
+		expect(Registers.get(1).value).toBe((r2v) - (r3v));
+		Registers.clean();
+
+		r2v = -3;
+		r3v = -3;
+		Registers.get(2).value = r2v;
+		Registers.get(3).value = r3v;
+		i = new SubInstruction(Registers.get(1), Registers.get(2), Registers.get(3))
+		i.execute();
+		expect(Registers.get(1).value).toBe((r2v) - (r3v));
+		Registers.clean();
+
+	});
+})

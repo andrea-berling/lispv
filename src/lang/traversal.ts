@@ -1,5 +1,7 @@
 import { Ast } from "../parser/ast";
+import { Parser } from "../parser/parser";
 import { EExpression } from "./expressions/expression";
+import { GRAMMAR, ONE_OR_MORE_SPACES, LBRACKET, RBRACKET, ZERO_OR_MORE_SPACES, OPERATION, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION, NUMBER, VARIABLE, FUNCTION } from "./grammar";
 
 export class Traversal {
 	tree: Ast;
@@ -22,7 +24,7 @@ export class Traversal {
 	start(): number {
 		function explore(node: Ast): number | undefined {
 			if (node.evaluableType === EExpression) {
-				return (node.evaluableType as typeof EExpression).evaluate(node);
+				return EExpression.evaluate(node);
 			}
 
 			for (const child of node.children || []) {
@@ -39,6 +41,43 @@ export class Traversal {
 			throw new Error("must have at least one expression");
 
 		return result;
+	}
+
+
+	static explore<T>(node: Ast, lambda: (node: Ast) => T): T | undefined {
+		if (node.evaluableType === EExpression) {
+			return lambda(node);
+		}
+
+		for (const child of node.children || []) {
+			const res = this.explore(child, lambda);
+			if (res !== undefined) return res;
+		}
+
+		return undefined;
+	}
+
+
+	static cleanAst(line: string) {
+
+		const p = new Parser(GRAMMAR);
+
+		let result = p.parse(line);
+
+		if (result.parsed) {
+			let ast = result.parsed.copyAsAst();
+
+			// wipe rules that were added for parsing purposes
+			ast.wipe(ONE_OR_MORE_SPACES, LBRACKET, RBRACKET, ZERO_OR_MORE_SPACES)
+
+			// remove picked grammar patterns that are not of use
+			ast.simplify(GRAMMAR, OPERATION, APPLICATION_OR_VARIABLE_OR_NUMBER_OR_EXPRESSION);
+
+			// collapse the digits of a number in a node of name number, 
+			ast.collapse(NUMBER, VARIABLE, FUNCTION);
+
+			return ast;
+		}
 	}
 
 }

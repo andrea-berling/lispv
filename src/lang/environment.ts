@@ -1,3 +1,4 @@
+import { DEBUG, DEBUG_ENVIRONMENT } from "../flags";
 import { Ast } from "../parser/ast";
 
 export class FunctionDefinition {
@@ -59,6 +60,54 @@ export class Environment {
 		this.variables = new Stack();
 		this.functions = new Stack();
 	}
+
+	clean() {
+		this.variables = new Stack();
+		this.functions = new Map<string, FunctionDefinition>();
+	}
 }
 
-export const GLOBAL_ENV = new Environment();
+export class CompilerEnvironment extends Environment {
+	register: number[];
+	inDefinition: boolean = false;
+	saveOnStack: boolean = false;
+	definingFunction: FunctionDefinition | undefined;
+	ifId: number = 0;
+
+	debug = DEBUG || DEBUG_ENVIRONMENT;
+
+	constructor() {
+		super();
+		this.register = [1];
+	}
+
+	push(n: number = 1) {
+		this.register.push(n);
+		this.debug && console.log("pushing", this.register);
+	}
+
+	get() {
+		this.debug && console.log("getting", this.register);
+		return this.register.at(this.register.length - 1);
+	}
+
+	increase() {
+		this.register[this.register.length - 1]++;
+		this.debug && console.log("increasing", this.register);
+	}
+
+	decrease() {
+		this.register[this.register.length - 1]--;
+		this.debug && console.log("decreasing", this.register);
+	}
+
+	pop() {
+		this.register.pop();
+		this.debug && console.log("popping", this.register);
+	}
+}
+
+
+export const INTERPRETER_ENV = new Environment();
+export const COMPILER_ENV = new CompilerEnvironment();
+

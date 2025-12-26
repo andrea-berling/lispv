@@ -1,4 +1,4 @@
-import { bin, flipEndianness, hex } from "../../src/riscv/utils";
+import { bin, flipEndianness, hex, unsigned } from "../../src/riscv/utils";
 
 describe("utils", () => {
 	test('bin', () => {
@@ -15,4 +15,10 @@ describe("utils", () => {
 		expect(n).toBe(flipEndianness(flipEndianness(n)));
 	});
 
+	test('unsigned comparison', () => {
+		let n1 = -1;
+		let n2 = 0x0fff_ffff;
+		expect(n1).toBeLessThan(n2);
+		expect(unsigned(n1)).toBeGreaterThan(unsigned(n2));
+	});
 })

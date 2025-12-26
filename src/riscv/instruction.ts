@@ -1,5 +1,7 @@
+import { DEBUG, DEBUG_DECODER } from "../flags";
 import { InstructionRegistry } from "./instructionRegistry";
-import { bin } from "./utils";
+import { ProgramCounter } from "./programCounter";
+import { bin, hex } from "./utils";
 
 /**
  * instructions are 4 byte data structures, comprised of an `opcode` and optionally the `f3` and `f7` fields. these are used to differentiate instruction types. the `Instruction` class is extended by concrete classes, that define a `name` for a specific instruction and an `execute()` method that is run during the execution. instructions are fetched from memory as a `number` and decoded to the correct instruction type, that assigns the correct registry or immediate fields. subclasses of `Instruction` must define the `encode()` method that translates the `Instruction` object into the `number` that is stored in memory, and the `static factory(encoded: number)` method, that cares to decode only the registry and immediate fields and instantiate the specific `Instruction` class.
@@ -11,20 +13,20 @@ export abstract class Instruction {
 	abstract disassemble(): string;
 
 	static opcode: number = 0;
-	static f3: number | null = null;
-	static f7: number | null = null;
+	static f3: number | undefined = undefined;
+	static f7: number | undefined = undefined;
 	static tag: string = "";
 
-	address: number | null = null;
+	address: number | undefined = undefined;
 
 	// get fields for instances
 	get opcode(): number {
 		return (this.constructor as typeof Instruction).opcode;
 	}
-	get f3(): number | null {
+	get f3(): number | undefined {
 		return (this.constructor as typeof Instruction).f3;
 	}
-	get f7(): number | null {
+	get f7(): number | undefined {
 		return (this.constructor as typeof Instruction).f7;
 	}
 	get tag(): string {
@@ -36,8 +38,8 @@ export abstract class Instruction {
 	 */
 	static decode(encoded: number): Instruction {
 		let opcode = 0;
-		let f3: number | null = null;
-		let f7: number | null = null;
+		let f3: number | undefined = undefined;
+		let f7: number | undefined = undefined;
 
 		let key: number;
 		let instructionClass: typeof Instruction | undefined;
@@ -62,14 +64,16 @@ export abstract class Instruction {
 		if (possibleInstructionClass)
 			instructionClass = possibleInstructionClass;
 
+		(DEBUG || DEBUG_DECODER) && (console.log("f7: " + bin(f7, 7), "f3: " + bin(f3, 3), "op: " + bin(opcode, 7)));
+
 		if (!instructionClass) {
-			throw new Error(`Unknown instruction: opcode=${opcode}, f3=${f3}, f7=${f7}`);
+			throw new Error(`unknown instruction at ${hex(ProgramCounter.address)} (${hex(encoded)}): opcode=${opcode}, f3=${f3}, f7=${f7}`);
 		}
 
 		return (instructionClass as any).factoryFromBinary(encoded);
 	}
 
-	static factoryFromBinary(encoded: number): Instruction {
+	static factoryFromBinary(_encoded: number): Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 
@@ -88,7 +92,7 @@ export abstract class Instruction {
 		return (instructionClass as any).factoryFromAssembly(parameters);
 	}
 
-	static factoryFromAssembly(parameters: string): Instruction {
+	static factoryFromAssembly(_parameters: string): Instruction {
 		throw new Error("factory must be implemented by subclass");
 	}
 }
@@ -112,8 +116,12 @@ export class HaltInstruction extends Instruction {
 		super();
 	}
 
-	static factoryFromBinary(encoded: number): Instruction {
+	static factoryFromBinary(_encoded: number): Instruction {
 		return new (this as any)() as Instruction;
+	}
+
+	static factoryFromAssembly(_parameters: string): Instruction {
+		return new HaltInstruction();
 	}
 
 	static {

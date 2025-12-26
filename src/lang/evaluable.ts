@@ -1,7 +1,9 @@
+import { DEBUG, DEBUG_COMPILER } from "../flags";
 import { Ast } from "../parser/ast";
 
 export abstract class Evaluable {
 	static tag?: string;
+	static debug_compiler?: boolean = DEBUG || DEBUG_COMPILER;
 
 	static createAst(literal?: string): Ast {
 		if (!this.tag)
@@ -15,4 +17,8 @@ export abstract class Evaluable {
 	static evaluate(_node: Ast): number {
 		throw new Error("not implemented");
 	};
+
+	static compile(_node: Ast): string[] {
+		throw new Error("not implemented");
+	}
 }

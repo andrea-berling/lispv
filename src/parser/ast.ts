@@ -160,11 +160,18 @@ export class Ast {
 		return results;
 	}
 
-	getText(): string {
+	getText(pretty: boolean = false): string {
 		if (this.literal)
 			return this.literal;
 		if (!this.children)
 			throw new Error("undefined literal and undefined children")
+
+		if (pretty) {
+			if (this.children.length == 1)
+				return this.children.map(c => c.getText(true)).join(" ");
+			return "(" + this.children.map(c => c.getText(true)).join(" ") + ")";
+		}
+
 		return this.children.map(c => c.getText()).join("");
 	}
 }

@@ -3,6 +3,9 @@ import { Register, Registers } from "../register";
 import { Memory } from "../memory";
 import { InstructionRegistry } from "../instructionRegistry";
 import { Immediate12 } from "../immediate";
+import { DEBUG_PIPELINE_LOG_STORE } from "../../flags";
+import { hex } from "../utils";
+import { ProgramCounter } from "../programCounter";
 
 abstract class STypeInstruction extends Instruction {
 	source1: Register; // add to this the immediate, that's the address to store in memory
@@ -82,12 +85,41 @@ abstract class STypeInstruction extends Instruction {
 	}
 }
 
+export class SbInstruction extends STypeInstruction {
+	static tag = "sb";
+	static f3 = 0b000;
+
+	execute(): void {
+		Memory.set(this.source1.value + this.immediate.value, this.source2.value & 0xff, 1);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
+export class ShInstruction extends STypeInstruction {
+	static tag = "sh";
+	static f3 = 0b001;
+
+	execute(): void {
+		Memory.set(this.source1.value + this.immediate.value, this.source2.value & 0xffff, 2);
+	}
+
+	static {
+		InstructionRegistry.register(this);
+	}
+}
+
 export class SwInstruction extends STypeInstruction {
 	static tag = "sw";
 	static f3 = 0b010;
 
 	execute(): void {
-		Memory.set(this.source1.value + this.immediate.value, this.source2.value);
+		let addr = this.source1.value + this.immediate.value;
+		let value = this.source2.value;
+		DEBUG_PIPELINE_LOG_STORE && console.log(`storing: ${hex(addr)}: ${hex(value)} (pc: ${hex(ProgramCounter.address)})`)
+		Memory.set(addr, value);
 	}
 
 	static {

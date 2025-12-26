@@ -1,5 +1,5 @@
 import { Ast } from "../../parser/ast";
-import { GLOBAL_ENV } from "../environment";
+import { COMPILER_ENV, INTERPRETER_ENV } from "../environment";
 import { Evaluable } from "../evaluable";
 
 export class EVariable extends Evaluable {
@@ -10,11 +10,38 @@ export class EVariable extends Evaluable {
 
 		name = node.literal;
 
-		let value = GLOBAL_ENV.variables.find(name);
+		let value = INTERPRETER_ENV.variables.find(name);
 
 		if (value === undefined)
-			throw new Error(`variable ${name} undefined at level ${GLOBAL_ENV.variables.current}`);
+			throw new Error(`variable ${name} undefined at level ${INTERPRETER_ENV.variables.current}`);
 
 		return value;
+	}
+
+	static compile(node: Ast): string[] {
+		let asm: string[] = []
+
+		let name: string;
+
+		if (!node.literal)
+			throw new Error("variable name cannot be empty");
+
+		name = node.literal;
+
+		let index = COMPILER_ENV.variables.find(name);
+
+		if (index === undefined)
+			throw new Error(`variable ${name} undefined at level ${INTERPRETER_ENV.variables.current}`);
+
+
+		let source_register = `a${index}`;
+
+		if (COMPILER_ENV.inDefinition)
+			source_register = `t${index}`;
+
+		asm.push(`\tadd a${COMPILER_ENV.get()}, zero, ${source_register}`);
+		asm.push(`\tadd a0, zero, ${source_register}`);
+
+		return asm;
 	}
 }

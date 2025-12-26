@@ -6,7 +6,7 @@ export class InstructionRegistry {
 
 	private constructor() { }
 
-	static key(opcode: number, f3: number | null, f7: number | null): number {
+	static key(opcode: number, f3: number | undefined, f7: number | undefined): number {
 		const f3Val = f3 ?? 0;
 		const f7Val = f7 ?? 0;
 		return (f7Val << 10) | (f3Val << 7) | opcode;
