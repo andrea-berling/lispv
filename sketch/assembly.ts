@@ -32,8 +32,9 @@ import { Immediate12, Immediate20 } from "../src/riscv/immediate"
 
 export function main() {
 	let source = `
-		(defun triangular (args a) (if (a) (+ a (triangular (+ a (- 1) )) ) (0) ) )
-		(triangular 5)
+		(defun times (args a b) (if (b) (+ (times a (+ b (- 1))) a ) (0) ))
+		(defun fact (args a) (if (a) (times a (fact (+ a (- 1))) ) (1) ))
+		(fact 8)
 	`
 
 	Compiler.toggleIndentation();
@@ -51,11 +52,14 @@ export function main() {
 
 	Pipeline.run();
 
+	// Memory.show();
+
 	Registers.show();
 
-	let i = new Interpreter(source);
-
-	console.log(i.run());
-
-	console.log(Registers.parse("a0").value == i.run());
+	// let i = new Interpreter(source);
+	//
+	// console.log(i.run());
+	//
+	// console.log(Registers.parse("a0").value == i.run());
+	
 }

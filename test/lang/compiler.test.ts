@@ -126,12 +126,85 @@ describe("compiled", () => {
 
 	})
 
-	test("triangular numbers without stack saving", () => {
+	test("triangular numbers 1", () => {
 		Pipeline.init();
 
 		let source = `
 		(defun f (args a) (if (a) (+ (f (+ a (- 1) )) a ) (0) ) )
 		(f 5)
+		`
+
+		let c = new Compiler(source);
+
+		let assembly = c.compile();
+
+		let as = new Assembler(assembly);
+
+		as.parse();
+
+		Pipeline.run();
+
+		let i = new Interpreter(source)
+
+		expect(Registers.parse("a0").value).toBe(i.run());
+
+	})
+
+	test("triangular numbers 2", () => {
+		Pipeline.init();
+
+		let source = `
+		(defun f (args a) (if (a) (+ a (f (+ a (- 1) ))) (0) ) )
+		(f 5)
+		`
+
+		let c = new Compiler(source);
+
+		let assembly = c.compile();
+
+		let as = new Assembler(assembly);
+
+		as.parse();
+
+		Pipeline.run();
+
+		let i = new Interpreter(source)
+
+		expect(Registers.parse("a0").value).toBe(i.run());
+
+	})
+
+	test("times 1", () => {
+		Pipeline.init();
+
+		let source = `
+		(defun times (args a b) (if (b) (+ (times a (+ b (- 1))) a ) (0) ))
+		(times 3 4)
+		`
+
+		let c = new Compiler(source);
+
+		let assembly = c.compile();
+
+		let as = new Assembler(assembly);
+
+		as.parse();
+
+		Pipeline.run();
+
+		let i = new Interpreter(source)
+
+		expect(Registers.parse("a0").value).toBe(i.run());
+
+	})
+
+	test("factorial", () => {
+		Pipeline.init();
+
+		let source = `
+		(defun times (args a b) (if (b) (+ (times a (+ b (- 1))) a ) (0) ))
+		(defun fact (args a) (if (a) (times a (fact (+ a (- 1))) ) (1) ))
+		(fact 4)
 		`
 
 		let c = new Compiler(source);

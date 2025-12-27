@@ -117,7 +117,7 @@ export class EFunction extends EOperation {
 		// call
 		if (!leaf_call) {
 			for (let i = 1; i <= argn; i++)
-				asm.push(`${indentation}lw t${i}, ${(i - 1) * 4}(sp)`)
+				asm.push(`${indentation}sw t${i}, ${(i - 1) * 4}(sp)`)
 		}
 		asm.push(`${indentation}jalr ra, ${func.name}(zero)`);
 

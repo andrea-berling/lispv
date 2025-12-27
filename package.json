@@ -8,6 +8,7 @@
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"watch": "tsx --watch sketch/dev.ts",
+		"exec": "tsx sketch/dev.ts",
 		"repl": "tsx -i",
 		"test": "jest --runInBand",
 		"dev": "webpack serve",
