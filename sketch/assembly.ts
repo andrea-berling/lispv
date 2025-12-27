@@ -32,8 +32,8 @@ import { Immediate12, Immediate20 } from "../src/riscv/immediate"
 
 export function main() {
 	let source = `
-		(defun triangular (args a) (if (a) (+ (triangular (+ a (- 1) )) a ) (0) ) )
-		(triangular 6)
+		(defun triangular (args a) (if (a) (+ a (triangular (+ a (- 1) )) ) (0) ) )
+		(triangular 5)
 	`
 
 	Compiler.toggleIndentation();
