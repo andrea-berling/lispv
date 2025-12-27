@@ -1,31 +1,16 @@
 import { Traversal } from "./traversal";
-import { DEBUG, DEBUG_INTERPRETER, DEBUG_READER } from "../flags";
+import { DEBUG, DEBUG_INTERPRETER } from "../flags";
 import { INTERPRETER_ENV } from "./environment";
 import { EExpression } from "./expressions/expression";
 
-export abstract class LispReader {
-	abstract lines: string[];
-	static debug_reader = DEBUG || DEBUG_READER;
-
-	static lines(lines: string[] | string) {
-		if (typeof lines === "string")
-			return lines.split("\n").map(x => x.trim()).filter(x => x.trim() != "");
-		else
-			return lines.map(x => x.trim()).filter(x => x.trim() != "");
-	}
-}
-
-export class Interpreter extends LispReader {
+export class Interpreter {
 	lines: string[];
 	debug = DEBUG || DEBUG_INTERPRETER;
 
 	constructor(lines: string[] | string, cleanEnv = true) {
-		super();
 		if (cleanEnv)
 			INTERPRETER_ENV.clean()
-		this.lines = LispReader.lines(lines);
-
-		LispReader.debug_reader && this.lines.forEach(x => console.log(x));
+		this.lines = Traversal.cleanLines(lines);
 	}
 
 	run() {

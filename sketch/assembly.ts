@@ -36,6 +36,7 @@ export function main() {
 		(triangular 6)
 	`
 
+	Compiler.toggleIndentation();
 	let c = new Compiler(source);
 
 	let assembly = c.compile();

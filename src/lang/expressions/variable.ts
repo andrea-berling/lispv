@@ -20,6 +20,7 @@ export class EVariable extends Evaluable {
 
 	static compile(node: Ast): string[] {
 		let asm: string[] = []
+		let indentation = this.indentation(node);
 
 		let name: string;
 
@@ -39,8 +40,8 @@ export class EVariable extends Evaluable {
 		if (COMPILER_ENV.inDefinition)
 			source_register = `t${index}`;
 
-		asm.push(`\tadd a${COMPILER_ENV.get()}, zero, ${source_register}`);
-		asm.push(`\tadd a0, zero, ${source_register}`);
+		asm.push(`${indentation}add a${COMPILER_ENV.get()}, zero, ${source_register}`);
+		asm.push(`${indentation}add a0, zero, ${source_register}`);
 
 		return asm;
 	}

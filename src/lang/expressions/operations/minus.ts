@@ -6,7 +6,7 @@ import { EOperation } from "../operation";
 export class EMinus extends EOperation {
 
 	static jumpLabel(n: number) {
-		return `\tjalr ra, minus-${n}(zero)`;
+		return `jalr ra, minus-${n}(zero)`;
 	}
 
 	static evaluate(node: Ast): number {

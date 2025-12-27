@@ -1,4 +1,5 @@
 import { DEBUG, DEBUG_COMPILER } from "../flags";
+import { Compiler } from "./compiler";
 import { Ast } from "../parser/ast";
 
 export abstract class Evaluable {
@@ -20,5 +21,18 @@ export abstract class Evaluable {
 
 	static compile(_node: Ast): string[] {
 		throw new Error("not implemented");
+	}
+
+	static indentationLevel(node: Ast): number {
+		let i = 0;
+		for (; node.parent; node = node.parent)
+			i++;
+		return i;
+	}
+	
+	static indentation(node: Ast): string {
+		if (!Compiler.indentation)
+			return "\t";
+		return "  ".repeat(Evaluable.indentationLevel(node));
 	}
 }

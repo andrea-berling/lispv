@@ -2,7 +2,6 @@ import { Ast } from "../../../parser/ast";
 import { COMPILER_ENV } from "../../environment";
 import { EExpression } from "../expression";
 import { EOperation } from "../operation";
-import { EVariable } from "../variable";
 
 export class EIf extends EOperation {
 	static parameters(node: Ast): { condition_node: Ast, expression_if_true: Ast, expression_if_false: Ast } {
@@ -50,26 +49,27 @@ export class EIf extends EOperation {
 
 	static compile(node: Ast): string[] {
 		let { condition_node, expression_if_true, expression_if_false } = this.parameters(node);
+		let indentation = this.indentation(node);
 
 		let asm: string[] = [];
 
-		this.debug_compiler && asm.push("\t# " + node.getText(true))
+		this.debug_compiler && asm.push(`${indentation}# ` + node.getText(true))
 
 		COMPILER_ENV.ifId++;
 
 		asm = asm.concat(EExpression.compile(condition_node));
 
-		asm.push(`\tbne a0, zero, if-true-${COMPILER_ENV.ifId}`)
-		asm.push(`\tjal zero, if-false-${COMPILER_ENV.ifId}`)
+		asm.push(`${indentation}bne a0, zero, if-true-${COMPILER_ENV.ifId}`)
+		asm.push(`${indentation}jal zero, if-false-${COMPILER_ENV.ifId}`)
 
-		this.debug_compiler && asm.push("\t# " + expression_if_true.getText(true))
+		this.debug_compiler && asm.push(`${indentation}# ` + expression_if_true.getText(true))
 		asm.push(`if-true-${COMPILER_ENV.ifId}:`)
 
 		asm = asm.concat(EExpression.compile(expression_if_true));
 
-		asm.push(`\tjal zero, if-end-${COMPILER_ENV.ifId}`)
+		asm.push(`${indentation}jal zero, if-end-${COMPILER_ENV.ifId}`)
 
-		this.debug_compiler && asm.push("\t# " + expression_if_false.getText(true))
+		this.debug_compiler && asm.push(`${indentation}# ` + expression_if_false.getText(true))
 		asm.push(`if-false-${COMPILER_ENV.ifId}:`)
 
 		asm = asm.concat(EExpression.compile(expression_if_false));
@@ -78,5 +78,4 @@ export class EIf extends EOperation {
 
 		return asm;
 	}
-
 }

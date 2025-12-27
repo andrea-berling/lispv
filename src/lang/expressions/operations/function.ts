@@ -1,3 +1,4 @@
+import { MAX_ARGUMENTS } from "../../../flags";
 import { Ast } from "../../../parser/ast";
 import { COMPILER_ENV, Environment, FunctionDefinition, INTERPRETER_ENV } from "../../environment";
 import { EExpression } from "../expression";
@@ -66,6 +67,7 @@ export class EFunction extends EOperation {
 		let asm: string[] = [];
 
 		let { func, args_nodes } = this.parameters(node, COMPILER_ENV);
+		let indentation = this.indentation(node);
 
 		let leaf_call = true;
 		for (let child of args_nodes)
@@ -75,11 +77,11 @@ export class EFunction extends EOperation {
 		let argn = args_nodes.length;
 
 		if (!leaf_call) {
-			asm.push(`\taddi sp, sp, -${argn * 4}`);
+			asm.push(`${indentation}addi sp, sp, -${argn * 4}`);
 			COMPILER_ENV.saveOnStack = true;
 		}
 
-		this.debug_compiler && asm.push(`\t# op ${node.getText(true)}`)
+		this.debug_compiler && asm.push(`${indentation}# op ${node.getText(true)}`)
 
 		COMPILER_ENV.push(argn);
 
@@ -94,13 +96,13 @@ export class EFunction extends EOperation {
 
 			if (!COMPILER_ENV.functions.get(arg || "")) {
 
-				asm.push(`\t# ${parameter_name}: ${arg || "nested call"}`)
+				asm.push(`${indentation}# ${parameter_name}: ${arg || "nested call"}`)
 
 				asm = asm.concat(EExpression.compile(args_nodes[i]));
 
 				if (!leaf_call) {
 					let r = COMPILER_ENV.get() as number;
-					asm.push(`\tsw a${r}, ${(r - 1) * 4}(sp)`)
+					asm.push(`${indentation}sw a${r}, ${(r - 1) * 4}(sp)`)
 				}
 
 				COMPILER_ENV.decrease();
@@ -115,24 +117,24 @@ export class EFunction extends EOperation {
 		// call
 		if (!leaf_call) {
 			for (let i = 1; i <= argn; i++)
-				asm.push(`\tlw a${i}, ${(i - 1) * 4}(sp)`)
+				asm.push(`${indentation}lw t${i}, ${(i - 1) * 4}(sp)`)
 		}
-		asm.push(`\tjalr ra, ${func.name}(zero)`);
+		asm.push(`${indentation}jalr ra, ${func.name}(zero)`);
 
 		let destination_register = COMPILER_ENV.get();
 
 		if (destination_register != 0)
-			asm.push(`\tadd a${destination_register}, zero, a0`);
+			asm.push(`${indentation}add a${destination_register}, zero, a0`);
 
 		if (!leaf_call) {
-			asm.push(`\taddi sp, sp, ${argn * 4}`);
+			asm.push(`${indentation}addi sp, sp, ${argn * 4}`);
 			COMPILER_ENV.saveOnStack = false;
 		}
 
 		if (COMPILER_ENV.inDefinition) {
 			// restore t-registers, please
 
-			let n = 7;
+			let n = MAX_ARGUMENTS;
 
 			let defining_function = COMPILER_ENV.definingFunction;
 
@@ -140,7 +142,7 @@ export class EFunction extends EOperation {
 				n = defining_function.params.length;
 
 			for (let i = 1; i < n; i++)
-				asm.push(`\tlw t${i}, ${(i - 1) * 4}(sp)`)
+				asm.push(`${indentation}lw t${i}, ${(i - 1) * 4}(sp)`)
 
 		}
 

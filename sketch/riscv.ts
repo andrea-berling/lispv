@@ -34,7 +34,10 @@ mult_loop:
     bne i1, i0, loop
 `
 
-	Assembler.parse(instructions.split("\n"));
+	Pipeline.init();
+
+	let as = new Assembler(instructions.split("\n"));
+	as.parse();
 
 	Memory.show();
 

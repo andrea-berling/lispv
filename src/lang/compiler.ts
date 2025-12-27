@@ -1,19 +1,19 @@
-import { Ast } from "../parser/ast";
 import { COMPILER_ENV } from "./environment";
 import { EExpression } from "./expressions/expression";
-import { LispReader } from "./interpreter";
 import { Traversal } from "./traversal";
 
-export class Compiler extends LispReader {
+export class Compiler {
+	static indentation: boolean = false;
 	lines: string[];
 
 	constructor(lines: string[] | string, cleanEnv = true) {
-		super();
 		if (cleanEnv)
 			COMPILER_ENV.clean()
-		this.lines = LispReader.lines(lines);
+		this.lines = Traversal.cleanLines(lines);
+	}
 
-		LispReader.debug_reader && this.lines.forEach(x => console.log(x));
+	static toggleIndentation() {
+		Compiler.indentation = true;
 	}
 
 	compile(): string[] {

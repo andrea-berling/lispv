@@ -12,6 +12,28 @@ import "../../src/riscv/instructions/stype"
 import "../../src/riscv/instructions/utype"
 
 describe("compiled", () => {
+	test("value", () => {
+		Pipeline.init();
+
+		let source = `
+		(1)
+		`.split("\n").map(x => x.trim()).filter(x => x != "");
+
+		let c = new Compiler(source);
+
+		let assembly = c.compile();
+
+		let as = new Assembler(assembly);
+
+		as.parse();
+
+		Pipeline.run();
+
+		let i = new Interpreter(source)
+
+		expect(Registers.parse("a0").value).toBe(i.run());
+	})
+
 	test("primitives", () => {
 		Pipeline.init();
 

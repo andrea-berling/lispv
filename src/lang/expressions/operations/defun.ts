@@ -96,6 +96,7 @@ export class EDefun extends EOperation {
 	static compile(node: Ast): string[] {
 
 		let { function_name, args, definition } = this.parameters(node);
+		let indentation = this.indentation(node);
 
 		let func = new FunctionDefinition(function_name, args, new Ast("body"));
 
@@ -111,20 +112,20 @@ export class EDefun extends EOperation {
 			throw new Error(`cant have more than ${MAX_ARGUMENTS} arguments`);
 
 		// jump to end
-		asm.push(`\tjal zero, end-${function_name}`)
+		asm.push(`${indentation}jal zero, end-${function_name}`)
 
 		// label
 		asm.push(`${function_name}:`)
 
 		// saving
 		let offset = (argn + 1) * 4;
-		asm.push(`\taddi sp, sp, -${offset}`);
+		asm.push(`${indentation}addi sp, sp, -${offset}`);
 		offset = offset - 4;
-		asm.push(`\tsw ra, ${offset}(sp)`);
+		asm.push(`${indentation}sw ra, ${offset}(sp)`);
 		offset = offset - 4;
 
 		for (let i = argn; offset >= 0; offset -= 4, i--) {
-			asm.push(`\tsw a${i}, ${offset}(sp)`);
+			asm.push(`${indentation}sw a${i}, ${offset}(sp)`);
 		}
 
 		// a-indexes are assigned to the variable, in this level.
@@ -134,28 +135,28 @@ export class EDefun extends EOperation {
 
 		// temporary registers for calling other functions. they need to be restored after a function is called.
 		for (let i = 1; i < argn + 1; i++)
-			asm.push(`\tadd t${i}, zero, a${i}`)
+			asm.push(`${indentation}add t${i}, zero, a${i}`)
 
 		// definition
 		asm = asm.concat(EExpression.compile(definition));
 
 		offset = (argn + 1) * 4;
 		offset = offset - 4;
-		asm.push(`\tlw ra, ${offset}(sp)`);
+		asm.push(`${indentation}lw ra, ${offset}(sp)`);
 		offset = offset - 4;
 
 		for (let i = argn; offset >= 0; offset -= 4, i--) {
-			asm.push(`\tlw a${i}, ${offset}(sp)`);
+			asm.push(`${indentation}lw a${i}, ${offset}(sp)`);
 		}
 
-		asm.push(`\taddi sp, sp, ${(argn + 1) * 4}`);
+		asm.push(`${indentation}addi sp, sp, ${(argn + 1) * 4}`);
 
 		// returning
 
-		asm.push("\tjal ra, 0");
+		asm.push(`${indentation}jal ra, 0`);
 
 		asm.push(`end-${function_name}:`)
-		asm.push(`\taddi a0, zero, ${argn}`);
+		asm.push(`${indentation}addi a0, zero, ${argn}`);
 
 
 
