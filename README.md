@@ -9,12 +9,11 @@ This is a Typescript project and is comprised of 4 main packages:
 
 ## Riscv simulator
 
-Despite only implementing 37/40[^missing-instructions] instructions of the official rv32i specification[^riscv-specification], the code for this simulator was designed to be extensible.
+Despite only implementing 37/40[^missing-instructions] instructions of the official [rv32i specification](https://riscv.atlassian.net/wiki/spaces/HOME/pages/16154769/RISC-V+Technical+Specifications), the code for this simulator was designed to be extensible.
 
 [^missing-instructions]: ECALL, EFENCE and EBREAK are not implemented.
-[^riscv-specification]: [link](https://riscv.atlassian.net/wiki/spaces/HOME/pages/16154769/RISC-V+Technical+Specifications).
 
-Here is an example of a custom instruction that can be added to the `InstructionRegistry`, with the provided static block[^jest-decorator-error]. For every instruction defined of the ISA, we have a class that extends `Instruction`. The _mnemonic_ for the instruction is here called `tag` for better ease.
+Here is an example of a custom instruction that can be added to the `InstructionRegistry`, with the provided static block[^jest-decorator-error]. For every instruction defined of the ISA, we have a class that extends `Instruction`. The _mnemonic_ for the instruction is here called `tag` for better ease. The custom instruction is extending `RTypeInstruction`, from which it inherits the 7 bit `opcode`.
 
 [^jest-decorator-error]: For the fact that we are using Jest for unit testing, I've found problems with typescript decorators. [Related issue](https://github.com/jestjs/jest/issues/15890).
 
@@ -37,19 +36,20 @@ export class CustomInstruction extends RTypeInstruction {
 }
 ```
 
-With the custom instruction added to the registry and `f3` and `f7` fields defined, the instruction can be encoded and decoded from and a to a 32 bit string representation (a js `number`), with the methods:
+With the custom instruction added to the registry and `f3` and `f7` fields defined, the instruction can be encoded and decoded from and a to a 32 bit representation (a js `number`), with the methods:
 
 - `static Instruction.decode(number): Instruction` turns a number in an instance of the specific custom instruction class it belongs to.
 - `Instruction.encode(): number` is the instance method that returns a number.
 
-Every instruction is also represented by a js `string`, such as `"cust i1, i2, i3"`. The following methods translate back and forth from a string representation to an object representaiton:
+Every instruction is also represented by a js `string`, such as `"cust i1, i2, i3"`. The following methods translate back and forth from a string representation to an object representation:
 
 - `static Instruction.factoryFromAssembly(string): Instruction` from string to object.
 - `Instruction.disassemble(): string` from object to string.
 
-The string representation is used in the `Assembler`, which supports labels, comments and register asliases.
+The string representation is used in the `Assembler`, which supports labels, comments and register asliases, as for this example:
 
 ```assembly
+# fibonacci
 	addi i10, i0, 0
 	addi i11, i0, 1
 	addi i1, i0, 40 # i1 = 40
@@ -60,10 +60,9 @@ loop:
 	add i10, i0, i12
 	sw i10, 0x100(i1) # 0xff is the base address of the array, of size 4B and length 10
 	bne i1, i0, loop # while i1 > 0
-
 ```
 
-The number representaiton is written to `Memory`.
+The number representation is written to `Memory`.
 
 ```
 0x00000000: 0x0040006f (4194415) [jal i0, 4]
@@ -95,10 +94,25 @@ And the `Registers` can be inspected.
 
 ## Parser
 
+We included a [parser-combinator](https://en.wikipedia.org/wiki/Parser_combinator) library that allows for the definition of `Rule`s in a _context-free_ grammar. It takes both a _grammar_ rule and a _text_ (a js `string`) as input and works like this:
+
+- Rules can be literals that match the text by checking string equality.
+- Rules can be _combined_ with the following methods:
+	- `ZeroOrMore` that will match a rule if it is repeated 0 or more times, like `*` in regular expressions.
+	- `And` that will match the text if all rules are respected, in order.
+	- `Or` that will match the text if any one of the rules is respected.
+	- `OneOrMore` that is simply an _and_ with a rule and a _zero or more_ of that very rule.
+- The parser _backtracks_ for alternatives.
+- an `Ast` (_abstract syntax tree_) is returned if the text matches the grammar.
+- errors are reported at the precise location where the text started not to match the grammar, if it did so.
+
+The `Ast` 
+
+
 
 ## Lang
 
-The language interpreter supports a bunch of 
+### Interpreter
 
 Recursion:
 
@@ -124,3 +138,21 @@ Currying:
 (created 200)
 ```
 
+### Compiler
+
+# Future extensions
+
+This project was brought forewards for learning purposes. There is room for many improvements, such as:
+
+- [ ] the simulator should have isa extensions, like M (multiplication and division), F (floating point), D (double precision).
+- [ ] the compiled code should follow the official [ABI](https://riscv.org/wp-content/uploads/2024/12/riscv-calling.pdf).
+- [ ] there should be an intermediate representation of the AST before compilation, that is the [A-normal form](https://en.wikipedia.org/wiki/A-normal_form).
+- [ ] the compiled version of the language should support all the features of the interpreted version.
+- [ ] the interprer should have memory optimizations and [tail call recursion](https://en.wikipedia.org/wiki/Tail_call) to prevent stack overflows.
+- [ ] the parser library should allow the programmer to easily specify _NOT_.
+
+# References
+
+- [Build your own lisp](https://buildyourownlisp.com/) by [Daniel Holden](https://github.com/orangeduck) - a web book that shows how to implement a lisp interpreter with C.
+- [Digital design and computer architecture - riscv edition](https://pages.hmc.edu/harris/ddca/ddcarv.html) by Sarah L. Harris and David Harris - particularly helpful for its chapter 6, with focus on code translation from C to assembly, and assembly programming.
+- [RISC-V RV32I Base Instruction Set](./notes/rv32i.pdf) - for referencing the instruction bitwise representations.
