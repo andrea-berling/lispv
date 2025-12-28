@@ -164,3 +164,19 @@ I can say that this has been my first true creative and complex programming proj
 No use of ai
 
 100s of hours
+
+```bash
+vale@think:~/sou+/ts/lispv(dev)$ cloc src test
+56 text files.
+56 unique files.
+0 files ignored.
+
+github.com/AlDanial/cloc v 2.04 T=0.06 s (1006.2 files/s, 86982.3 lines/s)
+-------------------------------------------------------------------------------
+Language                                               files blank comment code
+-------------------------------------------------------------------------------
+TypeScript                                                     56 1094 245 3502
+-------------------------------------------------------------------------------
+SUM:                                                           56 1094 245 3502
+-------------------------------------------------------------------------------
+```
