@@ -1,4 +1,4 @@
-import { Rule, RuleMethod } from "../../src/parser/rule"
+import { Rule } from "../../src/parser/rule"
 import { range } from "../../src/parser/utils"
 import { Parser } from "../../src/parser/parser";
 

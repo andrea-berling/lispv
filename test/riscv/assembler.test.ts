@@ -53,6 +53,8 @@ describe('assembling', () => {
 
 		as.parse();
 
+		Memory.show()
+
 		Pipeline.run();
 
 		expect(Memory.get(0x100)).toBe(55);

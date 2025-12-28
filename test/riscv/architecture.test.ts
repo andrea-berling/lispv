@@ -1,7 +1,3 @@
-import { bin, flipEndianness } from "../../src/riscv/utils";
-import { Instruction } from "../../src/riscv/instruction";
-import { AddInstruction, SubInstruction } from "../../src/riscv/instructions/rtype"
-import { JalrInstruction, LwInstruction, AddiInstruction } from "../../src/riscv/instructions/itype"
 import { Registers } from "../../src/riscv/register";
 import { Memory, MemoryMode } from "../../src/riscv/memory";
 

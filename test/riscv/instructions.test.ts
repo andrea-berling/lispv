@@ -8,7 +8,6 @@ import { LuiInstruction } from "../../src/riscv/instructions/utype"
 import { JalInstruction } from "../../src/riscv/instructions/jtype"
 
 import { Registers } from "../../src/riscv/register";
-import { InstructionRegistry } from "../../src/riscv/instructionRegistry";
 import { Immediate12, Immediate20 } from "../../src/riscv/immediate";
 
 describe('binary encoding and decoding', () => {

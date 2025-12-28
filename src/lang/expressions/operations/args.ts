@@ -1,5 +1,3 @@
-import { Ast } from "../../../parser/ast";
-import { EExpression } from "../expression";
 import { EOperation } from "../operation";
 
 /**

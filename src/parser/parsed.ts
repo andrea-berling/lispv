@@ -1,6 +1,5 @@
 import { Evaluable } from "../lang/evaluable";
 import { Ast } from "./ast";
-import { Rule } from "./rule";
 
 export class Parsed {
 	name: string

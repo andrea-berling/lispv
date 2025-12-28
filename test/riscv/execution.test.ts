@@ -1,7 +1,6 @@
-import { bin } from "../../src/riscv/utils";
 import { Instruction } from "../../src/riscv/instruction";
 import { AddInstruction, SubInstruction } from "../../src/riscv/instructions/rtype"
-import { JalrInstruction, LwInstruction, AddiInstruction } from "../../src/riscv/instructions/itype"
+import { AddiInstruction } from "../../src/riscv/instructions/itype"
 import { Registers } from "../../src/riscv/register";
 import { Memory } from "../../src/riscv/memory";
 import { SwInstruction } from "../../src/riscv/instructions/stype";
@@ -70,7 +69,7 @@ describe('execution', () => {
 
 describe("negative numbers", () => {
 	test('sub negs', () => {
-		let r2v, r3v: number;
+		let r2v: number; let r3v: number;
 		let i: Instruction;
 
 		r2v = 3;
