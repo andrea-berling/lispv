@@ -76,7 +76,7 @@ export class EOperation extends Evaluable {
 	static primitives() {
 		let primitives = "";
 
-		for (let i = 1; i < MAX_PRIMITIVES; i++) {
+		for (let i = 1; i < MAX_PRIMITIVES + 1; i++) {
 			primitives = primitives.concat(this.generatePrimitive(i))
 		}
 

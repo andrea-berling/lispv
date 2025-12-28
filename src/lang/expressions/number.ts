@@ -10,11 +10,15 @@ export class ENumber extends Evaluable {
 
 	static compile(node: Ast): string[] {
 		let indentation = this.indentation(node);
+		let asm: string[] = [];
 
-		let asm: string[] = [
-			`${indentation}addi a${COMPILER_ENV.get()}, zero, ${Number.parseInt(node.literal || "")}`,
-			`${indentation}addi a0, zero, ${Number.parseInt(node.literal || "")}`
-		];
+		let destination_register = COMPILER_ENV.get();
+
+		asm.push(`${indentation}addi a${destination_register}, zero, ${Number.parseInt(node.literal || "")}`);
+
+		if (destination_register == 1)
+			asm.push(`${indentation}addi a0, zero, ${Number.parseInt(node.literal || "")}`);
+
 		return asm;
 	}
 }

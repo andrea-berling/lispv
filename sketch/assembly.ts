@@ -14,9 +14,8 @@ import { Interpreter } from "../src/lang/interpreter"
 
 export function main() {
 	let source = `
-		(defun times (args a b) (if (b) (+ (times a (+ b (- 1))) a ) (0) ))
-		(defun fact (args a) (if (a) (times a (fact (+ a (- 1))) ) (1) ))
-		(fact 5)
+		(defun triangular (args a) (if (a) (+ a (triangular (+ a (- 1) )) ) (0) ) )
+		(triangular 5)
 	`
 
 	Compiler.toggleIndentation();
