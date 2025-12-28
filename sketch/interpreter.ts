@@ -33,6 +33,9 @@ export function main() {
 (defun create (args x) (defun created (args y) (+ x y)) )
 (create 50)
 (created 200)
+
+(defun f (args if) (+ if 1))
+(f 10)
 	`
 
 	let lines = source.split("\n");

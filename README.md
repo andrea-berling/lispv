@@ -7,6 +7,14 @@ This is a Typescript project and is comprised of 4 main packages:
 - `src/lang`: a lisp programming language, comprehensive of an interpreter and a compiler.
 - `frontend`: a vue application that let the user play with the language, and the simulator.
 
+With Node installed on your system you can run unit tests with:
+
+```bash
+npm install -g pnpm
+pnpm install 
+pnpm run test
+```
+
 ## Riscv simulator
 
 Despite only implementing 37/40[^missing-instructions] instructions of the official [rv32i specification](https://riscv.atlassian.net/wiki/spaces/HOME/pages/16154769/RISC-V+Technical+Specifications), the code for this simulator was designed to be extensible.
@@ -106,12 +114,30 @@ We included a [parser-combinator](https://en.wikipedia.org/wiki/Parser_combinato
 - an `Ast` (_abstract syntax tree_) is returned if the text matches the grammar.
 - errors are reported at the precise location where the text started not to match the grammar, if it did so.
 
-The `Ast` 
+Once the `Ast` is returned, it can be cleaned by:
 
+- _wiping_: removing nodes off of it, together with their children.
+- _simplifying_: removing unwanted nodes but maintaining their children.
+- _collapsing_: adding a leaf node that is the concatenation of the text of every old children node.
+- _flattening_: making the tree structure linear.
 
 ## Lang
 
+The _Lots of Irritating Silly Parentheses_ (LISP) grammar is defined in `src/lang/grammar`. Every line of our programs has to match the grammar, and in essence:
+
+- the `GRAMMAR` is formed by one `EXPRESSION`.
+- an `EXPRESSION` is either a `NUMBER`, a `VARIABLE`, an `APPLICATION` or another `EXPRESSION`.
+- every expression can be surrounded by spaces, like `  expr `.
+- every expression is then surrounded by parentheses, like `( expr )`.
+- a `NUMBER` is a sequence of `DIGIT`s, that are any of the characters `0123456789`.
+- a `VARIABLE` is a sequence of `LETTER`s, that are any of the characters of the alphabet.
+- an `APPLICATION` is comprised of an `OPERATION` followed by zero or more `EXPRESSION`s.
+- an `OPERATION` can be a primitive operation, a literal such as `+`, `-`, `if`..., or a user defined function that is a `VARIABLE`.
+
+And this is all that is defined at a grammatical level. Every other syntax check is done at the time of interpretation or compilation of the language.
+
 ### Interpreter
+
 
 Recursion:
 
@@ -141,28 +167,32 @@ Currying:
 
 # Future extensions
 
-This project was brought forewards for learning purposes. There is room for many improvements, such as:
+This project was brought forwards for learning purposes. There is room for many improvements, such as:
 
-- [ ] the simulator should have isa extensions, like M (multiplication and division), F (floating point), D (double precision).
+- [ ] implementing an interactive web app with a code editor, the compiler and a simulator runner and inspector.
+- [ ] the simulator should have ISA extensions, like M (multiplication and division), F (floating point), D (double precision).
 - [ ] the compiled code should follow the official [ABI](https://riscv.org/wp-content/uploads/2024/12/riscv-calling.pdf).
 - [ ] there should be an intermediate representation of the AST before compilation, that is the [A-normal form](https://en.wikipedia.org/wiki/A-normal_form).
 - [ ] the compiled version of the language should support all the features of the interpreted version.
-- [ ] the interprer should have memory optimizations and [tail call recursion](https://en.wikipedia.org/wiki/Tail_call) to prevent stack overflows.
+- [ ] the interpreter should have memory optimizations and [tail call recursion](https://en.wikipedia.org/wiki/Tail_call) to prevent stack overflows.
 - [ ] the parser library should allow the programmer to easily specify _NOT_.
+- [ ] the code is already commented in part, but it should have some more clarifications and some parts should be refactored to the overall style.
 
 # References
 
-- [Build your own lisp](https://buildyourownlisp.com/) by [Daniel Holden](https://github.com/orangeduck) - a web book that shows how to implement a lisp interpreter with C.
+- [Build your own lisp](https://buildyourownlisp.com/) by [Daniel Holden](https://github.com/orangeduck) - a web book that shows how to implement a lisp interpreter in C.
 - [Digital design and computer architecture - riscv edition](https://pages.hmc.edu/harris/ddca/ddcarv.html) by Sarah L. Harris and David Harris - particularly helpful for its chapter 6, with focus on code translation from C to assembly, and assembly programming.
-- [RISC-V RV32I Base Instruction Set](./notes/rv32i.pdf) - for referencing the instruction bitwise representations.
+- [RISC-V RV32I Base Instruction Set](./notes/rv32i.pdf) - for referencing the instructions' bitwise representations.
 
 # Considerations
 
-I can say that this has been my first true creative and complex programming project.
+I can say that this has been my first complex programming project for it made use of high level software engineering and low level knowledge of digital systems.
 
-No use of ai
+I have not received help by LLMs for the organization of code nor for implementing algorithms (and it shows). The algorithms used here are unoptimized and sometimes redundant by intention. What I've wanted to achieve with this project was exploring programming languages and computer architecture, and exemplifying them in a working program.
 
-100s of hours
+I have instead conversed with ChatGPT for research purposes. One of the most fruitful chats I'm attaching [here](./notes/lispv.pdf).
+
+It took 100s of hours and 1000s of lines of code to compile the factorial function and run it in the simulator, here is a rundown:
 
 ```bash
 vale@think:~/sou+/ts/lispv(dev)$ cloc src test
@@ -174,8 +204,10 @@ github.com/AlDanial/cloc v 2.04 T=0.06 s (1006.2 files/s, 86982.3 lines/s)
 -------------------------------------------------------------------------------
 Language                                               files blank comment code
 -------------------------------------------------------------------------------
-TypeScript                                                     56 1094 245 3502
+TypeScript                                                56  1094     245 3502
 -------------------------------------------------------------------------------
-SUM:                                                           56 1094 245 3502
+SUM:                                                      56  1094     245 3502
 -------------------------------------------------------------------------------
 ```
+
+
