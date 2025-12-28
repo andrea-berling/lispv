@@ -156,3 +156,11 @@ This project was brought forewards for learning purposes. There is room for many
 - [Build your own lisp](https://buildyourownlisp.com/) by [Daniel Holden](https://github.com/orangeduck) - a web book that shows how to implement a lisp interpreter with C.
 - [Digital design and computer architecture - riscv edition](https://pages.hmc.edu/harris/ddca/ddcarv.html) by Sarah L. Harris and David Harris - particularly helpful for its chapter 6, with focus on code translation from C to assembly, and assembly programming.
 - [RISC-V RV32I Base Instruction Set](./notes/rv32i.pdf) - for referencing the instruction bitwise representations.
+
+# Considerations
+
+I can say that this has been my first true creative and complex programming project.
+
+No use of ai
+
+100s of hours
