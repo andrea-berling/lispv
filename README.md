@@ -2,12 +2,12 @@
 
 This is a Typescript project and is comprised of 4 main packages:
 
-- `src/riscv`: an implementation of a simulator for a risc cpu.
+- `src/riscv`: an implementation of a simulator for a riscv cpu.
 - `src/parser`: a context-free-grammar parser combinator library.
 - `src/lang`: a lisp programming language, comprehensive of an interpreter and a compiler.
-- `frontend`: a vue application that let the user play with the language, and the simulator.
+- `frontend`: a vue application that let the user play with the language, and the simulator (TODO).
 
-With Node installed on your system you can run unit tests with:
+With Node.js installed on your system you can run unit tests with:
 
 ```bash
 npm install -g pnpm
@@ -21,13 +21,15 @@ Despite only implementing 37/40[^missing-instructions] instructions of the offic
 
 [^missing-instructions]: ECALL, EFENCE and EBREAK are not implemented.
 
-Here is an example of a custom instruction that can be added to the `InstructionRegistry`, with the provided static block[^jest-decorator-error]. For every instruction defined of the ISA, we have a class that extends `Instruction`. The _mnemonic_ for the instruction is here called `tag` for better ease. The custom instruction is extending `RTypeInstruction`, from which it inherits the 7 bit `opcode`.
+Here is an example of a custom instruction that can be added to the `InstructionRegistry`, with the provided static block[^jest-decorator-error]. For every instruction defined of the ISA, we have a class that extends `Instruction`. The _mnemonic_ for the instruction is here called `tag` for better ease. The custom instruction is extending `RTypeInstruction`, from which it inherits the 7 bit `opcode` and methods for internal work.
 
 [^jest-decorator-error]: For the fact that we are using Jest for unit testing, I've found problems with typescript decorators. [Related issue](https://github.com/jestjs/jest/issues/15890).
 
 ```typescript
-
-abstract class RTypeInstruction extends Instruction {/* ... */}
+abstract class RTypeInstruction extends Instruction {
+	static opcode = 0b0110011;
+	// ...
+}
 
 export class CustomInstruction extends RTypeInstruction {
  static tag = "cust";
@@ -102,14 +104,16 @@ And the `Registers` can be inspected.
 
 ## Parser
 
-We included a [parser-combinator](https://en.wikipedia.org/wiki/Parser_combinator) library that allows for the definition of `Rule`s in a _context-free_ grammar. It takes both a _grammar_ rule and a _text_ (a js `string`) as input and works like this:
+We included a [parser-combinator](https://en.wikipedia.org/wiki/Parser_combinator) library that allows for the definition of `Rule`s in a _context-free_ grammar[^chomsky]. It takes both a _grammar_ rule and a _text_ (a js `string`) as input and works like this:
+
+[^chomsky]: It recognizes Chomsky-type-2 grammars with non-left-recursive rules. Put differently it is a LL(*) parser with backtracking.
 
 - Rules can be literals that match the text by checking string equality.
 - Rules can be _combined_ with the following methods:
  	- `ZeroOrMore` that will match a rule if it is repeated 0 or more times, like `*` in regular expressions.
  	- `And` that will match the text if all rules are respected, in order.
  	- `Or` that will match the text if any one of the rules is respected.
- 	- `OneOrMore` that is simply an _and_ with a rule and a _zero or more_ of that very rule.
+ 	- `OneOrMore` that is simply an _and_ with a rule and a _zero or more_ of that very rule. This is just like `+` in regular expressions.
 - the parser _backtracks_ for alternatives.
 - an `Ast` (_abstract syntax tree_) is returned if the text matches the grammar.
 - errors are reported at the precise location where the text started not to match the grammar, if it did so.
@@ -118,23 +122,23 @@ Once the `Ast` is returned, it can be cleaned by:
 
 - _wiping_: removing nodes off of it, together with their children.
 - _simplifying_: removing unwanted nodes but maintaining their children.
-- _collapsing_: adding a leaf node that is the concatenation of the text of every old children node.
+- _collapsing_: adding a leaf node that is the concatenation of the text of every old children node, recursively.
 - _flattening_: making the tree structure linear.
 
 ## Lang
 
-The _Lots of Irritating Silly Parentheses_ (LISP) grammar is defined in `src/lang/grammar`. Every line of our programs has to match the grammar, and in essence:
+The _Lots of Irritating Silly Parentheses_ (LISP) grammar is defined in `src/lang/grammar.ts`. Every line of our programs has to match the grammar, and in essence:
 
 - the `GRAMMAR` is formed by one `EXPRESSION`.
 - an `EXPRESSION` is either a `NUMBER`, a `VARIABLE`, an `APPLICATION` or another `EXPRESSION`.
-- every expression can be surrounded by spaces, like ` expr `.
+- every expression can be surrounded by spaces, like `___expr__`.
 - every expression is then surrounded by parentheses, like `( expr )`.
 - a `NUMBER` is a sequence of `DIGIT`s, that are any of the characters `0123456789`.
 - a `VARIABLE` is a sequence of `LETTER`s, that are any of the characters of the alphabet.
 - an `APPLICATION` is comprised of an `OPERATION` followed by zero or more `EXPRESSION`s.
 - an `OPERATION` can be a primitive operation, a literal such as `+`, `-`, `if`..., or a user defined function that is a `VARIABLE`.
 
-And this is all that is defined at a grammatical level. The parsed `Ast` is then cleaned to have the irritating parentheses and spaces wiped, the numbers and variables collapsed into single nodes and `OPERATION`s simplified to their `APPLICATION`. Every other syntax check is done at the time of interpretation or compilation of the language, for example the definition of new functions, that is done like so: `(defun sum (args a b) (+ a b))`.
+And this is all that is defined at a grammatical level. The parsed `Ast` is then cleaned to have the irritating parentheses and spaces wiped, the numbers and variables collapsed into single nodes and `OPERATION`s simplified to their `APPLICATION`. Every other syntax check is done at the time of interpretation or compilation of the language, for example the definition of new functions, that takes form like: `(defun sum (args a b) (+ a b))`.
 
 A rule of the grammar can be associated to a class that extends `Evaluable`. The parameter `evaluableType: typeof Evaluable` is passed all the way to the corresponding node of the `Ast`, so the node can be _evaluated_ and _compiled_ in accordance with the behaviour defined in the relative `evaluableType` class.
 
@@ -165,8 +169,10 @@ export class ENumber extends Evaluable {
 
 The environment of the language includes:
 
-- A _stack_ structure for variables, to isolate lexical scopes.
-- A registry for functions, that holds their `FunctionDefinition`, which is comprised of the name, the parameters and the definition of the function.
+- a _stack_ structure for variables, to isolate lexical scopes.
+- a registry for functions, that holds their `FunctionDefinition`, which is comprised of the name, the parameters and the definition of the function.
+
+Starting from the root node of the AST, expressions are evaluated or compiled, and so are their children and the children of them, recursively. This is done in a _depth first_ fashion.
 
 ### Interpreter
 
@@ -202,11 +208,11 @@ The compiler works with an extended environment, that _keeps track of the regist
 
 The _application binary interface_ (ABI) that the compiler complies to is not very robust and certainly inefficient. Every one of its features is a weakness, for example:
 
-- function definitions are surrounded by a label that indicates where the function starts and by a label that indicates there the function ends. Definitions are inserted sequentially in the assembly and are skipped with a jump over the function end.
-- registers `a0..a7` are used as argument. They are saved to the stack even if they are not overwritten by the function. The maximum number of arguments that that a function supports is 7. `a0` is the returned value and not the first argument (this is against the riscv calling convention).
-- a prologue is placed at the beginning of the program, before the `_start` label. The program can jump there to apply plus-_n_ and minus-_n_ operations, for n that goes from 1 to 7.
+- function definitions are surrounded by a label that indicates where the function starts and by a label that indicates there the function ends. Function definitions are inserted sequentially in the assembly and are skipped with a jump over the function end.
+- registers `a0..a7` are used as arguments. They are saved to the stack even if they are not overwritten by the function. The maximum number of arguments that a function supports is 7. `a0` is the returned value and not the first argument (this is against the riscv calling convention).
+- `+` and `-` are not inlined. A prologue is placed at the beginning of the program, before the `_start` label. The program can jump there to apply plus-_n_ and minus-_n_ operations, for n that goes from 1 to 7.
 - the function call simply uses a `jalr` instruction that takes an unsigned 12 bit immediate to the location of the function. A jump longer than 1024 instructions wouldn't work. A temporary register should be used to extend the jump if needed.
-- the argument registers of use during a function call are saved to memory used to keep note of original arguments during [non-leaf](https://en.wikipedia.org/wiki/Leaf_routine) function calls. 
+- the argument registers of use during a [non-leaf](https://en.wikipedia.org/wiki/Leaf_routine) function call are saved to the stack and restored after the function of study calls every other function.
 
 Here is an example of a [triangular number](https://en.wikipedia.org/wiki/Triangular_number) function:
 
@@ -215,7 +221,7 @@ Here is an example of a [triangular number](https://en.wikipedia.org/wiki/Triang
 (triangular 5)
 ```
 
-And here is the assembly generated:
+And here is the assembly generated, with helpful indentation:
 
 ```assembly
             _start:
@@ -294,15 +300,15 @@ After execution the register `a0` will hold the decimal value `15`.
 
 This project was brought forwards for learning purposes. There is room for many improvements, such as:
 
-- [ ] implementing an interactive web app with a code editor, the compiler and a simulator runner and inspector.
+- [ ] implementing an interactive web app with a code editor, the compiler and the simulator runner and inspector.
 - [ ] the simulator should have ISA extensions, like M (multiplication and division), F (floating point), D (double precision).
-- [ ] there should be an intermediate representation of the AST before compilation, that is the [A-normal form](https://en.wikipedia.org/wiki/A-normal_form).
+- [ ] there should be an intermediate representation of the AST before compilation, in [A-normal form](https://en.wikipedia.org/wiki/A-normal_form).
 - [ ] the compiled version of the language should support all the features of the interpreted version.
 - [ ] the interpreter should have memory optimizations and [tail call recursion](https://en.wikipedia.org/wiki/Tail_call) to prevent stack overflows.
 - [ ] the parser library should allow the programmer to easily specify _NOT_ rules.
 - [ ] the code is already commented in part, but it should have some more clarifications and some parts should be refactored to the overall style.
 - [ ] the compiled code should follow the official [ABI](https://riscv.org/wp-content/uploads/2024/12/riscv-calling.pdf).
-- [ ] covering the weaknesses of the compiler.
+- [ ] the compiler's weaknesses should be covered.
 
 # References
 
@@ -312,7 +318,7 @@ This project was brought forwards for learning purposes. There is room for many 
 
 # Considerations
 
-I can say that this has been my first complex programming project for it made use of high level software engineering and low level knowledge of digital systems.
+I can say that this has been my first complex programming project for that it makes use of high level software engineering and low level knowledge of digital systems.
 
 I have not received help by LLMs for the organization of code nor for implementing algorithms (and it shows). The algorithms used here are unoptimized and sometimes redundant by intention. What I've wanted to achieve with this project was exploring programming languages and computer architecture, and exemplifying them in a working program.
 
@@ -336,7 +342,7 @@ SUM:                                                      56  1094     245 3502
 -------------------------------------------------------------------------------
 ```
 
-The following code, while it makes the interpreter explode for stack overflow, compiles to 195 lines of assembly, uses 141kB of stack memory for execution... gives the correct result!!
+The following code, while it makes the interpreter explode for stack overflow, compiles to 195 lines of assembly, uses 141kB of stack memory for execution... but gives the correct result!!
 
 ```lisp
 (defun times (args a b) (if (b) (+ a (times a (+ b (- 1))) ) (0) ))
