@@ -102,7 +102,7 @@ export abstract class Registers {
 
 		let x = name.match("x([0-9])")
 		if (x)
-			return "i" + x.at(1);
+			return "i" + x.slice(1);
 
 		return undefined;
 	}
