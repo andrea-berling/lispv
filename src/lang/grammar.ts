@@ -22,8 +22,11 @@ import { EEq } from "./expressions/operations/predicates/eq";
 
 // white spaces
 export const SPACE = Rule.literal(" ");
-export const ZERO_OR_MORE_SPACES = Rule.zeroOrMore("optional_spaces", SPACE);
-export const ONE_OR_MORE_SPACES = Rule.oneOrMore("spaces", SPACE);
+export const NEWLINE = Rule.literal("\n");
+export const HORIZONTAL_TAB = Rule.literal("\t");
+export const SPACES = Rule.or("", SPACE, NEWLINE, HORIZONTAL_TAB);
+export const ZERO_OR_MORE_SPACES = Rule.zeroOrMore("optional_spaces", SPACES);
+export const ONE_OR_MORE_SPACES = Rule.oneOrMore("spaces", SPACES);
 
 // digits
 export const DIGIT = Rule.or(
